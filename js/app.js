@@ -208,7 +208,25 @@ async function sendPost(mode) {
     } else if(mode === 'submitBooking') {
 
         data.name = document.getElementById('b_name').value;
-        data.phone = document.getElementById('b_phone').value;
+        let phone = document.getElementById('b_phone').value
+    .replace(/[^0-9]/g, '');
+
+if(phone.length === 11) {
+
+    phone =
+        phone.slice(0, 3) + '-' +
+        phone.slice(3, 7) + '-' +
+        phone.slice(7);
+
+} else if(phone.length === 10) {
+
+    phone =
+        phone.slice(0, 3) + '-' +
+        phone.slice(3, 6) + '-' +
+        phone.slice(6);
+}
+
+data.phone = phone;
         data.space = document.getElementById('b_space').value;
         data.content = document.getElementById('b_content').value;
         data.dateTime = document.getElementById('b_date').value;
