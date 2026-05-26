@@ -44,7 +44,11 @@
         </div>
 
         <!-- 출석 현황 -->
-        <div id="admin-stats-section" style="margin-top:25px;">
+        <div
+            id="admin-stats-section"
+            class="hidden"
+            style="margin-top:25px;"
+        >
 
             <p
                 style="
@@ -127,7 +131,13 @@
         }
     }
 
-    showAdminTab('stats');
+    document
+        .getElementById('admin-stats-section')
+        .classList.add('hidden');
+
+    document
+        .getElementById('admin-calendar-section')
+        .classList.add('hidden');
 
 </script>
 
