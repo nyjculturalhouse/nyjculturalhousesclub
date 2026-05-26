@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>대관 신청</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="overlay"></div>
+<div id="toast">제출 완료 ✅</div>
+
+<div class="container">
+
+    <div id="view-booking" class="card">
+
+        <h3>대관 신청서</h3>
+
+        <input id="b_name" placeholder="신청자 이름">
+
+        <input id="b_phone" placeholder="전화번호">
+
+        <label>공간 선택</label>
+
+        <select id="b_space">
+            <option value="어울림방">어울림방</option>
+            <option value="댄스실">댄스실</option>
+            <option value="음악실">음악실</option>
+            <option value="동아리방">동아리방</option>
+        </select>
+
+        <input id="b_content" placeholder="사용 목적">
+
+        <label>이용 일시</label>
+
+        <input id="b_date" type="datetime-local">
+
+        <label>사용 시간</label>
+
+        <select id="b_hours">
+            <option value="1">1시간</option>
+            <option value="2">2시간</option>
+            <option value="3">3시간</option>
+        </select>
+
+        <button
+            class="btn primary"
+            id="btn-submit-book"
+            onclick="sendPost('submitBooking')"
+            style="margin-top:30px;"
+        >
+            대관 신청하기
+        </button>
+
+        <button class="btn secondary" onclick="location.href='index.html'">
+            메인으로
+        </button>
+
+    </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
