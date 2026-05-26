@@ -88,6 +88,8 @@ function initDays() {
 
     const box = document.getElementById('day-buttons');
 
+    if (!box) return; // 🔥 추가 (DOM 없으면 중단)
+
     box.innerHTML = '';
 
     days.forEach(d => {
@@ -130,6 +132,16 @@ async function loadClubs(day) {
 
     box.innerHTML = '';
 
+    if (!clubs || clubs.length === 0) { // 🔥 추가
+
+        box.innerHTML = `
+            <p style="text-align:center;">
+                등록된 동아리가 없습니다.
+            </p>
+        `;
+        return;
+    }
+
     clubs.forEach(c => {
 
         const b = document.createElement('button');
@@ -156,9 +168,12 @@ async function loadMembers(club) {
 
     showStep(3);
 
-    document.getElementById('club-title').innerText = club;
+    const title = document.getElementById('club-title');
+    if (title) title.innerText = club;
 
     const box = document.getElementById('member-list');
+
+    if (!box) return;
 
     box.innerHTML = '';
 
@@ -167,6 +182,16 @@ async function loadMembers(club) {
     const members = await apiGet("getMembers", {
         club: club
     });
+
+    if (!members || members.length === 0) { // 🔥 추가
+
+        box.innerHTML = `
+            <p style="text-align:center;">
+                등록된 인원이 없습니다.
+            </p>
+        `;
+        return;
+    }
 
     members.forEach(m => {
 
@@ -208,25 +233,26 @@ async function sendPost(mode) {
     } else if(mode === 'submitBooking') {
 
         data.name = document.getElementById('b_name').value;
+
         let phone = document.getElementById('b_phone').value
-    .replace(/[^0-9]/g, '');
+            .replace(/[^0-9]/g, '');
 
-if(phone.length === 11) {
+        if(phone.length === 11) {
 
-    phone =
-        phone.slice(0, 3) + '-' +
-        phone.slice(3, 7) + '-' +
-        phone.slice(7);
+            phone =
+                phone.slice(0, 3) + '-' +
+                phone.slice(3, 7) + '-' +
+                phone.slice(7);
 
-} else if(phone.length === 10) {
+        } else if(phone.length === 10) {
 
-    phone =
-        phone.slice(0, 3) + '-' +
-        phone.slice(3, 6) + '-' +
-        phone.slice(6);
-}
+            phone =
+                phone.slice(0, 3) + '-' +
+                phone.slice(3, 6) + '-' +
+                phone.slice(6);
+        }
 
-data.phone = phone;
+        data.phone = phone;
         data.space = document.getElementById('b_space').value;
         data.content = document.getElementById('b_content').value;
         data.dateTime = document.getElementById('b_date').value;
@@ -255,9 +281,22 @@ data.phone = phone;
         btn.disabled = true;
     });
 
-    await apiPost(data);
+    try { // 🔥 추가 (API 실패 방어)
 
-    showCompleteToast();
+        await apiPost(data);
+        showCompleteToast();
+
+    } catch (e) {
+
+        alert("전송 실패");
+        console.error(e);
+
+    } finally {
+
+        submitBtns.forEach(btn => {
+            btn.disabled = false; // 🔥 복구 추가
+        });
+    }
 }
 
 function submitAttendance() {
@@ -285,5 +324,3 @@ function showStep(s) {
         .getElementById('step-members')
         ?.classList.toggle('hidden', s !== 3);
 }
-
-수정필요부분 수정해주고 내가 말하지 않은부분은 수정,첨삭,삭제 금지
