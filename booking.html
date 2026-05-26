@@ -19,9 +19,13 @@
 
         <h3>대관 신청서</h3>
 
+        <label>신청자 정보</label>
+
         <input id="b_name" placeholder="신청자 이름">
 
         <input id="b_phone" placeholder="전화번호">
+
+        <input id="b_org" placeholder="소속 동아리 / 단체명">
 
         <label>공간 선택</label>
 
@@ -32,7 +36,9 @@
             <option value="동아리방">동아리방</option>
         </select>
 
-        <input id="b_content" placeholder="사용 목적">
+        <label>사용 목적</label>
+
+        <input id="b_content" placeholder="예) 정기 연습, 회의, 공연 준비 등">
 
         <label>이용 일시</label>
 
@@ -45,6 +51,177 @@
             <option value="2">2시간</option>
             <option value="3">3시간</option>
         </select>
+
+        <label>예상 인원</label>
+
+        <input id="b_people" type="number" placeholder="예상 참여 인원">
+
+        <label>기타 요청사항</label>
+
+        <input id="b_request" placeholder="필요 장비 및 요청사항 입력">
+
+        <!-- 동의문 -->
+        <div
+            style="
+                margin-top:30px;
+                padding:20px;
+                border:2px solid #e5e8eb;
+                border-radius:16px;
+                background:#f9fafb;
+                line-height:1.8;
+                color:#333;
+                font-size:16px;
+            "
+        >
+
+            <div
+                style="
+                    font-weight:bold;
+                    margin-bottom:15px;
+                    font-size:18px;
+                    color:#191f28;
+                "
+            >
+                대관 신청 동의문
+            </div>
+
+            <!-- 1번 -->
+            <div
+                style="
+                    padding:16px;
+                    background:white;
+                    border-radius:12px;
+                    border:1px solid #e5e8eb;
+                    margin-bottom:18px;
+                "
+            >
+
+                <div style="margin-bottom:15px;">
+                    1. 남양주시 문화의집 시설을 사용함에 있어 허가 조건 등을 철저히 준수할 것이며,
+                    대관기간 중 사용자들의 안전 및 보건과 관련 사항 준수 등
+                    대관자로서의 의무를 성실히 수행할 것을 서약합니다.
+                </div>
+
+                <div
+                    style="
+                        display:flex;
+                        gap:12px;
+                    "
+                >
+
+                    <label
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:8px;
+                            font-size:15px;
+                            font-weight:500;
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="agree1"
+                            value="동의"
+                            id="agree1_yes"
+                        >
+                        동의
+                    </label>
+
+                    <label
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:8px;
+                            font-size:15px;
+                            font-weight:500;
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="agree1"
+                            value="비동의"
+                            id="agree1_no"
+                        >
+                        비동의
+                    </label>
+
+                </div>
+
+            </div>
+
+            <!-- 2번 -->
+            <div
+                style="
+                    padding:16px;
+                    background:white;
+                    border-radius:12px;
+                    border:1px solid #e5e8eb;
+                "
+            >
+
+                <div style="margin-bottom:15px;">
+
+                    2.<br><br>
+
+                    ① 사전승인을 받지 않은 물품 및 장비는 반입하지 않으며,
+                    이로 인한 손해가 발생할 경우 책임을 지겠습니다.<br><br>
+
+                    ② 대관시설 내, 취사 및 음식물 반입을 하지 않겠습니다.<br><br>
+
+                    ③ 정치적, 종교적, 유료 강습, 특강 등의 영리목적으로 시설 사용을 하지 않으며
+                    지켜지지 않을 시, 사용승인에 대한 취소 및 정지하는 것에 대해
+                    이의를 제기하지 않겠습니다.
+
+                </div>
+
+                <div
+                    style="
+                        display:flex;
+                        gap:12px;
+                    "
+                >
+
+                    <label
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:8px;
+                            font-size:15px;
+                            font-weight:500;
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="agree2"
+                            value="동의"
+                            id="agree2_yes"
+                        >
+                        동의
+                    </label>
+
+                    <label
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:8px;
+                            font-size:15px;
+                            font-weight:500;
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="agree2"
+                            value="비동의"
+                            id="agree2_no"
+                        >
+                        비동의
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
 
         <button
             class="btn primary"
@@ -66,6 +243,29 @@
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
+
+<script>
+
+    const originalSendPost = sendPost;
+
+    sendPost = async function(mode) {
+
+        if(mode === 'submitBooking') {
+
+            const agree1 = document.getElementById('agree1_yes').checked;
+
+            const agree2 = document.getElementById('agree2_yes').checked;
+
+            if(!agree1 || !agree2) {
+
+                return alert("모든 동의 항목에 동의해주세요.");
+            }
+        }
+
+        originalSendPost(mode);
+    }
+
+</script>
 
 </body>
 </html>
