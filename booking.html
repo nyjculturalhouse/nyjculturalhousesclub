@@ -23,7 +23,44 @@
 
         <input id="b_name" placeholder="신청자 이름">
 
-        <input id="b_phone" placeholder="전화번호">
+        <input
+            id="b_phone"
+            placeholder="전화번호"
+            inputmode="numeric"
+            maxlength="13"
+            oninput="
+                let v = this.value.replace(/[^0-9]/g, '');
+
+                if(v.length > 11) {
+                    v = v.slice(0, 11);
+                }
+
+                if(v.length >= 11) {
+
+                    this.value =
+                        v.slice(0,3) + '-' +
+                        v.slice(3,7) + '-' +
+                        v.slice(7);
+
+                } else if(v.length >= 7) {
+
+                    this.value =
+                        v.slice(0,3) + '-' +
+                        v.slice(3,6) + '-' +
+                        v.slice(6);
+
+                } else if(v.length >= 4) {
+
+                    this.value =
+                        v.slice(0,3) + '-' +
+                        v.slice(3);
+
+                } else {
+
+                    this.value = v;
+                }
+            "
+        >
 
         <input id="b_org" placeholder="소속 동아리 / 단체명">
 
@@ -42,7 +79,11 @@
 
         <label>이용 일시</label>
 
-        <input id="b_date" type="datetime-local">
+        <input
+            id="b_date"
+            type="datetime-local"
+            min=""
+        >
 
         <label>사용 시간</label>
 
@@ -102,6 +143,7 @@
                         display:flex;
                         align-items:center;
                         gap:20px;
+                        flex-wrap:wrap;
                     "
                 >
 
@@ -113,6 +155,7 @@
                             font-size:15px;
                             font-weight:500;
                             margin:0;
+                            white-space:nowrap;
                         "
                     >
                         <input
@@ -137,6 +180,7 @@
                             font-size:15px;
                             font-weight:500;
                             margin:0;
+                            white-space:nowrap;
                         "
                     >
                         <input
@@ -184,6 +228,7 @@
                         display:flex;
                         align-items:center;
                         gap:20px;
+                        flex-wrap:wrap;
                     "
                 >
 
@@ -195,6 +240,7 @@
                             font-size:15px;
                             font-weight:500;
                             margin:0;
+                            white-space:nowrap;
                         "
                     >
                         <input
@@ -219,6 +265,7 @@
                             font-size:15px;
                             font-weight:500;
                             margin:0;
+                            white-space:nowrap;
                         "
                     >
                         <input
@@ -244,7 +291,13 @@
         <button
             class="btn primary"
             id="btn-submit-book"
-            onclick="sendPost('submitBooking')"
+            onclick="
+                if(navigator.vibrate){
+                    navigator.vibrate(30);
+                }
+
+                sendPost('submitBooking');
+            "
             style="margin-top:30px;"
         >
             대관 신청하기
@@ -263,6 +316,16 @@
 <script src="js/app.js"></script>
 
 <script>
+
+    const now = new Date();
+
+    now.setMinutes(
+        now.getMinutes() - now.getTimezoneOffset()
+    );
+
+    document
+        .getElementById('b_date')
+        .min = now.toISOString().slice(0,16);
 
     const originalSendPost = sendPost;
 
