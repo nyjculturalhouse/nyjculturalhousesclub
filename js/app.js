@@ -88,7 +88,7 @@ function initDays() {
 
     const box = document.getElementById('day-buttons');
 
-    if (!box) return; // 🔥 추가 (DOM 없으면 중단)
+    if (!box) return;
 
     box.innerHTML = '';
 
@@ -132,7 +132,7 @@ async function loadClubs(day) {
 
     box.innerHTML = '';
 
-    if (!clubs || clubs.length === 0) { // 🔥 추가
+    if (!clubs || clubs.length === 0) {
 
         box.innerHTML = `
             <p style="text-align:center;">
@@ -179,11 +179,24 @@ async function loadMembers(club) {
 
     selMembers = [];
 
-    const members = await apiGet("getMembers", {
+    let members = await apiGet("getMembers", {
         club: club
     });
 
-    if (!members || members.length === 0) { // 🔥 추가
+    // 🔥 추가: 문자열 한 줄로 넘어오는 경우 분리
+    if (
+        members.length === 1 &&
+        typeof members[0] === 'string' &&
+        members[0].includes(',')
+    ) {
+
+        members = members[0]
+            .split(',')
+            .map(v => v.trim())
+            .filter(Boolean);
+    }
+
+    if (!members || members.length === 0) {
 
         box.innerHTML = `
             <p style="text-align:center;">
@@ -281,7 +294,7 @@ async function sendPost(mode) {
         btn.disabled = true;
     });
 
-    try { // 🔥 추가 (API 실패 방어)
+    try {
 
         await apiPost(data);
         showCompleteToast();
@@ -294,7 +307,7 @@ async function sendPost(mode) {
     } finally {
 
         submitBtns.forEach(btn => {
-            btn.disabled = false; // 🔥 복구 추가
+            btn.disabled = false;
         });
     }
 }
