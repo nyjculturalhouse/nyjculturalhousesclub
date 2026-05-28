@@ -355,6 +355,10 @@ async function sendPost(mode) {
         data.agree1 = document.querySelector('input[name="agree1"]:checked')?.value || '';
         data.agree2 = document.querySelector('input[name="agree2"]:checked')?.value || '';
 
+        // 🔥 추가
+        data.org = document.getElementById('b_org')?.value || '';
+        data.people = document.getElementById('b_people')?.value || '';
+
         if(!data.name || !data.dateTime) {
             return alert("필수 정보를 입력해주세요.");
         }
@@ -380,7 +384,14 @@ async function sendPost(mode) {
 
     try {
 
-        await apiPost(data);
+        const res = await apiPost(data);
+
+        // 🔥 추가
+        if(res && res.error) {
+            alert(res.error);
+            return;
+        }
+
         showCompleteToast();
 
     } catch (e) {
