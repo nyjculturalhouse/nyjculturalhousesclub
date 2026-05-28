@@ -1,3 +1,4 @@
+```javascript
 let curStep = 1;
 let selDay = '';
 let selClub = '';
@@ -263,7 +264,6 @@ async function loadMembers(club) {
         club: club
     });
 
-    // 🔥 추가: 문자열 한 줄로 넘어오는 경우 분리
     if (
         members.length === 1 &&
         typeof members[0] === 'string' &&
@@ -320,7 +320,6 @@ async function sendPost(mode) {
     if(mode === 'submitAttendance') {
 
         data.clubName = selClub;
-
         data.attendees = selMembers;
 
     } else if(mode === 'submitBooking') {
@@ -351,11 +350,9 @@ async function sendPost(mode) {
         data.dateTime = document.getElementById('b_date').value;
         data.hours = document.getElementById('b_hours').value;
 
-        // 🔥 추가
         data.agree1 = document.querySelector('input[name="agree1"]:checked')?.value || '';
         data.agree2 = document.querySelector('input[name="agree2"]:checked')?.value || '';
 
-        // 🔥 추가
         data.org = document.getElementById('b_org')?.value || '';
         data.people = document.getElementById('b_people')?.value || '';
 
@@ -386,8 +383,9 @@ async function sendPost(mode) {
 
         const res = await apiPost(data);
 
-        // 🔥 추가
-        if(res && res.error) {
+        console.log(res);
+
+        if (res && res.error) {
             alert(res.error);
             return;
         }
@@ -396,8 +394,12 @@ async function sendPost(mode) {
 
     } catch (e) {
 
-        alert("전송 실패");
         console.error(e);
+
+        alert(
+            "전송 실패\n\n" +
+            (e.message || JSON.stringify(e))
+        );
 
     } finally {
 
@@ -432,3 +434,4 @@ function showStep(s) {
         .getElementById('step-members')
         ?.classList.toggle('hidden', s !== 3);
 }
+```
