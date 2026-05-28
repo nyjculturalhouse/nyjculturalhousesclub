@@ -351,6 +351,10 @@ async function sendPost(mode) {
         data.dateTime = document.getElementById('b_date').value;
         data.hours = document.getElementById('b_hours').value;
 
+        // 🔥 추가
+        data.agree1 = document.querySelector('input[name="agree1"]:checked')?.value || '';
+        data.agree2 = document.querySelector('input[name="agree2"]:checked')?.value || '';
+
         if(!data.name || !data.dateTime) {
             return alert("필수 정보를 입력해주세요.");
         }
