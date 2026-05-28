@@ -80,6 +80,82 @@ async function loadStats() {
     }
 }
 
+
+// 🔥 추가
+async function loadAttendanceCheck() {
+
+    const box = document.getElementById('attendance-check-content');
+
+    if (!box) return;
+
+    box.innerHTML = `
+        <p style="text-align:center; padding:20px;">
+            불러오는 중...
+        </p>
+    `;
+
+    try {
+
+        const data = await apiGet("getAttendanceStatus");
+
+        if(!data || data.length === 0) {
+
+            box.innerHTML = `
+                <p style="text-align:center; padding:20px;">
+                    데이터가 없습니다.
+                </p>
+            `;
+
+            return;
+        }
+
+        let html = `
+            <table>
+                <tr>
+                    <th>동아리</th>
+                    <th>저번주</th>
+                    <th>이번주</th>
+                </tr>
+        `;
+
+        data.forEach(d => {
+
+            html += `
+                <tr>
+                    <td>${d.club}</td>
+
+                    <td style="
+                        font-weight:bold;
+                        color:${d.lastWeek ? '#3182f6' : 'red'};
+                    ">
+                        ${d.lastWeek ? '완료' : '미체크'}
+                    </td>
+
+                    <td style="
+                        font-weight:bold;
+                        color:${d.thisWeek ? '#3182f6' : 'red'};
+                    ">
+                        ${d.thisWeek ? '완료' : '미체크'}
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `</table>`;
+
+        box.innerHTML = html;
+
+    } catch (e) {
+
+        box.innerHTML = `
+            <p style="text-align:center; color:red;">
+                불러오기 실패
+            </p>
+        `;
+    }
+}
+
+
 function initDays() {
 
     showStep(1);
