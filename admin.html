@@ -19,7 +19,7 @@
         <div
             style="
                 display:grid;
-                grid-template-columns:1fr 1fr;
+                grid-template-columns:1fr 1fr 1fr;
                 gap:12px;
                 margin-top:20px;
             "
@@ -31,6 +31,15 @@
                 style="margin-top:0;"
             >
                 동아리 주간 출석 현황
+            </button>
+
+            <!-- 🔥 추가 -->
+            <button
+                class="btn primary"
+                onclick="showAdminTab('attendance-check')"
+                style="margin-top:0;"
+            >
+                출석 체크 현황
             </button>
 
             <button
@@ -62,6 +71,34 @@
             </p>
 
             <div id="admin-content"></div>
+
+        </div>
+
+        <!-- 🔥 추가 : 출석 체크 현황 -->
+        <div
+            id="admin-attendance-check-section"
+            class="hidden"
+            style="margin-top:25px;"
+        >
+
+            <p
+                style="
+                    text-align:center;
+                    color:#666;
+                    font-size:16px;
+                    margin-bottom:15px;
+                "
+            >
+                저번주 / 이번주 출석부 체크 여부입니다.
+            </p>
+
+            <div id="attendance-check-content">
+
+                <p style="text-align:center; padding:20px;">
+                    불러오는 중...
+                </p>
+
+            </div>
 
         </div>
 
@@ -104,10 +141,87 @@
 
     adminAuth();
 
+    // 🔥 추가
+    async function loadAttendanceCheck() {
+
+        const box = document.getElementById('attendance-check-content');
+
+        box.innerHTML = `
+            <p style="text-align:center; padding:20px;">
+                불러오는 중...
+            </p>
+        `;
+
+        try {
+
+            const data = await apiGet("getAttendanceStatus");
+
+            if(!data || data.length === 0) {
+
+                box.innerHTML = `
+                    <p style="text-align:center; padding:20px;">
+                        데이터가 없습니다.
+                    </p>
+                `;
+
+                return;
+            }
+
+            let html = `
+                <table>
+                    <tr>
+                        <th>동아리</th>
+                        <th>저번주</th>
+                        <th>이번주</th>
+                    </tr>
+            `;
+
+            data.forEach(d => {
+
+                html += `
+                    <tr>
+                        <td>${d.club}</td>
+
+                        <td style="
+                            font-weight:bold;
+                            color:${d.lastWeek ? '#3182f6' : 'red'};
+                        ">
+                            ${d.lastWeek ? '완료' : '미체크'}
+                        </td>
+
+                        <td style="
+                            font-weight:bold;
+                            color:${d.thisWeek ? '#3182f6' : 'red'};
+                        ">
+                            ${d.thisWeek ? '완료' : '미체크'}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `</table>`;
+
+            box.innerHTML = html;
+
+        } catch(e) {
+
+            box.innerHTML = `
+                <p style="text-align:center; color:red;">
+                    불러오기 실패
+                </p>
+            `;
+        }
+    }
+
     function showAdminTab(tab) {
 
         document
             .getElementById('admin-stats-section')
+            .classList.add('hidden');
+
+        // 🔥 추가
+        document
+            .getElementById('admin-attendance-check-section')
             .classList.add('hidden');
 
         document
@@ -123,6 +237,16 @@
             loadStats();
         }
 
+        // 🔥 추가
+        if(tab === 'attendance-check') {
+
+            document
+                .getElementById('admin-attendance-check-section')
+                .classList.remove('hidden');
+
+            loadAttendanceCheck();
+        }
+
         if(tab === 'calendar') {
 
             document
@@ -133,6 +257,11 @@
 
     document
         .getElementById('admin-stats-section')
+        .classList.add('hidden');
+
+    // 🔥 추가
+    document
+        .getElementById('admin-attendance-check-section')
         .classList.add('hidden');
 
     document
