@@ -15,21 +15,11 @@ async function apiGet(mode, params = {}) {
 }
 
 async function apiPost(data) {
-
     const res = await fetch(API_URL, {
-
         method: 'POST',
-
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-        },
-
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(data)
     });
-
-    // 🔥 추가
-    const result = await res.json();
-
-    // 🔥 추가
-    return result;
+    const result = await res.json(); // 🔥 추가
+    return result; // 🔥 추가
 }
