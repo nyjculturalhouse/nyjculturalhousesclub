@@ -1,4 +1,3 @@
-```javascript
 let curStep = 1;
 let selDay = '';
 let selClub = '';
@@ -26,11 +25,7 @@ async function loadStats() {
 
     if (!box) return;
 
-    box.innerHTML = `
-        <p style="text-align:center; padding:20px;">
-            데이터 분석 중...
-        </p>
-    `;
+    box.innerHTML = '<p style="text-align:center; padding:20px;">데이터 분석 중...</p>';
 
     try {
 
@@ -38,48 +33,26 @@ async function loadStats() {
 
         if(!stats || stats.length === 0) {
 
-            box.innerHTML = `
-                <p style="text-align:center; padding:20px;">
-                    출석 기록이 없습니다.
-                </p>
-            `;
+            box.innerHTML = '<p style="text-align:center; padding:20px;">출석 기록이 없습니다.</p>';
 
             return;
         }
 
         stats.sort((a, b) => b.week.localeCompare(a.week));
 
-        let html = `
-            <table>
-                <tr>
-                    <th>날짜 (주차)</th>
-                    <th>전체 인원</th>
-                </tr>
-        `;
+        let html = '<table><tr><th>날짜 (주차)</th><th>전체 인원</th></tr>';
 
         stats.forEach(s => {
-
-            html += `
-                <tr>
-                    <td>${s.week}</td>
-                    <td style="font-weight:bold; color:#3182f6;">
-                        ${s.total}명
-                    </td>
-                </tr>
-            `;
+            html += '<tr><td>' + s.week + '</td><td style="font-weight:bold; color:#3182f6;">' + s.total + '명</td></tr>';
         });
 
-        html += `</table>`;
+        html += '</table>';
 
         box.innerHTML = html;
 
     } catch (e) {
 
-        box.innerHTML = `
-            <p style="text-align:center; color:red;">
-                불러오기 실패
-            </p>
-        `;
+        box.innerHTML = '<p style="text-align:center; color:red;">불러오기 실패</p>';
     }
 }
 
@@ -91,11 +64,7 @@ async function loadAttendanceCheck() {
 
     if (!box) return;
 
-    box.innerHTML = `
-        <p style="text-align:center; padding:20px;">
-            불러오는 중...
-        </p>
-    `;
+    box.innerHTML = '<p style="text-align:center; padding:20px;">불러오는 중...</p>';
 
     try {
 
@@ -103,48 +72,28 @@ async function loadAttendanceCheck() {
 
         if(!data || data.length === 0) {
 
-            box.innerHTML = `
-                <p style="text-align:center; padding:20px;">
-                    데이터가 없습니다.
-                </p>
-            `;
+            box.innerHTML = '<p style="text-align:center; padding:20px;">데이터가 없습니다.</p>';
 
             return;
         }
 
-        let html = `
-            <table>
-                <tr>
-                    <th>동아리</th>
-                    <th>저번주</th>
-                    <th>이번주</th>
-                </tr>
-        `;
+        let html = '<table><tr><th>동아리</th><th>저번주</th><th>이번주</th></tr>';
 
         data.forEach(d => {
 
-            html += `
-                <tr>
-                    <td>${d.club}</td>
+            const lastWeekColor = d.lastWeek ? '#3182f6' : 'red';
+            const lastWeekText = d.lastWeek ? '완료' : '미체크';
+            const thisWeekColor = d.thisWeek ? '#3182f6' : 'red';
+            const thisWeekText = d.thisWeek ? '완료' : '미체크';
 
-                    <td style="
-                        font-weight:bold;
-                        color:${d.lastWeek ? '#3182f6' : 'red'};
-                    ">
-                        ${d.lastWeek ? '완료' : '미체크'}
-                    </td>
-
-                    <td style="
-                        font-weight:bold;
-                        color:${d.thisWeek ? '#3182f6' : 'red'};
-                    ">
-                        ${d.thisWeek ? '완료' : '미체크'}
-                    </td>
-                </tr>
-            `;
+            html += '<tr>';
+            html += '<td>' + d.club + '</td>';
+            html += '<td style="font-weight:bold; color:' + lastWeekColor + ';">' + lastWeekText + '</td>';
+            html += '<td style="font-weight:bold; color:' + thisWeekColor + ';">' + thisWeekText + '</td>';
+            html += '</tr>';
         });
 
-        html += `</table>`;
+        html += '</table>';
 
         box.innerHTML = html;
 
@@ -152,11 +101,7 @@ async function loadAttendanceCheck() {
 
         console.error(e);
 
-        box.innerHTML = `
-            <p style="text-align:center; color:red;">
-                불러오기 실패
-            </p>
-        `;
+        box.innerHTML = '<p style="text-align:center; color:red;">불러오기 실패</p>';
     }
 }
 
@@ -201,11 +146,7 @@ async function loadClubs(day) {
 
     const box = document.getElementById('club-buttons');
 
-    box.innerHTML = `
-        <p style="text-align:center;">
-            불러오는 중...
-        </p>
-    `;
+    box.innerHTML = '<p style="text-align:center;">불러오는 중...</p>';
 
     const clubs = await apiGet("getClubs", {
         day: day
@@ -215,11 +156,7 @@ async function loadClubs(day) {
 
     if (!clubs || clubs.length === 0) {
 
-        box.innerHTML = `
-            <p style="text-align:center;">
-                등록된 동아리가 없습니다.
-            </p>
-        `;
+        box.innerHTML = '<p style="text-align:center;">등록된 동아리가 없습니다.</p>';
         return;
     }
 
@@ -278,11 +215,7 @@ async function loadMembers(club) {
 
     if (!members || members.length === 0) {
 
-        box.innerHTML = `
-            <p style="text-align:center;">
-                등록된 인원이 없습니다.
-            </p>
-        `;
+        box.innerHTML = '<p style="text-align:center;">등록된 인원이 없습니다.</p>';
         return;
     }
 
@@ -434,4 +367,3 @@ function showStep(s) {
         .getElementById('step-members')
         ?.classList.toggle('hidden', s !== 3);
 }
-```
