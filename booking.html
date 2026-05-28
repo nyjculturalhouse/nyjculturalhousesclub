@@ -497,8 +497,6 @@
             };
 
             try {
-                // 🛠️ 고정된 API_URL이 정의되지 않아 발생할 에러를 막기 위해 js/api.js의 전역 변수를 활용하거나 안전하게 통신 유도
-                // 🛠️ redirect: 'follow' 옵션을 주어 구글 302 리다이렉션을 완벽히 추적하게 만듭니다.
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -512,16 +510,30 @@
                     return alert(result.error);
                 }
 
-                // 🛠️ 정의되지 않은 showToast 함수 대신 HTML에 구현된 toast 요소를 직접 띄워 작동을 보장합니다.
+                // 🛠️ 토스트 출력
                 const toastEl = document.getElementById('toast');
                 if (toastEl) {
                     toastEl.classList.add('show');
                     setTimeout(() => {
                         toastEl.classList.remove('show');
                     }, 3000);
-                } else {
-                    alert("제출 완료 ✅");
                 }
+
+                // 🛠️ 후속 처리 추가: 알림창을 띄우고 확인을 누르면 메인 홈으로 이동시키거나 양식을 비웁니다.
+                alert("대관 신청이 완료되었습니다! 캘린더를 확인해 주세요.");
+                
+                // 기존 입력 폼 내용을 리셋합니다.
+                document.getElementById('b_name').value = '';
+                document.getElementById('b_phone').value = '';
+                document.getElementById('b_org').value = '';
+                document.getElementById('b_content').value = '';
+                document.getElementById('b_date').value = '';
+                document.getElementById('b_people').value = '';
+                if(agree1) agree1.checked = false;
+                if(agree2) agree2.checked = false;
+
+                // 신청 완료 후 자동으로 '대관 캘린더' 탭으로 화면을 넘겨 등록 결과를 보여줍니다.
+                showBookingTab('calendar');
 
             } catch(err) {
                 console.error(err);
