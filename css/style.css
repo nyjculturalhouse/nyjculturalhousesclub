@@ -125,6 +125,8 @@ iframe {
     width: 100%;
     height: 100%;
     border: none;
+    min-height: 700px;
+    background: white;
 }
 
 #member-list {
@@ -192,4 +194,16 @@ th {
 
 tr:nth-child(even) {
     background: #f9fafb;
+}
+
+/* 🔥 추가 */
+@media (max-width: 768px) {
+
+    .calendar-container {
+        height: 75vh;
+    }
+
+    iframe {
+        min-height: 600px;
+    }
 }
