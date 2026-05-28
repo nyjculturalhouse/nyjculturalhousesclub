@@ -1,22 +1,35 @@
-const API = "https://script.google.com/macros/s/AKfycbz7wNZ6WAygSpqk2fPxJxe9CyOOQlR6KHaUjC29k-hcDl2iFHMbfzDvlbtEUet36roypQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz7wNZ6WAygSpqk2fPxJxe9CyOOQlR6KHaUjC29k-hcDl2iFHMbfzDvlbtEUet36roypQ/exec";
 
 async function apiGet(mode, params = {}) {
 
     const query = new URLSearchParams({
         mode,
         ...params
-    }).toString();
+    });
 
-    const res = await fetch(`${API}?${query}`);
+    const res = await fetch(
+        `${API_URL}?${query.toString()}`
+    );
 
     return await res.json();
 }
 
 async function apiPost(data) {
 
-    await fetch(API, {
-        method: "POST",
-        body: JSON.stringify(data),
-        mode: "no-cors"
+    const res = await fetch(API_URL, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+        },
+
+        body: JSON.stringify(data)
     });
+
+    // 🔥 추가
+    const result = await res.json();
+
+    // 🔥 추가
+    return result;
 }
