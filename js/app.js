@@ -10,9 +10,22 @@ const AttendanceApp = (() => {
     };
 
     /* =========================
+       STEP CONTROL (추가 수정 핵심)
+    ========================= */
+    function showStep(step) {
+
+        document.getElementById("step-days")?.classList.add("hidden");
+        document.getElementById("step-clubs")?.classList.add("hidden");
+        document.getElementById("step-members")?.classList.add("hidden");
+
+        document.getElementById(step)?.classList.remove("hidden");
+    }
+
+    /* =========================
        INIT
     ========================= */
     function init() {
+        showStep("step-days");
         renderDays();
     }
 
@@ -35,7 +48,6 @@ const AttendanceApp = (() => {
 
         days.forEach(d => {
             const btn = document.createElement("button");
-
             btn.className = "p-4 border rounded-xl bg-white";
 
             btn.innerHTML = `<b>${d.label}</b>`;
@@ -57,8 +69,7 @@ const AttendanceApp = (() => {
         state.club = '';
         state.members = [];
 
-        document.getElementById("step-clubs").classList.remove("hidden");
-        document.getElementById("step-members").classList.add("hidden");
+        showStep("step-clubs"); // 🔥 핵심 수정
 
         const box = document.getElementById("club-buttons");
         box.innerHTML = "로딩중...";
@@ -66,6 +77,11 @@ const AttendanceApp = (() => {
         const clubs = await apiGet("getClubs", { day });
 
         box.innerHTML = "";
+
+        if (!clubs || clubs.length === 0) {
+            box.innerHTML = "<p>동아리 없음</p>";
+            return;
+        }
 
         clubs.forEach(c => {
             const btn = document.createElement("button");
@@ -88,10 +104,10 @@ const AttendanceApp = (() => {
 
         state.members = [];
 
-        document.getElementById("step-members").classList.remove("hidden");
+        showStep("step-members"); // 🔥 핵심 수정
 
         const title = document.getElementById("club-title");
-        title.innerText = club;
+        if (title) title.innerText = club;
 
         const box = document.getElementById("member-list");
         box.innerHTML = "";
@@ -99,7 +115,15 @@ const AttendanceApp = (() => {
         let members = await apiGet("getMembers", { club });
 
         if (members?.length === 1 && typeof members[0] === "string") {
-            members = members[0].split(",");
+            members = members[0]
+                .split(",")
+                .map(v => v.trim())   // 🔥 공백 제거
+                .filter(Boolean);
+        }
+
+        if (!members?.length) {
+            box.innerHTML = "<p>인원 없음</p>";
+            return;
         }
 
         members.forEach(m => {
@@ -130,6 +154,11 @@ const AttendanceApp = (() => {
 
         if (!state.members.length) {
             alert("인원 선택하세요");
+            return;
+        }
+
+        if (!state.club) {
+            alert("동아리 선택하세요");
             return;
         }
 
