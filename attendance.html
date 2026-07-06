@@ -8,22 +8,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    primary: "#2563eb",
-                    bg: "#faf8ff",
-                    surface: "#ffffff",
-                    outline: "#e5e7eb"
-                }
-            }
-        }
-    }
-</script>
 
 <style>
     body {
@@ -37,61 +21,56 @@
         border: 2px solid #2563eb !important;
         background: #eff6ff !important;
     }
+
+    /* ⭐ 공통 카드 디자인 */
+    .card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 14px;
+        transition: .2s;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
 </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
 
-<header class="sticky top-0 z-50 bg-white border-b border-outline">
+<header class="sticky top-0 bg-white border-b z-50">
     <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="font-bold text-primary text-xl">동아리 출석부</div>
-
-        <button onclick="location.href='index.html'"
-                class="text-sm text-gray-600 hover:text-primary transition">
-            메인으로
-        </button>
+        <div class="font-bold text-blue-600">동아리 출석부</div>
+        <button onclick="location.href='index.html'">메인으로</button>
     </div>
 </header>
 
-<main class="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
+<main class="max-w-5xl mx-auto w-full px-4 py-10">
 
-    <div id="view-attendance" class="space-y-10">
+<!-- ===================== STEP 1 ===================== -->
+<section id="step-days">
+    <h1 class="text-2xl font-bold mb-4">요일 선택</h1>
+    <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
+</section>
 
-        <section id="step-days">
-            <div class="mb-6">
-                <h1 class="text-3xl font-bold">요일 선택</h1>
-                <p class="text-gray-500 mt-1">출석을 진행할 요일을 선택하세요</p>
-            </div>
+<!-- ===================== STEP 2 ===================== -->
+<section id="step-clubs" class="hidden">
+    <h1 class="text-2xl font-bold mb-4">동아리 선택</h1>
+    <div id="club-buttons" class="grid grid-cols-1 gap-3"></div>
+</section>
 
-            <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
-        </section>
+<!-- ===================== STEP 3 ===================== -->
+<section id="step-members" class="hidden">
+    <h1 id="club-title" class="text-2xl font-bold mb-4 text-blue-600"></h1>
+    <div id="member-list" class="grid grid-cols-2 gap-3"></div>
 
-        <section id="step-clubs" class="hidden">
-            <div class="mb-6">
-                <h1 class="text-3xl font-bold">동아리 선택</h1>
-                <p class="text-gray-500 mt-1">출석할 동아리를 선택하세요</p>
-            </div>
+    <button onclick="submitAttendance()"
+            class="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold">
+        출석 제출
+    </button>
+</section>
 
-            <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </section>
-
-        <section id="step-members" class="hidden">
-
-            <div class="mb-6">
-                <h1 id="club-title" class="text-2xl font-bold text-primary"></h1>
-                <p class="text-gray-500">출석한 사람을 선택하세요.</p>
-            </div>
-
-            <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-
-            <button onclick="submitAttendance()"
-                    class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg">
-                출석 제출하기
-            </button>
-
-        </section>
-
-    </div>
 </main>
 
 <script src="js/api.js"></script>
@@ -100,145 +79,145 @@
 
 <script>
 
-    /* =========================
-       🔥 핵심 수정: 중복 방지 (app.js 기준)
-    ========================= */
+window.selMembers = [];
+let selClub = "";
+let selDay = "";
+
+/* =========================
+   ⭐ 화면 전환 핵심 (중요)
+========================= */
+function showStep(step) {
+
+    document.getElementById("step-days").classList.add("hidden");
+    document.getElementById("step-clubs").classList.add("hidden");
+    document.getElementById("step-members").classList.add("hidden");
+
+    document.getElementById(step).classList.remove("hidden");
+}
+
+/* =========================
+   STEP 1 DAYS
+========================= */
+const days = [
+    { en: "Tuesday", ko: "화요일", key: "화" },
+    { en: "Wednesday", ko: "수요일", key: "수" },
+    { en: "Thursday", ko: "목요일", key: "목" },
+    { en: "Friday", ko: "금요일", key: "금" },
+    { en: "Saturday", ko: "토요일", key: "토" },
+    { en: "Sunday", ko: "일요일", key: "일" },
+];
+
+const dayBox = document.getElementById("day-buttons");
+
+days.forEach(d => {
+    const btn = document.createElement("button");
+    btn.className = "card";
+    btn.innerHTML = `<b>${d.en}</b><br><small>${d.ko}</small>`;
+
+    btn.onclick = () => {
+        selDay = d.key;
+
+        document.querySelectorAll("#day-buttons button")
+            .forEach(b => b.classList.remove("selected"));
+
+        btn.classList.add("selected");
+
+        loadClubs(d.key);
+    };
+
+    dayBox.appendChild(btn);
+});
+
+/* =========================
+   STEP 2 CLUBS
+========================= */
+window.loadClubs = async function(day) {
+
+    selClub = "";
     window.selMembers = [];
-    let selClub = "";
-    let selDay = "";
 
-    /* =========================
-       DAYS
-    ========================= */
-    const days = [
-        { en: "Tuesday", ko: "화요일", key: "화" },
-        { en: "Wednesday", ko: "수요일", key: "수" },
-        { en: "Thursday", ko: "목요일", key: "목" },
-        { en: "Friday", ko: "금요일", key: "금" },
-        { en: "Saturday", ko: "토요일", key: "토" },
-        { en: "Sunday", ko: "일요일", key: "일" },
-    ];
+    showStep("step-clubs");
 
-    const box = document.getElementById("day-buttons");
+    const box = document.getElementById("club-buttons");
+    box.innerHTML = "";
 
-    days.forEach(d => {
-        const btn = document.createElement("button");
+    const clubs = await apiGet("getClubs", { day });
 
-        btn.className = "p-4 rounded-xl border bg-white";
+    clubs.forEach(c => {
+        const b = document.createElement("button");
+        b.className = "card";
+        b.innerText = c;
 
-        btn.innerHTML = `
-            <div class="font-bold">${d.en}</div>
-            <div class="text-sm text-gray-500">${d.ko}</div>
-        `;
+        b.onclick = () => {
+            selClub = c;
 
-        btn.onclick = () => {
-            selDay = d.key;
+            document.querySelectorAll("#club-buttons button")
+                .forEach(x => x.classList.remove("selected"));
 
-            document.querySelectorAll("#day-buttons button")
-                .forEach(b => b.classList.remove("selected"));
+            b.classList.add("selected");
 
-            btn.classList.add("selected");
-
-            loadClubs(d.key);
+            loadMembers(c);
         };
 
-        box.appendChild(btn);
+        box.appendChild(b);
     });
+};
 
-    /* =========================
-       CLUBS
-    ========================= */
-    window.loadClubs = async function(day) {
+/* =========================
+   STEP 3 MEMBERS
+========================= */
+async function loadMembers(club) {
 
-        selClub = "";
-        window.selMembers = [];
+    showStep("step-members");
 
-        document.getElementById("step-clubs").classList.remove("hidden");
-        document.getElementById("step-members").classList.add("hidden");
+    document.getElementById("club-title").innerText = club;
 
-        const box = document.getElementById('club-buttons');
-        box.innerHTML = "불러오는 중...";
+    const box = document.getElementById("member-list");
+    box.innerHTML = "";
 
-        const clubs = await apiGet("getClubs", { day });
+    window.selMembers = [];
 
-        box.innerHTML = "";
+    let members = await apiGet("getMembers", { club });
 
-        clubs.forEach(c => {
-            const b = document.createElement('button');
-            b.className = "p-4 border rounded-xl";
-            b.innerText = c;
-
-            b.onclick = () => {
-                selClub = c;
-
-                document.querySelectorAll("#club-buttons button")
-                    .forEach(x => x.classList.remove("selected"));
-
-                b.classList.add("selected");
-
-                loadMembers(c);
-            };
-
-            box.appendChild(b);
-        });
-    };
-
-    /* =========================
-       MEMBERS
-    ========================= */
-    async function loadMembers(club) {
-
-        document.getElementById("step-members").classList.remove("hidden");
-
-        document.getElementById("club-title").innerText = club;
-
-        const box = document.getElementById('member-list');
-        box.innerHTML = "";
-
-        window.selMembers = [];
-
-        let members = await apiGet("getMembers", { club });
-
-        if (members.length === 1 && typeof members[0] === "string") {
-            members = members[0].split(",").map(v => v.trim());
-        }
-
-        members.forEach(m => {
-            const b = document.createElement('button');
-            b.className = "p-3 border rounded-xl";
-            b.innerText = m;
-
-            b.onclick = () => {
-                const i = selMembers.indexOf(m);
-                if (i > -1) {
-                    selMembers.splice(i, 1);
-                    b.classList.remove("selected");
-                } else {
-                    selMembers.push(m);
-                    b.classList.add("selected");
-                }
-            };
-
-            box.appendChild(b);
-        });
+    if (members.length === 1 && typeof members[0] === "string") {
+        members = members[0].split(",").map(v => v.trim());
     }
 
-    /* =========================
-       🔥 핵심: app.js sendPost 연결
-    ========================= */
-    window.submitAttendance = function () {
+    members.forEach(m => {
+        const b = document.createElement("button");
+        b.className = "card";
+        b.innerText = m;
 
-        if (!selMembers.length) {
-            alert("인원을 선택하세요.");
-            return;
-        }
+        b.onclick = () => {
+            const i = selMembers.indexOf(m);
 
-        if (typeof sendPost === "function") {
-            sendPost("submitAttendance");
-        } else {
-            alert("서버 연결 함수(sendPost)를 찾을 수 없습니다.");
-        }
-    };
+            if (i > -1) {
+                selMembers.splice(i, 1);
+                b.classList.remove("selected");
+            } else {
+                selMembers.push(m);
+                b.classList.add("selected");
+            }
+        };
+
+        box.appendChild(b);
+    });
+}
+
+/* =========================
+   SUBMIT
+========================= */
+window.submitAttendance = function () {
+
+    if (!selMembers.length) {
+        alert("인원을 선택하세요.");
+        return;
+    }
+
+    if (typeof sendPost === "function") {
+        sendPost("submitAttendance");
+    }
+};
 
 </script>
 
