@@ -41,11 +41,29 @@ body { font-family: 'Inter', sans-serif; }
 
 <header class="bg-white border-b sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <h1 class="text-xl font-bold text-blue-600">Culture Connect</h1>
 
-        <div class="flex items-center gap-2 text-sm text-gray-500">
-            <span class="material-symbols-outlined text-base">calendar_month</span>
-            대관 시스템
+        <!-- LEFT: 타이틀 -->
+        <h1 class="text-xl font-bold text-blue-600">
+            Culture Connect
+        </h1>
+
+        <!-- RIGHT: 시스템 정보 + 홈 -->
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+
+            <div class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">
+                    calendar_month
+                </span>
+                <span>대관 시스템</span>
+            </div>
+
+            <!-- HOME BUTTON -->
+            <button onclick="location.href='index.html'"
+                class="p-2 rounded-full hover:bg-gray-100 transition"
+                title="메인으로">
+                <span class="material-symbols-outlined">home</span>
+            </button>
+
         </div>
     </div>
 </header>
