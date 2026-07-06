@@ -185,6 +185,22 @@ function showBookingTab(tab) {
     document.getElementById('booking-calendar-section').classList.toggle('hidden', tab !== 'calendar');
 }
 
+// ✅ 이거 추가 (핵심)
+function showSchedule(type) {
+    const frame = document.getElementById('schedule-frame');
+
+    const urls = {
+        dance: "https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview",
+        music: "https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview",
+        clubroom: "https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview",
+        harmony: "https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview"
+    };
+
+    if (urls[type]) {
+        frame.src = urls[type];
+    }
+}
+
 async function sendPost(mode) {
     const data = { mode };
 
