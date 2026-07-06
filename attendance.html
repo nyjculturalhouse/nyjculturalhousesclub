@@ -9,85 +9,87 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: "#2563eb",
+                bg: "#faf8ff"
+            }
+        }
+    }
+}
+</script>
+
 <style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background: #faf8ff;
-    }
+body {
+    font-family: 'Inter', sans-serif;
+    background: #faf8ff;
+}
 
-    .hidden { display: none; }
+/* 카드 느낌 */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+}
 
-    .selected {
-        border: 2px solid #2563eb !important;
-        background: #eff6ff !important;
-    }
+/* 선택 */
+.selected {
+    border: 2px solid #2563eb !important;
+    background: #eff6ff !important;
+}
 
-    /* ⭐ 공통 카드 디자인 */
-    .card {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        padding: 14px;
-        transition: .2s;
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-    }
+.hidden { display: none; }
 </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body>
 
-<header class="sticky top-0 bg-white border-b z-50">
-    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="font-bold text-blue-600">동아리 출석부</div>
-        <button onclick="location.href='index.html'">메인으로</button>
-    </div>
-</header>
+<div class="max-w-2xl mx-auto px-4 py-6">
 
-<main class="max-w-5xl mx-auto w-full px-4 py-10">
+<!-- STEP 1 -->
+<div id="step-days">
+    <h1 class="text-xl font-bold mb-4">요일 선택</h1>
+    <div id="day-buttons" class="space-y-3"></div>
+</div>
 
-<!-- ===================== STEP 1 ===================== -->
-<section id="step-days">
-    <h1 class="text-2xl font-bold mb-4">요일 선택</h1>
-    <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
-</section>
+<!-- STEP 2 -->
+<div id="step-clubs" class="hidden">
+    <h1 class="text-xl font-bold mb-4">동아리 선택</h1>
+    <div id="club-buttons" class="space-y-3"></div>
+</div>
 
-<!-- ===================== STEP 2 ===================== -->
-<section id="step-clubs" class="hidden">
-    <h1 class="text-2xl font-bold mb-4">동아리 선택</h1>
-    <div id="club-buttons" class="grid grid-cols-1 gap-3"></div>
-</section>
-
-<!-- ===================== STEP 3 ===================== -->
-<section id="step-members" class="hidden">
-    <h1 id="club-title" class="text-2xl font-bold mb-4 text-blue-600"></h1>
+<!-- STEP 3 -->
+<div id="step-members" class="hidden">
+    <h1 id="club-title" class="text-xl font-bold mb-4"></h1>
     <div id="member-list" class="grid grid-cols-2 gap-3"></div>
 
-    <button onclick="submitAttendance()"
-            class="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold">
+    <button id="btn-submit-att"
+        onclick="submitAttendance()"
+        class="mt-6 w-full bg-primary text-white py-3 rounded-xl font-bold">
         출석 제출
     </button>
-</section>
+</div>
 
-</main>
+</div>
 
 <script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
 
 <script>
-
-window.selMembers = [];
-let selClub = "";
+/* =====================
+   상태
+===================== */
 let selDay = "";
+let selClub = "";
+window.selMembers = [];
 
-/* =========================
-   ⭐ 화면 전환 핵심 (중요)
-========================= */
+/* =====================
+   STEP 전환 (핵심)
+===================== */
 function showStep(step) {
-
     document.getElementById("step-days").classList.add("hidden");
     document.getElementById("step-clubs").classList.add("hidden");
     document.getElementById("step-members").classList.add("hidden");
@@ -95,16 +97,16 @@ function showStep(step) {
     document.getElementById(step).classList.remove("hidden");
 }
 
-/* =========================
-   STEP 1 DAYS
-========================= */
+/* =====================
+   DAYS
+===================== */
 const days = [
-    { en: "Tuesday", ko: "화요일", key: "화" },
-    { en: "Wednesday", ko: "수요일", key: "수" },
-    { en: "Thursday", ko: "목요일", key: "목" },
-    { en: "Friday", ko: "금요일", key: "금" },
-    { en: "Saturday", ko: "토요일", key: "토" },
-    { en: "Sunday", ko: "일요일", key: "일" },
+    { key:"화", label:"화요일" },
+    { key:"수", label:"수요일" },
+    { key:"목", label:"목요일" },
+    { key:"금", label:"금요일" },
+    { key:"토", label:"토요일" },
+    { key:"일", label:"일요일" }
 ];
 
 const dayBox = document.getElementById("day-buttons");
@@ -112,36 +114,28 @@ const dayBox = document.getElementById("day-buttons");
 days.forEach(d => {
     const btn = document.createElement("button");
     btn.className = "card";
-    btn.innerHTML = `<b>${d.en}</b><br><small>${d.ko}</small>`;
+    btn.innerText = d.label;
 
     btn.onclick = () => {
         selDay = d.key;
-
-        document.querySelectorAll("#day-buttons button")
-            .forEach(b => b.classList.remove("selected"));
-
-        btn.classList.add("selected");
-
         loadClubs(d.key);
     };
 
     dayBox.appendChild(btn);
 });
 
-/* =========================
-   STEP 2 CLUBS
-========================= */
-window.loadClubs = async function(day) {
-
-    selClub = "";
-    window.selMembers = [];
-
+/* =====================
+   CLUBS
+===================== */
+async function loadClubs(day) {
     showStep("step-clubs");
 
     const box = document.getElementById("club-buttons");
-    box.innerHTML = "";
+    box.innerHTML = "<div class='card'>불러오는 중...</div>";
 
     const clubs = await apiGet("getClubs", { day });
+
+    box.innerHTML = "";
 
     clubs.forEach(c => {
         const b = document.createElement("button");
@@ -150,24 +144,17 @@ window.loadClubs = async function(day) {
 
         b.onclick = () => {
             selClub = c;
-
-            document.querySelectorAll("#club-buttons button")
-                .forEach(x => x.classList.remove("selected"));
-
-            b.classList.add("selected");
-
             loadMembers(c);
         };
 
         box.appendChild(b);
     });
-};
+}
 
-/* =========================
-   STEP 3 MEMBERS
-========================= */
+/* =====================
+   MEMBERS
+===================== */
 async function loadMembers(club) {
-
     showStep("step-members");
 
     document.getElementById("club-title").innerText = club;
@@ -189,36 +176,41 @@ async function loadMembers(club) {
         b.innerText = m;
 
         b.onclick = () => {
-            const i = selMembers.indexOf(m);
+            b.classList.toggle("selected");
 
-            if (i > -1) {
-                selMembers.splice(i, 1);
-                b.classList.remove("selected");
-            } else {
-                selMembers.push(m);
-                b.classList.add("selected");
-            }
+            const i = window.selMembers.indexOf(m);
+            if (i > -1) window.selMembers.splice(i, 1);
+            else window.selMembers.push(m);
         };
 
         box.appendChild(b);
     });
 }
 
-/* =========================
-   SUBMIT
-========================= */
-window.submitAttendance = function () {
-
-    if (!selMembers.length) {
+/* =====================
+   SUBMIT (핵심 수정)
+===================== */
+async function submitAttendance() {
+    if (!window.selMembers.length) {
         alert("인원을 선택하세요.");
         return;
     }
 
-    if (typeof sendPost === "function") {
-        sendPost("submitAttendance");
-    }
-};
+    // ❌ sendPost 제거
+    const res = await apiPost({
+        mode: "submitAttendance",
+        clubName: selClub,
+        attendees: window.selMembers
+    });
 
+    if (res?.error) {
+        alert(res.error);
+        return;
+    }
+
+    alert("출석 완료");
+    window.selMembers = [];
+}
 </script>
 
 </body>
