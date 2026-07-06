@@ -30,6 +30,7 @@
             font-family: 'Inter', sans-serif;
             background: #faf8ff;
         }
+
         .hidden { display: none; }
 
         .card {
@@ -42,6 +43,12 @@
         .glass {
             background: rgba(255,255,255,0.8);
             backdrop-filter: blur(10px);
+        }
+
+        /* ✅ 추가: 버튼 선택 스타일 */
+        .selected {
+            border: 2px solid #2563eb !important;
+            background: #eff6ff !important;
         }
     </style>
 </head>
@@ -103,15 +110,13 @@ days.forEach(d => {
 
     btn.classList.add("ring-2", "ring-blue-500");
 
-    console.log("선택된 요일:", d.key);
-
-    // 👉 기존 loadClubs(d.key) 연결하면 됨
     if (typeof loadClubs === "function") loadClubs(d.key);
   };
 
   box.appendChild(btn);
 });
 </script>
+
         <!-- STEP 2 CLUBS -->
         <section id="step-clubs" class="hidden">
             <div class="mb-6">
@@ -119,9 +124,7 @@ days.forEach(d => {
                 <p class="text-gray-500 mt-1">출석할 동아리를 선택하세요</p>
             </div>
 
-            <div id="club-buttons"
-                 class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            </div>
+            <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
 
         <!-- STEP 3 MEMBERS -->
@@ -132,9 +135,7 @@ days.forEach(d => {
                 <p class="text-gray-500">출석한 사람을 선택하세요.</p>
             </div>
 
-            <div id="member-list"
-                 class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            </div>
+            <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
 
             <button id="btn-submit-att"
                     onclick="submitAttendance()"
@@ -148,8 +149,7 @@ days.forEach(d => {
 </main>
 
 <!-- OVERLAY -->
-<div id="overlay"
-     class="hidden fixed inset-0 bg-black/30 z-40"></div>
+<div id="overlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
 
 <!-- TOAST -->
 <div id="toast"
@@ -157,13 +157,33 @@ days.forEach(d => {
     제출 완료 ✅
 </div>
 
-<!-- SCRIPTS (절대 변경 금지) -->
+<!-- SCRIPTS -->
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
 
 <script>
     initDays();
+
+    // =========================
+    // ✅ 추가: 클럽/멤버 버튼화
+    // (기존 JS 건드리지 않음)
+    // =========================
+
+    function enableButtonBehavior(containerId) {
+        const container = document.getElementById(containerId);
+
+        container.addEventListener("click", (e) => {
+            const item = e.target.closest("div, button");
+            if (!item || !container.contains(item)) return;
+
+            // 토글 선택
+            item.classList.toggle("selected");
+        });
+    }
+
+    enableButtonBehavior("club-buttons");
+    enableButtonBehavior("member-list");
 </script>
 
 </body>
