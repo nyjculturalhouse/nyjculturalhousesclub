@@ -1,65 +1,133 @@
 <!DOCTYPE html>
-<html class="light" lang="ko">
+<html lang="ko">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>동아리 출석체크 | 동아리 출석부</title>
+    <title>동아리 출석체크 | Culture Connect</title>
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2563eb",
+                        bg: "#faf8ff",
+                        surface: "#ffffff",
+                        outline: "#e5e7eb"
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #faf8ff;
+        }
         .hidden { display: none; }
-        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.8); }
+
+        .card {
+            transition: all .2s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .glass {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+        }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
-<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-        <span class="font-bold text-blue-600 text-xl">Culture Connect</span>
-        <button onclick="location.href='index.html'" class="text-sm font-medium text-gray-600 hover:text-blue-600">메인으로</button>
+<!-- TOP BAR -->
+<header class="sticky top-0 z-50 bg-white border-b border-outline">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="font-bold text-primary text-xl">Culture Connect</div>
+
+        <button onclick="location.href='index.html'"
+                class="text-sm text-gray-600 hover:text-primary transition">
+            메인으로
+        </button>
     </div>
 </header>
 
-<main class="flex-grow max-w-4xl mx-auto w-full px-4 py-8">
-    
-    <div id="view-attendance" class="space-y-8">
-        
-        <div id="step-days">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">요일을 선택해주세요.</h1>
-            <div id="day-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                </div>
-        </div>
+<!-- MAIN -->
+<main class="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
 
-        <div id="step-clubs" class="hidden">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">동아리를 선택해주세요.</h1>
-            <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </div>
+    <div id="view-attendance" class="space-y-10">
 
-        <div id="step-members" class="hidden">
-            <h1 id="club-title" class="text-2xl font-bold text-blue-600 mb-2"></h1>
-            <p class="text-gray-600 mb-6">출석한 분들을 선택해주세요.</p>
-            
-            <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+        <!-- STEP 1 DAYS -->
+        <section id="step-days">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">요일 선택</h1>
+                <p class="text-gray-500 mt-1">출석을 진행할 요일을 선택하세요</p>
+            </div>
 
-            <button id="btn-submit-att" onclick="submitAttendance()" 
-                    class="w-full mt-8 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg active:scale-[0.98]">
+            <div id="day-buttons"
+                 class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            </div>
+        </section>
+
+        <!-- STEP 2 CLUBS -->
+        <section id="step-clubs" class="hidden">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">동아리 선택</h1>
+                <p class="text-gray-500 mt-1">출석할 동아리를 선택하세요</p>
+            </div>
+
+            <div id="club-buttons"
+                 class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            </div>
+        </section>
+
+        <!-- STEP 3 MEMBERS -->
+        <section id="step-members" class="hidden">
+
+            <div class="mb-6">
+                <h1 id="club-title" class="text-2xl font-bold text-primary"></h1>
+                <p class="text-gray-500">출석한 사람을 선택하세요</p>
+            </div>
+
+            <div id="member-list"
+                 class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            </div>
+
+            <button id="btn-submit-att"
+                    onclick="submitAttendance()"
+                    class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg active:scale-[0.98]">
                 출석 제출하기
             </button>
-        </div>
+
+        </section>
+
     </div>
 </main>
 
-<div id="overlay" class="hidden fixed inset-0 bg-black/20 z-40"></div>
-<div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl z-50">제출 완료 ✅</div>
+<!-- OVERLAY -->
+<div id="overlay"
+     class="hidden fixed inset-0 bg-black/30 z-40"></div>
 
+<!-- TOAST -->
+<div id="toast"
+     class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl z-50">
+    제출 완료 ✅
+</div>
+
+<!-- SCRIPTS (절대 변경 금지) -->
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
 
 <script>
-    // 페이지 로드 시 요일 초기화
     initDays();
 </script>
 
