@@ -72,11 +72,46 @@
                 <p class="text-gray-500 mt-1">출석을 진행할 요일을 선택하세요</p>
             </div>
 
-            <div id="day-buttons"
-                 class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            </div>
-        </section>
+            <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
 
+<script>
+const days = [
+  { en: "Tuesday", ko: "화요일", key: "화" },
+  { en: "Wednesday", ko: "수요일", key: "수" },
+  { en: "Thursday", ko: "목요일", key: "목" },
+  { en: "Friday", ko: "금요일", key: "금" },
+  { en: "Saturday", ko: "토요일", key: "토" },
+  { en: "Sunday", ko: "일요일", key: "일" },
+];
+
+const box = document.getElementById("day-buttons");
+
+days.forEach(d => {
+  const btn = document.createElement("button");
+
+  btn.className =
+    "p-4 rounded-xl border bg-white hover:bg-blue-50 active:scale-95 transition text-left";
+
+  btn.innerHTML = `
+    <div class="font-bold">${d.en}</div>
+    <div class="text-sm text-gray-500">${d.ko}</div>
+  `;
+
+  btn.onclick = () => {
+    document.querySelectorAll("#day-buttons button")
+      .forEach(b => b.classList.remove("ring-2", "ring-blue-500"));
+
+    btn.classList.add("ring-2", "ring-blue-500");
+
+    console.log("선택된 요일:", d.key);
+
+    // 👉 기존 loadClubs(d.key) 연결하면 됨
+    if (typeof loadClubs === "function") loadClubs(d.key);
+  };
+
+  box.appendChild(btn);
+});
+</script>
         <!-- STEP 2 CLUBS -->
         <section id="step-clubs" class="hidden">
             <div class="mb-6">
