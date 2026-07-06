@@ -15,7 +15,9 @@ tailwind.config = {
         extend: {
             colors: {
                 primary: "#2563eb",
-                bg: "#faf8ff"
+                bg: "#faf8ff",
+                surface: "#ffffff",
+                outline: "#e5e7eb"
             }
         }
     }
@@ -28,21 +30,24 @@ body {
     background: #faf8ff;
 }
 
-/* 카드 느낌 */
+.hidden { display: none; }
+
 .card {
     background: white;
     border-radius: 12px;
     padding: 14px;
     border: 1px solid #e5e7eb;
+    transition: all .2s ease;
 }
 
-/* 선택 */
+.card:hover {
+    transform: translateY(-3px);
+}
+
 .selected {
     border: 2px solid #2563eb !important;
     background: #eff6ff !important;
 }
-
-.hidden { display: none; }
 </style>
 </head>
 
@@ -87,9 +92,10 @@ let selClub = "";
 window.selMembers = [];
 
 /* =====================
-   STEP 전환 (핵심)
+   STEP 전환 (핵심 유지)
 ===================== */
 function showStep(step) {
+
     document.getElementById("step-days").classList.add("hidden");
     document.getElementById("step-clubs").classList.add("hidden");
     document.getElementById("step-members").classList.add("hidden");
@@ -113,6 +119,7 @@ const dayBox = document.getElementById("day-buttons");
 
 days.forEach(d => {
     const btn = document.createElement("button");
+
     btn.className = "card";
     btn.innerText = d.label;
 
@@ -128,6 +135,7 @@ days.forEach(d => {
    CLUBS
 ===================== */
 async function loadClubs(day) {
+
     showStep("step-clubs");
 
     const box = document.getElementById("club-buttons");
@@ -137,8 +145,14 @@ async function loadClubs(day) {
 
     box.innerHTML = "";
 
+    if (!clubs || clubs.length === 0) {
+        box.innerHTML = "<div class='card'>동아리 없음</div>";
+        return;
+    }
+
     clubs.forEach(c => {
         const b = document.createElement("button");
+
         b.className = "card";
         b.innerText = c;
 
@@ -155,6 +169,7 @@ async function loadClubs(day) {
    MEMBERS
 ===================== */
 async function loadMembers(club) {
+
     showStep("step-members");
 
     document.getElementById("club-title").innerText = club;
@@ -166,16 +181,23 @@ async function loadMembers(club) {
 
     let members = await apiGet("getMembers", { club });
 
-    if (members.length === 1 && typeof members[0] === "string") {
+    if (members?.length === 1 && typeof members[0] === "string") {
         members = members[0].split(",").map(v => v.trim());
     }
 
+    if (!members || members.length === 0) {
+        box.innerHTML = "<div class='card'>인원 없음</div>";
+        return;
+    }
+
     members.forEach(m => {
+
         const b = document.createElement("button");
         b.className = "card";
         b.innerText = m;
 
         b.onclick = () => {
+
             b.classList.toggle("selected");
 
             const i = window.selMembers.indexOf(m);
@@ -191,12 +213,12 @@ async function loadMembers(club) {
    SUBMIT (핵심 수정)
 ===================== */
 async function submitAttendance() {
+
     if (!window.selMembers.length) {
         alert("인원을 선택하세요.");
         return;
     }
 
-    // ❌ sendPost 제거
     const res = await apiPost({
         mode: "submitAttendance",
         clubName: selClub,
@@ -211,6 +233,7 @@ async function submitAttendance() {
     alert("출석 완료");
     window.selMembers = [];
 }
+
 </script>
 
 </body>
