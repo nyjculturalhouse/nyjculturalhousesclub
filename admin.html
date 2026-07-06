@@ -4,65 +4,129 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Culture Connect - 관리자 대시보드</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
         .hidden { display: none !important; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .card {
+            transition: all .2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
     </style>
 </head>
-<body class="bg-background text-on-surface">
+
+<body class="bg-slate-50 text-slate-900">
+
+<!-- TOP BAR (디자인 추가, 기능 영향 없음) -->
+<header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+    <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-blue-600"></div>
+            <h1 class="font-bold text-lg text-blue-600">Culture Connect</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-slate-500">Admin Dashboard</span>
+            <button onclick="location.href='index.html'"
+                    class="text-sm px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 transition">
+                메인
+            </button>
+        </div>
+    </div>
+</header>
 
 <main class="max-w-[1200px] mx-auto px-6 py-10">
+
+    <!-- HEADER -->
     <div class="mb-10">
-        <h2 class="text-4xl font-bold text-on-surface mb-2">관리자 페이지</h2>
-        <p class="text-body-md text-on-surface-variant">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
+        <h2 class="text-4xl font-bold text-slate-900 mb-2">관리자 페이지</h2>
+        <p class="text-slate-500">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
     </div>
 
+    <!-- QUICK MENU (디자인 개선) -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-        <div onclick="showAdminTab('stats')" class="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/20 cursor-pointer hover:border-primary transition-all">
-            <h4 class="font-bold text-lg mb-2">동아리 주간 출석 현황</h4>
-            <p class="text-sm text-on-surface-variant">지난 7일간의 참여 지표 분석</p>
+
+        <div onclick="showAdminTab('stats')"
+             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-blue-600">monitoring</span>
+            </div>
+            <h4 class="font-bold text-lg mb-1">동아리 주간 출석 현황</h4>
+            <p class="text-sm text-slate-500">7일간 참여 지표 분석</p>
         </div>
-        <div onclick="showAdminTab('attendance-check')" class="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/20 cursor-pointer hover:border-primary transition-all">
-            <h4 class="font-bold text-lg mb-2">출석 체크 현황</h4>
-            <p class="text-sm text-on-surface-variant">QR 및 수동 출석 체크 기록 관리</p>
+
+        <div onclick="showAdminTab('attendance-check')"
+             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-blue-600">how_to_reg</span>
+            </div>
+            <h4 class="font-bold text-lg mb-1">출석 체크 현황</h4>
+            <p class="text-sm text-slate-500">QR / 수동 출석 관리</p>
         </div>
-        <div onclick="showAdminTab('calendar')" class="bg-white p-6 rounded-xl shadow-sm border border-outline-variant/20 cursor-pointer hover:border-primary transition-all">
-            <h4 class="font-bold text-lg mb-2">대관 캘린더</h4>
-            <p class="text-sm text-on-surface-variant">시설물 대관 및 사용 일정</p>
+
+        <div onclick="showAdminTab('calendar')"
+             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-blue-600">calendar_month</span>
+            </div>
+            <h4 class="font-bold text-lg mb-1">대관 캘린더</h4>
+            <p class="text-sm text-slate-500">시설 예약 일정 관리</p>
         </div>
+
     </div>
 
-    <div id="admin-content-area" class="bg-white p-8 rounded-xl shadow-sm border border-outline-variant/20">
-        
+    <!-- CONTENT AREA -->
+    <div id="admin-content-area"
+         class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+
+        <!-- STATS -->
         <div id="admin-stats-section" class="hidden">
             <h3 class="text-xl font-bold mb-4">동아리 주간 출석 현황</h3>
             <div id="admin-stats-content">데이터를 불러오는 중...</div>
         </div>
 
+        <!-- ATTENDANCE -->
         <div id="admin-attendance-check-section" class="hidden">
             <h3 class="text-xl font-bold mb-4">출석 체크 현황</h3>
+
             <div id="attendance-check-content" class="overflow-x-auto">
-                <p>불러오는 중...</p>
+                <p class="text-slate-500">불러오는 중...</p>
             </div>
         </div>
 
+        <!-- CALENDAR -->
         <div id="admin-calendar-section" class="hidden">
             <h3 class="text-xl font-bold mb-4">대관 캘린더</h3>
-            <div class="w-full h-[600px] rounded-xl overflow-hidden">
-                <iframe src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com&ctz=Asia%2FSeoul" width="100%" height="100%" frameborder="0"></iframe>
+
+            <div class="w-full h-[600px] rounded-xl overflow-hidden border">
+                <iframe
+                    src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com&ctz=Asia%2FSeoul"
+                    class="w-full h-full">
+                </iframe>
             </div>
         </div>
+
     </div>
 
-    <button onclick="location.href='index.html'" class="mt-8 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-black transition-colors">
-        메인으로 돌아가기
-    </button>
 </main>
 
+<!-- JS (절대 유지) -->
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
@@ -71,15 +135,12 @@
     adminAuth();
 
     function showAdminTab(tab) {
-        // 모든 섹션 숨김
         document.getElementById('admin-stats-section').classList.add('hidden');
         document.getElementById('admin-attendance-check-section').classList.add('hidden');
         document.getElementById('admin-calendar-section').classList.add('hidden');
 
-        // 선택된 섹션 표시
         if(tab === 'stats') {
             document.getElementById('admin-stats-section').classList.remove('hidden');
-            // loadStats(); // 기존 API 함수
         } else if(tab === 'attendance-check') {
             document.getElementById('admin-attendance-check-section').classList.remove('hidden');
             loadAttendanceCheck();
@@ -91,20 +152,42 @@
     async function loadAttendanceCheck() {
         const box = document.getElementById('attendance-check-content');
         box.innerHTML = `<p>데이터 로딩 중...</p>`;
+
         try {
             const data = await apiGet("getAttendanceStatus");
-            if(!data || data.length === 0) return box.innerHTML = `<p>데이터가 없습니다.</p>`;
-            
-            let html = `<table class="w-full text-left border-collapse"><thead><tr class="border-b"><th class="py-3">동아리</th><th class="py-3">저번주</th><th class="py-3">이번주</th></tr></thead><tbody>`;
+
+            if(!data || data.length === 0)
+                return box.innerHTML = `<p>데이터가 없습니다.</p>`;
+
+            let html = `
+                <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="py-3">동아리</th>
+                        <th class="py-3">저번주</th>
+                        <th class="py-3">이번주</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
             data.forEach(d => {
-                html += `<tr class="border-b">
-                    <td class="py-3">${d.club}</td>
-                    <td class="py-3 font-bold ${d.lastWeek ? 'text-blue-600' : 'text-red-500'}">${d.lastWeek ? '완료' : '미체크'}</td>
-                    <td class="py-3 font-bold ${d.thisWeek ? 'text-blue-600' : 'text-red-500'}">${d.thisWeek ? '완료' : '미체크'}</td>
-                </tr>`;
+                html += `
+                    <tr class="border-t hover:bg-slate-50">
+                        <td class="py-3 font-medium">${d.club}</td>
+                        <td class="py-3 ${d.lastWeek ? 'text-blue-600' : 'text-red-500'} font-semibold">
+                            ${d.lastWeek ? '완료' : '미체크'}
+                        </td>
+                        <td class="py-3 ${d.thisWeek ? 'text-blue-600' : 'text-red-500'} font-semibold">
+                            ${d.thisWeek ? '완료' : '미체크'}
+                        </td>
+                    </tr>
+                `;
             });
+
             html += `</tbody></table>`;
             box.innerHTML = html;
+
         } catch(e) {
             box.innerHTML = `<p class="text-red-500">불러오기 실패</p>`;
         }
