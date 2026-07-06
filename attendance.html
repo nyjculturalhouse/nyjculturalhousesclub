@@ -130,7 +130,8 @@
 <script>
     // ❌ initDays(); 제거됨
 
-    let selMembers = [];
+    // ✅ 수정: 중복 선언 방지
+    window.selMembers = window.selMembers || [];
     let selClub = "";
     let selDay = "";
 
@@ -180,7 +181,7 @@
     window.loadClubs = async function(day) {
 
         selClub = "";
-        selMembers = [];
+        window.selMembers = [];
 
         document.getElementById("step-clubs").classList.remove("hidden");
         document.getElementById("step-members").classList.add("hidden");
@@ -233,7 +234,7 @@
         const box = document.getElementById('member-list');
         box.innerHTML = "";
 
-        selMembers = [];
+        window.selMembers = [];
 
         let members = await apiGet("getMembers", { club });
 
@@ -255,13 +256,13 @@
 
             b.onclick = () => {
 
-                const idx = selMembers.indexOf(m);
+                const idx = window.selMembers.indexOf(m);
 
                 if (idx > -1) {
-                    selMembers.splice(idx, 1);
+                    window.selMembers.splice(idx, 1);
                     b.classList.remove("selected");
                 } else {
-                    selMembers.push(m);
+                    window.selMembers.push(m);
                     b.classList.add("selected");
                 }
             };
@@ -275,14 +276,14 @@
     ========================= */
     window.submitAttendance = async function () {
 
-        if (!selMembers.length) {
+        if (!window.selMembers.length) {
             alert("인원을 선택하세요.");
             return;
         }
 
         await sendPost('submitAttendance');
 
-        selMembers = [];
+        window.selMembers = [];
         selClub = "";
 
         document.querySelectorAll(".selected")
