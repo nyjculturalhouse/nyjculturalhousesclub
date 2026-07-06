@@ -8,231 +8,286 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <script>
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                primary: "#2563eb",
-                bg: "#faf8ff",
-                surface: "#ffffff",
-                outline: "#e5e7eb"
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: "#2563eb",
+                    bg: "#faf8ff",
+                    surface: "#ffffff",
+                    outline: "#e5e7eb"
+                }
             }
         }
     }
-}
 </script>
 
 <style>
-body {
-    font-family: 'Inter', sans-serif;
-    background: #faf8ff;
-}
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #faf8ff;
+    }
 
-.hidden { display: none; }
+    .hidden { display: none; }
 
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 14px;
-    border: 1px solid #e5e7eb;
-    transition: all .2s ease;
-}
+    .card {
+        transition: all .2s ease;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+    }
 
-.card:hover {
-    transform: translateY(-3px);
-}
+    .glass {
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(10px);
+    }
 
-.selected {
-    border: 2px solid #2563eb !important;
-    background: #eff6ff !important;
-}
+    /* 선택 상태 */
+    .selected {
+        border: 2px solid #2563eb !important;
+        background: #eff6ff !important;
+    }
 </style>
 </head>
 
-<body>
+<body class="min-h-screen flex flex-col">
 
-<div class="max-w-2xl mx-auto px-4 py-6">
+<!-- TOP BAR -->
+<header class="sticky top-0 z-50 bg-white border-b border-outline">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="font-bold text-primary text-xl">동아리 출석부</div>
 
-<!-- STEP 1 -->
-<div id="step-days">
-    <h1 class="text-xl font-bold mb-4">요일 선택</h1>
-    <div id="day-buttons" class="space-y-3"></div>
+        <button onclick="location.href='index.html'"
+                class="text-sm text-gray-600 hover:text-primary transition">
+            메인으로
+        </button>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
+
+    <div id="view-attendance" class="space-y-10">
+
+        <!-- STEP 1 DAYS -->
+        <section id="step-days">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">요일 선택</h1>
+                <p class="text-gray-500 mt-1">출석을 진행할 요일을 선택하세요</p>
+            </div>
+
+            <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
+        </section>
+
+        <!-- STEP 2 CLUBS -->
+        <section id="step-clubs" class="hidden">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">동아리 선택</h1>
+                <p class="text-gray-500 mt-1">출석할 동아리를 선택하세요</p>
+            </div>
+
+            <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- STEP 3 MEMBERS -->
+        <section id="step-members" class="hidden">
+
+            <div class="mb-6">
+                <h1 id="club-title" class="text-2xl font-bold text-primary"></h1>
+                <p class="text-gray-500">출석한 사람을 선택하세요.</p>
+            </div>
+
+            <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+
+            <button id="btn-submit-att"
+                    onclick="submitAttendance()"
+                    class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg active:scale-[0.98]">
+                출석 제출하기
+            </button>
+
+        </section>
+
+    </div>
+</main>
+
+<!-- OVERLAY -->
+<div id="overlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
+
+<!-- TOAST -->
+<div id="toast"
+     class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl z-50">
+    제출 완료 ✅
 </div>
 
-<!-- STEP 2 -->
-<div id="step-clubs" class="hidden">
-    <h1 class="text-xl font-bold mb-4">동아리 선택</h1>
-    <div id="club-buttons" class="space-y-3"></div>
-</div>
-
-<!-- STEP 3 -->
-<div id="step-members" class="hidden">
-    <h1 id="club-title" class="text-xl font-bold mb-4"></h1>
-    <div id="member-list" class="grid grid-cols-2 gap-3"></div>
-
-    <button id="btn-submit-att"
-        onclick="submitAttendance()"
-        class="mt-6 w-full bg-primary text-white py-3 rounded-xl font-bold">
-        출석 제출
-    </button>
-</div>
-
-</div>
-
+<!-- SCRIPTS -->
 <script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
 
 <script>
-/* =====================
-   상태
-===================== */
-let selDay = "";
-let selClub = "";
-window.selMembers = [];
+    // ❌ initDays(); 제거됨
 
-/* =====================
-   STEP 전환 (핵심 유지)
-===================== */
-function showStep(step) {
+    let selMembers = [];
+    let selClub = "";
+    let selDay = "";
 
-    document.getElementById("step-days").classList.add("hidden");
-    document.getElementById("step-clubs").classList.add("hidden");
-    document.getElementById("step-members").classList.add("hidden");
+    /* =========================
+       STEP 1 - DAYS (안정화)
+    ========================= */
+    const days = [
+        { en: "Tuesday", ko: "화요일", key: "화" },
+        { en: "Wednesday", ko: "수요일", key: "수" },
+        { en: "Thursday", ko: "목요일", key: "목" },
+        { en: "Friday", ko: "금요일", key: "금" },
+        { en: "Saturday", ko: "토요일", key: "토" },
+        { en: "Sunday", ko: "일요일", key: "일" },
+    ];
 
-    document.getElementById(step).classList.remove("hidden");
-}
+    const box = document.getElementById("day-buttons");
 
-/* =====================
-   DAYS
-===================== */
-const days = [
-    { key:"화", label:"화요일" },
-    { key:"수", label:"수요일" },
-    { key:"목", label:"목요일" },
-    { key:"금", label:"금요일" },
-    { key:"토", label:"토요일" },
-    { key:"일", label:"일요일" }
-];
+    days.forEach(d => {
+        const btn = document.createElement("button");
 
-const dayBox = document.getElementById("day-buttons");
+        btn.className =
+            "p-4 rounded-xl border bg-white hover:bg-blue-50 active:scale-95 transition text-left";
 
-days.forEach(d => {
-    const btn = document.createElement("button");
+        btn.innerHTML = `
+            <div class="font-bold">${d.en}</div>
+            <div class="text-sm text-gray-500">${d.ko}</div>
+        `;
 
-    btn.className = "card";
-    btn.innerText = d.label;
+        btn.onclick = () => {
 
-    btn.onclick = () => {
-        selDay = d.key;
-        loadClubs(d.key);
+            selDay = d.key;
+
+            document.querySelectorAll("#day-buttons button")
+                .forEach(b => b.classList.remove("selected"));
+
+            btn.classList.add("selected");
+
+            if (typeof loadClubs === "function") loadClubs(d.key);
+        };
+
+        box.appendChild(btn);
+    });
+
+    /* =========================
+       STEP 2 - CLUBS (충돌 제거)
+    ========================= */
+    window.loadClubs = async function(day) {
+
+        selClub = "";
+        selMembers = [];
+
+        document.getElementById("step-clubs").classList.remove("hidden");
+        document.getElementById("step-members").classList.add("hidden");
+
+        const box = document.getElementById('club-buttons');
+        box.innerHTML = '<p class="text-gray-500">불러오는 중...</p>';
+
+        const clubs = await apiGet("getClubs", { day });
+
+        box.innerHTML = "";
+
+        if (!clubs || clubs.length === 0) {
+            box.innerHTML = '<p class="text-gray-500">등록된 동아리가 없습니다.</p>';
+            return;
+        }
+
+        clubs.forEach(c => {
+            const b = document.createElement('button');
+
+            b.className = "p-4 rounded-xl border bg-white hover:bg-blue-50 transition text-left";
+
+            b.innerText = c;
+
+            b.onclick = () => {
+
+                selClub = c;
+
+                document.querySelectorAll("#club-buttons button")
+                    .forEach(x => x.classList.remove("selected"));
+
+                b.classList.add("selected");
+
+                loadMembers(c);
+            };
+
+            box.appendChild(b);
+        });
     };
 
-    dayBox.appendChild(btn);
-});
+    /* =========================
+       STEP 3 - MEMBERS (완전 동기화)
+    ========================= */
+    async function loadMembers(club) {
 
-/* =====================
-   CLUBS
-===================== */
-async function loadClubs(day) {
+        document.getElementById("step-members").classList.remove("hidden");
 
-    showStep("step-clubs");
+        const title = document.getElementById('club-title');
+        title.innerText = club;
 
-    const box = document.getElementById("club-buttons");
-    box.innerHTML = "<div class='card'>불러오는 중...</div>";
+        const box = document.getElementById('member-list');
+        box.innerHTML = "";
 
-    const clubs = await apiGet("getClubs", { day });
+        selMembers = [];
 
-    box.innerHTML = "";
+        let members = await apiGet("getMembers", { club });
 
-    if (!clubs || clubs.length === 0) {
-        box.innerHTML = "<div class='card'>동아리 없음</div>";
-        return;
+        if (members.length === 1 && typeof members[0] === "string") {
+            members = members[0].split(",").map(v => v.trim());
+        }
+
+        if (!members || members.length === 0) {
+            box.innerHTML = '<p class="text-gray-500">등록된 인원이 없습니다.</p>';
+            return;
+        }
+
+        members.forEach(m => {
+            const b = document.createElement('button');
+
+            b.className = "p-3 rounded-xl border bg-white transition";
+
+            b.innerText = m;
+
+            b.onclick = () => {
+
+                const idx = selMembers.indexOf(m);
+
+                if (idx > -1) {
+                    selMembers.splice(idx, 1);
+                    b.classList.remove("selected");
+                } else {
+                    selMembers.push(m);
+                    b.classList.add("selected");
+                }
+            };
+
+            box.appendChild(b);
+        });
     }
 
-    clubs.forEach(c => {
-        const b = document.createElement("button");
+    /* =========================
+       SUBMIT (안정화 유지)
+    ========================= */
+    window.submitAttendance = async function () {
 
-        b.className = "card";
-        b.innerText = c;
+        if (!selMembers.length) {
+            alert("인원을 선택하세요.");
+            return;
+        }
 
-        b.onclick = () => {
-            selClub = c;
-            loadMembers(c);
-        };
+        await sendPost('submitAttendance');
 
-        box.appendChild(b);
-    });
-}
+        selMembers = [];
+        selClub = "";
 
-/* =====================
-   MEMBERS
-===================== */
-async function loadMembers(club) {
-
-    showStep("step-members");
-
-    document.getElementById("club-title").innerText = club;
-
-    const box = document.getElementById("member-list");
-    box.innerHTML = "";
-
-    window.selMembers = [];
-
-    let members = await apiGet("getMembers", { club });
-
-    if (members?.length === 1 && typeof members[0] === "string") {
-        members = members[0].split(",").map(v => v.trim());
-    }
-
-    if (!members || members.length === 0) {
-        box.innerHTML = "<div class='card'>인원 없음</div>";
-        return;
-    }
-
-    members.forEach(m => {
-
-        const b = document.createElement("button");
-        b.className = "card";
-        b.innerText = m;
-
-        b.onclick = () => {
-
-            b.classList.toggle("selected");
-
-            const i = window.selMembers.indexOf(m);
-            if (i > -1) window.selMembers.splice(i, 1);
-            else window.selMembers.push(m);
-        };
-
-        box.appendChild(b);
-    });
-}
-
-/* =====================
-   SUBMIT (핵심 수정)
-===================== */
-async function submitAttendance() {
-
-    if (!window.selMembers.length) {
-        alert("인원을 선택하세요.");
-        return;
-    }
-
-    const res = await apiPost({
-        mode: "submitAttendance",
-        clubName: selClub,
-        attendees: window.selMembers
-    });
-
-    if (res?.error) {
-        alert(res.error);
-        return;
-    }
-
-    alert("출석 완료");
-    window.selMembers = [];
-}
+        document.querySelectorAll(".selected")
+            .forEach(el => el.classList.remove("selected"));
+    };
 
 </script>
 
