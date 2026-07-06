@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>문화의집(모바일)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f7f9fb; }
+        .mobile-card { 
+            display: flex; flex-direction: column; padding: 24px; 
+            border-radius: 20px; background: white; shadow-sm;
+        }
+    </style>
+</head>
+<body class="pb-24">
+    <main class="px-5 pt-10 flex flex-col gap-4">
+        <h2 class="text-2xl font-bold mb-4">안녕하세요!</h2>
+        
+        <button onclick="location.href='attendance.html'" class="mobile-card bg-primary text-white">
+            <span class="text-4xl mb-4">✅</span>
+            <span class="text-xl font-bold">동아리 출석체크</span>
+        </button>
+        
+        <button onclick="location.href='booking.html'" class="mobile-card border border-gray-200">
+            <span class="text-4xl mb-4">🏢</span>
+            <span class="text-xl font-bold">대관 신청</span>
+        </button>
+    </main>
+</body>
+</html>
