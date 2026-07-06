@@ -33,19 +33,6 @@
 
     .hidden { display: none; }
 
-    .card {
-        transition: all .2s ease;
-    }
-    .card:hover {
-        transform: translateY(-3px);
-    }
-
-    .glass {
-        background: rgba(255,255,255,0.8);
-        backdrop-filter: blur(10px);
-    }
-
-    /* 선택 상태 */
     .selected {
         border: 2px solid #2563eb !important;
         background: #eff6ff !important;
@@ -55,7 +42,6 @@
 
 <body class="min-h-screen flex flex-col">
 
-<!-- TOP BAR -->
 <header class="sticky top-0 z-50 bg-white border-b border-outline">
     <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         <div class="font-bold text-primary text-xl">동아리 출석부</div>
@@ -67,32 +53,31 @@
     </div>
 </header>
 
-<!-- MAIN -->
 <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
 
     <div id="view-attendance" class="space-y-10">
 
-        <!-- STEP 1 DAYS -->
+        <!-- STEP 1 -->
         <section id="step-days">
             <div class="mb-6">
-                <h1 class="text-3xl font-bold text-gray-900">요일 선택</h1>
+                <h1 class="text-3xl font-bold">요일 선택</h1>
                 <p class="text-gray-500 mt-1">출석을 진행할 요일을 선택하세요</p>
             </div>
 
             <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
         </section>
 
-        <!-- STEP 2 CLUBS -->
+        <!-- STEP 2 -->
         <section id="step-clubs" class="hidden">
             <div class="mb-6">
-                <h1 class="text-3xl font-bold text-gray-900">동아리 선택</h1>
+                <h1 class="text-3xl font-bold">동아리 선택</h1>
                 <p class="text-gray-500 mt-1">출석할 동아리를 선택하세요</p>
             </div>
 
             <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
 
-        <!-- STEP 3 MEMBERS -->
+        <!-- STEP 3 -->
         <section id="step-members" class="hidden">
 
             <div class="mb-6">
@@ -102,9 +87,8 @@
 
             <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
 
-            <button id="btn-submit-att"
-                    onclick="submitAttendance()"
-                    class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg active:scale-[0.98]">
+            <button onclick="submitAttendance()"
+                    class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
                 출석 제출하기
             </button>
 
@@ -113,30 +97,23 @@
     </div>
 </main>
 
-<!-- OVERLAY -->
-<div id="overlay" class="hidden fixed inset-0 bg-black/30 z-40"></div>
-
-<!-- TOAST -->
-<div id="toast"
-     class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl z-50">
-    제출 완료 ✅
-</div>
-
-<!-- SCRIPTS -->
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
 
 <script>
-    // ❌ initDays(); 제거됨
-
     let selMembers = [];
     let selClub = "";
     let selDay = "";
 
-    /* =========================
-       STEP 1 - DAYS (안정화)
-    ========================= */
+    /* 🔥 STEP 전환 함수 추가 */
+    function showStep(step) {
+        document.getElementById("step-days").classList.add("hidden");
+        document.getElementById("step-clubs").classList.add("hidden");
+        document.getElementById("step-members").classList.add("hidden");
+        document.getElementById(step).classList.remove("hidden");
+    }
+
     const days = [
         { en: "Tuesday", ko: "화요일", key: "화" },
         { en: "Wednesday", ko: "수요일", key: "수" },
@@ -168,22 +145,19 @@
 
             btn.classList.add("selected");
 
-            if (typeof loadClubs === "function") loadClubs(d.key);
+            showStep("step-clubs"); // 🔥 추가
+            loadClubs(d.key);
         };
 
         box.appendChild(btn);
     });
 
-    /* =========================
-       STEP 2 - CLUBS (충돌 제거)
-    ========================= */
     window.loadClubs = async function(day) {
 
         selClub = "";
         selMembers = [];
 
-        document.getElementById("step-clubs").classList.remove("hidden");
-        document.getElementById("step-members").classList.add("hidden");
+        showStep("step-clubs"); // 🔥 안전장치
 
         const box = document.getElementById('club-buttons');
         box.innerHTML = '<p class="text-gray-500">불러오는 중...</p>';
@@ -213,6 +187,7 @@
 
                 b.classList.add("selected");
 
+                showStep("step-members"); // 🔥 추가
                 loadMembers(c);
             };
 
@@ -220,12 +195,9 @@
         });
     };
 
-    /* =========================
-       STEP 3 - MEMBERS (완전 동기화)
-    ========================= */
     async function loadMembers(club) {
 
-        document.getElementById("step-members").classList.remove("hidden");
+        showStep("step-members"); // 🔥 안전장치
 
         const title = document.getElementById('club-title');
         title.innerText = club;
@@ -270,9 +242,6 @@
         });
     }
 
-    /* =========================
-       SUBMIT (안정화 유지)
-    ========================= */
     window.submitAttendance = async function () {
 
         if (!selMembers.length) {
@@ -280,7 +249,12 @@
             return;
         }
 
-        await sendPost('submitAttendance');
+        const res = await apiPost({
+            mode: "submitAttendance",
+            clubName: selClub,
+            attendees: selMembers,
+            day: selDay
+        });
 
         selMembers = [];
         selClub = "";
