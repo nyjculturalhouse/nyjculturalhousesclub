@@ -45,7 +45,7 @@
             backdrop-filter: blur(10px);
         }
 
-        /* ✅ 추가: 버튼 선택 스타일 */
+        /* 선택 상태 */
         .selected {
             border: 2px solid #2563eb !important;
             background: #eff6ff !important;
@@ -80,42 +80,7 @@
             </div>
 
             <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
-
-<script>
-const days = [
-  { en: "Tuesday", ko: "화요일", key: "화" },
-  { en: "Wednesday", ko: "수요일", key: "수" },
-  { en: "Thursday", ko: "목요일", key: "목" },
-  { en: "Friday", ko: "금요일", key: "금" },
-  { en: "Saturday", ko: "토요일", key: "토" },
-  { en: "Sunday", ko: "일요일", key: "일" },
-];
-
-const box = document.getElementById("day-buttons");
-
-days.forEach(d => {
-  const btn = document.createElement("button");
-
-  btn.className =
-    "p-4 rounded-xl border bg-white hover:bg-blue-50 active:scale-95 transition text-left";
-
-  btn.innerHTML = `
-    <div class="font-bold">${d.en}</div>
-    <div class="text-sm text-gray-500">${d.ko}</div>
-  `;
-
-  btn.onclick = () => {
-    document.querySelectorAll("#day-buttons button")
-      .forEach(b => b.classList.remove("ring-2", "ring-blue-500"));
-
-    btn.classList.add("ring-2", "ring-blue-500");
-
-    if (typeof loadClubs === "function") loadClubs(d.key);
-  };
-
-  box.appendChild(btn);
-});
-</script>
+        </section>
 
         <!-- STEP 2 CLUBS -->
         <section id="step-clubs" class="hidden">
@@ -165,25 +130,165 @@ days.forEach(d => {
 <script>
     initDays();
 
-    // =========================
-    // ✅ 추가: 클럽/멤버 버튼화
-    // (기존 JS 건드리지 않음)
-    // =========================
+    let selMembers = [];
+    let selClub = "";
+    let selDay = "";
 
-    function enableButtonBehavior(containerId) {
-        const container = document.getElementById(containerId);
+    /* =========================
+       STEP 1 - DAYS (안정화)
+    ========================= */
+    const days = [
+        { en: "Tuesday", ko: "화요일", key: "화" },
+        { en: "Wednesday", ko: "수요일", key: "수" },
+        { en: "Thursday", ko: "목요일", key: "목" },
+        { en: "Friday", ko: "금요일", key: "금" },
+        { en: "Saturday", ko: "토요일", key: "토" },
+        { en: "Sunday", ko: "일요일", key: "일" },
+    ];
 
-        container.addEventListener("click", (e) => {
-            const item = e.target.closest("div, button");
-            if (!item || !container.contains(item)) return;
+    const box = document.getElementById("day-buttons");
 
-            // 토글 선택
-            item.classList.toggle("selected");
+    days.forEach(d => {
+        const btn = document.createElement("button");
+
+        btn.className =
+            "p-4 rounded-xl border bg-white hover:bg-blue-50 active:scale-95 transition text-left";
+
+        btn.innerHTML = `
+            <div class="font-bold">${d.en}</div>
+            <div class="text-sm text-gray-500">${d.ko}</div>
+        `;
+
+        btn.onclick = () => {
+
+            selDay = d.key;
+
+            document.querySelectorAll("#day-buttons button")
+                .forEach(b => b.classList.remove("selected"));
+
+            btn.classList.add("selected");
+
+            if (typeof loadClubs === "function") loadClubs(d.key);
+        };
+
+        box.appendChild(btn);
+    });
+
+    /* =========================
+       STEP 2 - CLUBS (충돌 제거)
+    ========================= */
+    window.loadClubs = async function(day) {
+
+        selClub = "";
+        selMembers = [];
+
+        document.getElementById("step-clubs").classList.remove("hidden");
+        document.getElementById("step-members").classList.add("hidden");
+
+        const box = document.getElementById('club-buttons');
+        box.innerHTML = '<p class="text-gray-500">불러오는 중...</p>';
+
+        const clubs = await apiGet("getClubs", { day });
+
+        box.innerHTML = "";
+
+        if (!clubs || clubs.length === 0) {
+            box.innerHTML = '<p class="text-gray-500">등록된 동아리가 없습니다.</p>';
+            return;
+        }
+
+        clubs.forEach(c => {
+            const b = document.createElement('button');
+
+            b.className = "p-4 rounded-xl border bg-white hover:bg-blue-50 transition text-left";
+
+            b.innerText = c;
+
+            b.onclick = () => {
+
+                selClub = c;
+
+                document.querySelectorAll("#club-buttons button")
+                    .forEach(x => x.classList.remove("selected"));
+
+                b.classList.add("selected");
+
+                loadMembers(c);
+            };
+
+            box.appendChild(b);
+        });
+    };
+
+    /* =========================
+       STEP 3 - MEMBERS (완전 동기화)
+    ========================= */
+    async function loadMembers(club) {
+
+        document.getElementById("step-members").classList.remove("hidden");
+
+        const title = document.getElementById('club-title');
+        title.innerText = club;
+
+        const box = document.getElementById('member-list');
+        box.innerHTML = "";
+
+        selMembers = [];
+
+        let members = await apiGet("getMembers", { club });
+
+        if (members.length === 1 && typeof members[0] === "string") {
+            members = members[0].split(",").map(v => v.trim());
+        }
+
+        if (!members || members.length === 0) {
+            box.innerHTML = '<p class="text-gray-500">등록된 인원이 없습니다.</p>';
+            return;
+        }
+
+        members.forEach(m => {
+            const b = document.createElement('button');
+
+            b.className = "p-3 rounded-xl border bg-white transition";
+
+            b.innerText = m;
+
+            b.onclick = () => {
+
+                const idx = selMembers.indexOf(m);
+
+                if (idx > -1) {
+                    selMembers.splice(idx, 1);
+                    b.classList.remove("selected");
+                } else {
+                    selMembers.push(m);
+                    b.classList.add("selected");
+                }
+            };
+
+            box.appendChild(b);
         });
     }
 
-    enableButtonBehavior("club-buttons");
-    enableButtonBehavior("member-list");
+    /* =========================
+       SUBMIT (안정화 유지)
+    ========================= */
+    window.submitAttendance = async function () {
+
+        if (!selMembers.length) {
+            alert("인원을 선택하세요.");
+            return;
+        }
+
+        await sendPost('submitAttendance');
+
+        selMembers = [];
+        selClub = "";
+
+        document.querySelectorAll(".selected")
+            .forEach(el => el.classList.remove("selected"));
+    };
+
 </script>
 
 </body>
