@@ -1,61 +1,104 @@
-/* style.css */
+/* =========================
+   style.css (Culture Connect Attendance)
+   ========================= */
 
-
-
-/* 1. 기본 폰트와 배경 설정은 Tailwind의 class로 대체 가능하나, 
-
-   전역으로 보존하고 싶다면 유지 */
-
+/* 1. 기본 폰트 */
 body {
-
     font-family: 'Inter', sans-serif;
-
     -webkit-font-smoothing: antialiased;
-
+    background: #faf8ff;
 }
 
-
-
-/* 2. Tailwind가 제공하지 않는 특수 컴포넌트(글래스 효과 등)만 명시 */
-
-.glass-card {
-
-    background: rgba(255, 255, 255, 0.95);
-
-    backdrop-filter: blur(12px);
-
-    border: 1px solid rgba(226, 232, 240, 0.8);
-
+/* =========================
+   2. 핵심 버튼 스타일 (JS 생성용 필수)
+   ========================= */
+.btn {
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.15s ease;
+    display: block;
+    width: 100%;
+    font-size: 14px;
 }
 
-
-
-/* 3. 토스트 및 오버레이 (JS와 연동되는 기능성 스타일) */
-
-#toast {
-
-    transition: visibility 0s, opacity 0.3s linear;
-
+.btn:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+    transform: translateY(-1px);
 }
 
-
-
-/* 4. 기존 앱에서 필수적인 애니메이션이나 특수 동작 */
-
+/* 클릭 시 살짝 눌림 */
 .btn:active {
-
     transform: scale(0.98);
-
 }
 
+/* 선택된 상태 */
+.btn.selected {
+    border: 2px solid #2563eb !important;
+    background: #eff6ff !important;
+    color: #2563eb;
+}
 
+/* =========================
+   3. 카드/글래스 UI (확장용)
+   ========================= */
+.card {
+    transition: all 0.2s ease;
+}
 
-/* 5. 혹시 모를 기존 레거시 코드와의 충돌 방지 */
+.card:hover {
+    transform: translateY(-3px);
+}
 
-.hidden { display: none !important; }
+.glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
 
+/* =========================
+   4. 글래스 카드 (관리자용 확장)
+   ========================= */
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
 
+/* =========================
+   5. 토스트 애니메이션
+   ========================= */
+#toast {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
-/* 기존의 복잡한 버튼/입력창 스타일들은 이제 HTML에서 
+#toast.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
 
-   bg-primary, p-4, rounded-xl 등으로 직접 작성합니다. */
+/* =========================
+   6. 오버레이
+   ========================= */
+#overlay {
+    transition: opacity 0.2s ease;
+}
+
+/* =========================
+   7. hidden (Tailwind 대비 안전장치)
+   ========================= */
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   8. 스크롤 UX 개선 (선택)
+   ========================= */
+html {
+    scroll-behavior: smooth;
+}
