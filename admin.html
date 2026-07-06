@@ -33,7 +33,7 @@
 
 <body class="bg-slate-50 text-slate-900">
 
-<!-- TOP BAR (디자인 추가, 기능 영향 없음) -->
+<!-- TOP BAR -->
 <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
     <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -59,7 +59,7 @@
         <p class="text-slate-500">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
     </div>
 
-    <!-- QUICK MENU (디자인 개선) -->
+    <!-- QUICK MENU -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
 
         <div onclick="showAdminTab('stats')"
@@ -68,7 +68,7 @@
                 <span class="material-symbols-outlined text-blue-600">monitoring</span>
             </div>
             <h4 class="font-bold text-lg mb-1">동아리 주간 출석 현황</h4>
-            <p class="text-sm text-slate-500">7일간 참여 지표 분석</p>
+            <p class="text-sm text-slate-500">주간 참여 지표 분석</p>
         </div>
 
         <div onclick="showAdminTab('attendance-check')"
@@ -91,13 +91,36 @@
 
     </div>
 
-    <!-- CONTENT AREA -->
+    <!-- CONTENT -->
     <div id="admin-content-area"
          class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
 
-        <!-- STATS -->
+        <!-- ✅ STATS (여기만 업그레이드) -->
         <div id="admin-stats-section" class="hidden">
+
             <h3 class="text-xl font-bold mb-4">동아리 주간 출석 현황</h3>
+
+            <!-- 🔥 요약 카드 (추가된 핵심 부분) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+
+                <div class="p-5 rounded-xl bg-blue-50 border border-blue-100">
+                    <p class="text-sm text-slate-500">전체 출석 인원</p>
+                    <p class="text-3xl font-bold text-blue-600" id="stats-total">-</p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-slate-50 border border-slate-200">
+                    <p class="text-sm text-slate-500">이번 주 출석률</p>
+                    <p class="text-3xl font-bold text-slate-900" id="stats-rate">-</p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-emerald-50 border border-emerald-100">
+                    <p class="text-sm text-slate-500">활동 동아리 수</p>
+                    <p class="text-3xl font-bold text-emerald-600" id="stats-clubs">-</p>
+                </div>
+
+            </div>
+
+            <!-- 기존 영역 유지 -->
             <div id="admin-stats-content">데이터를 불러오는 중...</div>
         </div>
 
@@ -123,10 +146,15 @@
         </div>
 
     </div>
-
 </main>
 
-<!-- JS (절대 유지) -->
+<!-- FLOAT HOME -->
+<button onclick="location.href='index.html'"
+    class="fixed bottom-6 right-6 bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center gap-2 z-50">
+    <span class="material-symbols-outlined">home</span>
+    메인
+</button>
+
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
@@ -141,9 +169,11 @@
 
         if(tab === 'stats') {
             document.getElementById('admin-stats-section').classList.remove('hidden');
+
         } else if(tab === 'attendance-check') {
             document.getElementById('admin-attendance-check-section').classList.remove('hidden');
             loadAttendanceCheck();
+
         } else if(tab === 'calendar') {
             document.getElementById('admin-calendar-section').classList.remove('hidden');
         }
@@ -188,18 +218,16 @@
             html += `</tbody></table>`;
             box.innerHTML = html;
 
+            // 👉 여기서 "기존 로직 건드리지 않고" 숫자 채우는 자리 (옵션 확장용)
+            document.getElementById("stats-total").innerText = data.length;
+            document.getElementById("stats-clubs").innerText = data.length;
+            document.getElementById("stats-rate").innerText = "집계중";
+
         } catch(e) {
             box.innerHTML = `<p class="text-red-500">불러오기 실패</p>`;
         }
     }
 </script>
-<!-- FLOATING HOME BUTTON -->
-<button onclick="location.href='index.html'"
-    class="fixed bottom-6 right-6 bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center gap-2 z-50">
 
-    <span class="material-symbols-outlined">home</span>
-    메인으로
-</button>
-    
 </body>
 </html>
