@@ -58,11 +58,13 @@ body { font-family: Inter, sans-serif; background:#f7f9fb; }
   .bento-grid{grid-template-columns:1fr;}
 }
 
-/* 💡 [수정] FILL 설정을 0으로 변경하여 아이콘이 깨지거나 안 바뀌는 현상을 수정했습니다. */
+/* 💡 [수정] text-transform: lowercase !important; 를 적용하여 대문자 깨짐 문제를 방지했습니다. */
 .material-symbols-outlined{
   font-variation-settings:'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   display: inline-block;
   vertical-align: middle;
+  text-transform: lowercase !important;
+  font-style: normal !important;
 }
 </style>
 </head>
@@ -120,7 +122,7 @@ body { font-family: Inter, sans-serif; background:#f7f9fb; }
       <span class="material-symbols-outlined text-3xl">share_windows</span>
     </div>
 
-    <h3 class="text-lg font-bold mb-2">외부활동 공유</h3>
+    <h3 class="text-lg font-bold mb-2">外部활동 공유</h3>
     <p class="text-gray-500 mb-6">성과를 기록하고 공유</p>
     <div class="text-primary font-bold">등록하기 →</div>
   </button>
