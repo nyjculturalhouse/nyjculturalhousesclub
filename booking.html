@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
 
 <style>
-/* 💡 [수정] 전체 기본 폰트를 Paperlogy로 변경했습니다. */
+/* 💡 전체 기본 폰트를 Paperlogy로 변경했습니다. */
 body { font-family: 'Paperlogy', sans-serif; }
 
 .toast {
@@ -41,7 +41,7 @@ body { font-family: 'Paperlogy', sans-serif; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 10px; }
 
-/* 💡 [수정] 아이콘 폰트 패밀리가 페이퍼로지로 덮어씌워져 글자로 깨지는 문제를 방지하기 위해 속성을 고정했습니다. */
+/* 💡 아이콘 폰트 패밀리 문제를 방지하기 위해 속성을 고정했습니다. */
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined' !important;
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
@@ -62,7 +62,8 @@ body { font-family: 'Paperlogy', sans-serif; }
 <div id="toast" class="toast">제출 완료 ✅</div>
 
 <header class="bg-white border-b sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <!-- 💡 [넓이 조절] max-w-6xl -> max-w-[1200px]로 변경하여 index.html과 일치시켰습니다. -->
+    <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
 
         <h1 class="text-xl font-bold text-blue-600">
             남양주시 문화의집
@@ -72,13 +73,14 @@ body { font-family: 'Paperlogy', sans-serif; }
             <button onclick="location.href='index.html'"
                 class="p-2 rounded-full hover:bg-gray-100 transition"
                 title="메인으로">
-                <span class="material-symbols-outlined">home</span>
+                <span class="material-symbols-outlined">home_app_logo</span>
             </button>
         </div>
     </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-6 py-10">
+<!-- 💡 [넓이 조절] max-w-6xl -> max-w-[1200px]로 변경하여 index.html과 일치시켰습니다. -->
+<main class="max-w-[1200px] mx-auto px-6 py-10">
 
 <div class="mb-8">
     <h2 class="text-3xl font-bold tracking-tight">대관 신청</h2>
