@@ -21,7 +21,7 @@
                             hover: "#222222"
                         },
                         accent: {
-                            bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
+                            bg: "#FF5A36",      // 힙한 오렌지 Redmond 포인트
                             text: "#FFFFFF",
                             hover: "#E04825"
                         },
@@ -38,9 +38,9 @@
         body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacing: -0.01em; }
         .hidden { display: none; }
         
-        /* 💡 [핵심 가이드 적용] 타이틀 전용 힙 매거진 타이포그래피 스타일 */
+        /* 💡 [수정 완료] 요청하신 대로 800에서 300으로 두께를 얇게 조절했습니다. */
         .magazine-title {
-            font-weight: 800 !important;
+            font-weight: 300 !important;
             letter-spacing: -0.04em !important;
             line-height: 1.1 !important;
         }
@@ -75,19 +75,26 @@
             flex-direction: column-reverse;
             align-items: center;
             justify-content: center;
-            gap: 2px;
+            gap: 4px;
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
         }
+        
+        /* 💡 [수정 완료] 한글 요일 글자를 더 키우고, 색상은 기존 영문 측의 무거운 회색 느낌으로 변경 */
         #day-buttons button span:first-child, 
         #day-buttons button .day-kr {
-            font-size: 1.25rem !important;
+            font-size: 1.6rem !important;
             font-weight: 700 !important;
+            color: #374151 !important;
         }
-        /* 💡 [수정] 연해서 잘 안 보인다고 하신 부분의 투명도(opacity)를 지우고 글자색을 진한 회색(#4B5563)으로 교체 */
+        
+        /* 💡 [수정 완료] 영문 요일 글자는 조금 더 줄이고, 색상은 기존 한글 측의 진한 다크 차콜로 변경 */
         #day-buttons button span:last-child,
         #day-buttons button .day-en {
-            font-size: 0.85rem !important;
+            font-size: 0.75rem !important;
             font-weight: 600 !important;
-            color: #4B5563 !important;
+            color: #111111 !important;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -107,9 +114,10 @@
 
 <main class="flex-1 max-w-[1200px] mx-auto w-full px-4 py-10">
     <div id="view-attendance" class="space-y-10">
+        
         <section id="step-days">
             <div class="mb-6">
-                <h1 class="magazine-title text-3xl text-primary">요일 선택</h1>
+                <h1 class="magazine-title text-2xl text-primary">요일 선택</h1>
                 <p class="text-gray-700 mt-2 text-sm font-semibold">출석을 등록할 요일을 선택하세요.</p>
             </div>
             <div id="day-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
@@ -117,7 +125,7 @@
 
         <section id="step-clubs" class="hidden">
             <div class="mb-6">
-                <h1 class="magazine-title text-3xl text-primary">동아리 선택</h1>
+                <h1 class="magazine-title text-2xl text-primary">동아리 선택</h1>
                 <p class="text-gray-700 mt-2 text-sm font-semibold">출석을 시작할 동아리를 선택하세요.</p>
             </div>
             <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
