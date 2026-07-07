@@ -1,28 +1,155 @@
-<script>
-    /********************************************************
-     * 🔐 관리자 비밀번호 보호 (추가된 부분)
-     ********************************************************/
-    const ADMIN_PASSWORD = "0226"; // ← 원하는 비밀번호로 변경
+<!DOCTYPE html>
+<html class="light" lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>관리자 대시보드</title>
 
-    function adminAuth() {
-        const isAuth = sessionStorage.getItem("adminAuth");
+    <script src="https://cdn.tailwindcss.com"></script>
 
-        if (isAuth === "true") return;
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 
-        const input = prompt("관리자 비밀번호를 입력하세요");
-
-        if (input === ADMIN_PASSWORD) {
-            sessionStorage.setItem("adminAuth", "true");
-        } else {
-            alert("비밀번호가 틀렸습니다.");
-            location.href = "index.html";
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
         }
-    }
+        .hidden { display: none !important; }
 
-    /********************************************************
-     * 기존 코드 (절대 수정 없음)
-     ********************************************************/
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
+        .card {
+            transition: all .2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+<header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+    <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-blue-600"></div>
+            <h1 class="font-bold text-lg text-blue-600">남양주시 문화의집</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-slate-500">관리자 페이지</span>
+            <button onclick="location.href='index.html'"
+                    class="text-sm px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 transition">
+                메인
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-[1200px] mx-auto px-6 py-10">
+
+    <div class="mb-10">
+        <h2 class="text-4xl font-bold text-slate-900 mb-2">관리자 페이지</h2>
+        <p class="text-slate-500">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+
+        <div onclick="showAdminTab('stats')"
+             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-blue-600">monitoring</span>
+            </div>
+            <h4 class="font-bold text-lg mb-1">동아리 주간 출석 현황</h4>
+            <p class="text-sm text-slate-500">주간 참여 지표 분석</p>
+        </div>
+
+        <div onclick="showAdminTab('attendance-check')"
+             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-blue-600">how_to_reg</span>
+            </div>
+            <h4 class="font-bold text-lg mb-1">출석 체크 현황</h4>
+            <p class="text-sm text-slate-500">QR / 수동 출석 관리</p>
+        </div>
+
+        <div onclick="showAdminTab('calendar')"
+             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-blue-600">calendar_month</span>
+            </div>
+            <h4 class="font-bold text-lg mb-1">대관 캘린더</h4>
+            <p class="text-sm text-slate-500">시설 예약 일정 관리</p>
+        </div>
+
+    </div>
+
+    <div id="admin-content-area"
+         class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+
+        <div id="admin-stats-section" class="hidden">
+
+            <h3 class="text-xl font-bold mb-4">동아리 주간 출석 현황</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+
+                <div class="p-5 rounded-xl bg-blue-50 border border-blue-100">
+                    <p class="text-sm text-slate-500">전체 출석 인원</p>
+                    <p class="text-3xl font-bold text-blue-600" id="stats-total">-</p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-slate-50 border border-slate-200">
+                    <p class="text-sm text-slate-500">이번 주 출석률</p>
+                    <p class="text-3xl font-bold text-slate-900" id="stats-rate">-</p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-emerald-50 border border-emerald-100">
+                    <p class="text-sm text-slate-500">활동 동아리 수</p>
+                    <p class="text-3xl font-bold text-emerald-600" id="stats-clubs">-</p>
+                </div>
+
+            </div>
+
+            <div id="admin-stats-content">데이터를 불러오는 중...</div>
+        </div>
+
+        <div id="admin-attendance-check-section" class="hidden">
+            <h3 class="text-xl font-bold mb-4">출석 체크 현황</h3>
+
+            <div id="attendance-check-content" class="overflow-x-auto">
+                <p class="text-slate-500">불러오는 중...</p>
+            </div>
+        </div>
+
+        <div id="admin-calendar-section" class="hidden">
+            <h3 class="text-xl font-bold mb-4">대관 캘린더</h3>
+
+            <div class="w-full h-[600px] rounded-xl overflow-hidden border">
+                <iframe
+                    src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com&ctz=Asia%2FSeoul"
+                    class="w-full h-full">
+                </iframe>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<button onclick="location.href='index.html'"
+    class="fixed bottom-6 right-6 bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center gap-2 z-50">
+    <span class="material-symbols-outlined">home</span>
+    메인
+</button>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
+<script>
     adminAuth();
 
     function showAdminTab(tab) {
@@ -32,13 +159,10 @@
 
         if(tab === 'stats') {
             document.getElementById('admin-stats-section').classList.remove('hidden');
-
             loadStats();
-
         } else if(tab === 'attendance-check') {
             document.getElementById('admin-attendance-check-section').classList.remove('hidden');
             loadAttendanceCheck();
-
         } else if(tab === 'calendar') {
             document.getElementById('admin-calendar-section').classList.remove('hidden');
         }
@@ -87,8 +211,9 @@
             html += `</tbody></table>`;
             box.innerHTML = html;
 
-            document.getElementById("stats-total").innerText = total;
-            document.getElementById("stats-clubs").innerText = data.length;
+            // 명/개 단위 누락 방지 바인딩 스크립트 수정
+            document.getElementById("stats-total").innerText = total + "명";
+            document.getElementById("stats-clubs").innerText = data.length + "개";
             document.getElementById("stats-rate").innerText = "집계 완료";
 
         } catch (e) {
@@ -136,8 +261,8 @@
             html += `</tbody></table>`;
             box.innerHTML = html;
 
-            document.getElementById("stats-total").innerText = data.length;
-            document.getElementById("stats-clubs").innerText = data.length;
+            document.getElementById("stats-total").innerText = data.length + "명";
+            document.getElementById("stats-clubs").innerText = data.length + "개";
             document.getElementById("stats-rate").innerText = "집계중";
 
         } catch(e) {
@@ -145,3 +270,6 @@
         }
     }
 </script>
+
+</body>
+</html>
