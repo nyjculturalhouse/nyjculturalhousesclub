@@ -52,20 +52,11 @@ body { font-family: 'Inter', sans-serif; }
         </h1>
 
         <div class="flex items-center gap-3 text-sm text-gray-500">
-
-            <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-base">
-                    calendar_month
-                </span>
-                <span>대관 시스템</span>
-            </div>
-
             <button onclick="location.href='index.html'"
                 class="p-2 rounded-full hover:bg-gray-100 transition"
                 title="메인으로">
                 <span class="material-symbols-outlined">home</span>
             </button>
-
         </div>
     </div>
 </header>
@@ -99,7 +90,7 @@ body { font-family: 'Inter', sans-serif; }
 
         <div>
             <label class="text-sm text-gray-600">전화번호</label>
-            <input id="b_phone" type="tel" class="mt-2 w-full rounded-xl border-gray-300" placeholder="010-0000-0000">
+            <input id="b_phone" type="tel" maxlength="13" class="mt-2 w-full rounded-xl border-gray-300" placeholder="010-0000-0000">
         </div>
 
         <div class="md:col-span-2">
@@ -112,21 +103,18 @@ body { font-family: 'Inter', sans-serif; }
             </select>
         </div>
 
-        <!-- 사용 일시 -->
         <div>
             <label class="text-sm text-gray-600">사용 일시</label>
             <input id="b_date" type="datetime-local"
                 class="mt-2 w-full rounded-xl border-gray-300">
         </div>
 
-        <!-- 사용 시간 -->
         <div>
             <label class="text-sm text-gray-600">사용 시간(시간)</label>
             <input id="b_hours" type="number" min="1" max="3" value="1"
             class="mt-2 w-full rounded-xl border-gray-300">
         </div>
 
-        <!-- 예상 참여 인원 -->
         <div class="md:col-span-2">
             <label class="text-sm text-gray-600">예상 참여 인원</label>
             <div class="relative mt-2">
@@ -136,7 +124,6 @@ body { font-family: 'Inter', sans-serif; }
             </div>
         </div>
 
-        <!-- 대관 사유 -->
         <div class="md:col-span-2">
             <label class="text-sm text-gray-600">대관 사유</label>
             <textarea id="b_content"
@@ -145,32 +132,37 @@ body { font-family: 'Inter', sans-serif; }
                 placeholder="사용 목적을 입력하세요"></textarea>
         </div>
 
-        <!-- 이용 동의문 (Culture Connect 스타일 연동) -->
         <div class="md:col-span-2 border-t pt-6 mt-2 space-y-4">
-            <h3 class="text-base font-bold text-gray-900">이용 동의문</h3>
-            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 space-y-4">
+            <h3 class="text-base font-bold text-gray-900">이용 동의문 및 약관</h3>
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 space-y-6">
                 
-                <!-- 동의 1 -->
                 <div class="flex items-start gap-3">
                     <input id="b_agree1" type="checkbox" class="mt-1 rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
                     <div class="text-sm">
-                        <p class="mb-1 text-gray-700 font-medium">남양주시 문화의집 시설을 이용함에 있어 이용수칙과 허가 조건을 준수하고 대관 기간 동안 안전 및 시설 관리에 유의하며 대관자로서의 책임을 성실히 이행하겠습니다.</p>
+                        <p class="mb-1 text-gray-700 font-medium">[1번 동의] 남양주시 문화의집 시설을 이용함에 있어 이용수칙과 허가 조건을 준수하고 대관 기간 동안 안전 및 시설 관리에 유의하며 대관자로서의 책임을 성실히 이행하겠습니다.</p>
                         <span class="text-red-500 font-semibold text-xs">* 필수 동의 사항</span>
                     </div>
                 </div>
 
-                <!-- 스크롤 텍스트 상자 -->
-                <div class="p-4 bg-white rounded-xl border border-gray-200 text-gray-500 text-xs leading-relaxed space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
+                <div class="p-4 bg-white rounded-xl border border-gray-200 text-gray-500 text-xs leading-relaxed space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
                     <p>① 사전 승인되지 않은 물품 및 장비는 반입하지 않으며 이로 인해 발생하는 사항에 대해서는 책임을 지겠습니다.</p>
                     <p>② 대관시설 내에서는 취사 및 음식물 반입을 하지 않겠습니다.</p>
                     <p>③ 정치 종교 활동이나 유료 강습, 특강 등 영리 목적의 시설 사용은 하지 않겠으며 이를 위반할 경우 사용 승인 취소 및 이용 제한 조치에 동의합니다.</p>
                     <p>④ 시설 이용 후에는 원상복구를 원칙으로 하며, 파손 시 배상 책임을 지겠습니다.</p>
                 </div>
 
-                <!-- 동의 2 -->
-                <div class="flex items-center gap-3 pt-2 border-t border-gray-200">
-                    <input id="b_agree2" type="checkbox" class="rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
-                    <span class="text-sm text-gray-800 font-bold">위 유의사항 및 이용 규칙을 모두 읽었으며 이에 동의합니다.</span>
+                <div class="flex items-start gap-3 pt-4 border-t border-gray-200">
+                    <input id="b_agree2" type="checkbox" class="mt-1 rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
+                    <div class="text-sm">
+                        <p class="mb-1 text-gray-700 font-medium">[2번 동의] 개인정보 수집 및 이용 동의</p>
+                        <div class="text-gray-600 text-xs space-y-1 leading-relaxed mb-2">
+                            <p>• <strong>수집 항목:</strong> 신청자 이름, 연락처(전화번호)</p>
+                            <p>• <strong>수집 및 이용 목적:</strong> 문화의집 공간 대관 예약 확인, 이용 스케줄 관리, 긴급 연락 및 안내 문자 발송</p>
+                            <p>• <strong>보유 및 이용 기간:</strong> <span class="text-blue-600 font-bold">대관 신청일로부터 1년간 저장 및 보관</span> 후 안전하게 파기됩니다.</p>
+                            <p class="text-gray-500">• 귀하는 개인정보 수집 및 이용에 동의하지 않을 권리가 있으나, 동의 거부 시 대관 시스템 예약 서비스 이용이 제한됩니다.</p>
+                        </div>
+                        <span class="text-red-500 font-semibold text-xs">* 필수 동의 사항</span>
+                    </div>
                 </div>
 
             </div>
@@ -223,6 +215,21 @@ body { font-family: 'Inter', sans-serif; }
 <script src="js/api.js"></script>
 
 <script>
+function formatPhoneNumber(value) {
+    if (!value) return value;
+    const phoneNumber = value.replace(/[^\d]/g, '');
+    const phoneNumberLength = phoneNumber.length;
+    if (phoneNumberLength < 4) return phoneNumber;
+    if (phoneNumberLength < 8) {
+        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+    }
+    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7, 11)}`;
+}
+
+document.getElementById('b_phone').addEventListener('input', (e) => {
+    e.target.value = formatPhoneNumber(e.target.value);
+});
+
 function showBookingTab(tab) {
     document.getElementById('booking-form-section').classList.toggle('hidden', tab !== 'form');
     document.getElementById('booking-schedule-section').classList.toggle('hidden', tab !== 'schedule');
@@ -263,7 +270,7 @@ async function sendPost(mode) {
         const space = document.getElementById('b_space').value;
         const dateTime = document.getElementById('b_date').value;
         const hours = document.getElementById('b_hours').value;
-        const count = document.getElementById('b_count').value; // 참여 인원 수 추출
+        const count = document.getElementById('b_count').value;
         const content = document.getElementById('b_content').value.trim();
         
         const agree1Checked = document.getElementById('b_agree1').checked;
@@ -271,6 +278,11 @@ async function sendPost(mode) {
 
         if (!name || !phone || !dateTime) {
             alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
+            return;
+        }
+
+        if (phone.length < 12) {
+            alert("연락처를 올바른 형식(010-0000-0000)으로 정확하게 입력하세요.");
             return;
         }
 
@@ -290,7 +302,7 @@ async function sendPost(mode) {
             space: space,
             dateTime: dateTime,
             hours: hours,
-            count: count, // 구글 시트 백엔드로 인원값 전송 추가
+            count: count,
             content: content,
             agree1: agree1Checked ? "동의" : "비동의",
             agree2: agree2Checked ? "동의" : "비동의",
@@ -316,12 +328,11 @@ async function sendPost(mode) {
 
         alert("대관 신청 및 구글 캘린더 자동 등록 완료!");
 
-        // 입력 폼 완벽 초기화
         document.getElementById('b_name').value = "";
         document.getElementById('b_phone').value = "";
         document.getElementById('b_date').value = "";
         document.getElementById('b_hours').value = "1";
-        document.getElementById('b_count').value = ""; // 인원수 초기화
+        document.getElementById('b_count').value = "";
         document.getElementById('b_content').value = "";
         document.getElementById('b_agree1').checked = false;
         document.getElementById('b_agree2').checked = false;
