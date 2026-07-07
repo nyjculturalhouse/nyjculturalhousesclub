@@ -250,18 +250,25 @@
         }
 
         const res = await apiPost({
-            mode: "submitAttendance",
-            clubName: selClub,
-            attendees: selMembers,
-            day: selDay
-        });
+    mode: "submitAttendance",
+    clubName: selClub,
+    attendees: selMembers,
+    day: selDay
+});
 
-        selMembers = [];
-        selClub = "";
+console.log(res);
 
-        document.querySelectorAll(".selected")
-            .forEach(el => el.classList.remove("selected"));
-    };
+if (!res) {
+    alert("응답이 없습니다.");
+    return;
+}
+
+if (res.error) {
+    alert(res.error);
+    return;
+}
+
+alert("출석이 저장되었습니다.");
 
 </script>
 
