@@ -12,18 +12,31 @@
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
 
 <script>
+// 💡 [수정] 지정해주신 컬러 가이드 및 카드 스펙(Radius, Shadow)을 테일윈드 확장 테마에 매핑했습니다.
 tailwind.config = {
   theme: {
     extend: {
       colors: {
-        primary: "#0059b9",
-        surface: "#f7f9fb",
-        container: "#ffffff",
-        onSurface: "#191c1e",
-        variant: "#5e656d"
+        primary: {
+          DEFAULT: "#3A4EFB",
+          hover: "#2953F5"
+        },
+        accent: {
+          bg: "#E3FF3B",
+          text: "#252943",
+          hover: "#D6F826"
+        },
+        surface: "#FFFFFF",
+        container: "#FFFFFF",
+        onSurface: "#252943",
+        variant: "#5e656d",
+        borderColor: "#ECEEF5"
       },
       boxShadow: {
-        soft: "0 10px 30px rgba(0,0,0,0.06)"
+        soft: "0 12px 40px rgba(37,41,67,0.12)"
+      },
+      borderRadius: {
+        'xl': '20px' // 가이드라인의 Radius 20px 반영
       }
     }
   }
@@ -32,14 +45,17 @@ tailwind.config = {
 
 <style>
 /* 💡 [수정] 전체 기본 폰트를 Paperlogy로 변경했습니다. */
-body { font-family: 'Paperlogy', sans-serif; background:#f7f9fb; }
+body { font-family: 'Paperlogy', sans-serif; background:#FFFFFF; }
 
+/* 💡 [수정] 카드 가이드라인 (Radius 20px, Border, Shadow) 스타일을 반영했습니다. */
 .card-hover {
   transition: all .25s ease;
+  border: 1px solid #ECEEF5;
+  box-shadow: 0 12px 40px rgba(37,41,67,0.12);
+  border-radius: 20px;
 }
 .card-hover:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 }
 .card-hover:active {
   transform: scale(0.98);
@@ -72,7 +88,7 @@ body { font-family: 'Paperlogy', sans-serif; background:#f7f9fb; }
 
 <body>
 
-<header class="fixed top-0 left-0 w-full h-16 bg-white border-b z-50 flex items-center">
+<header class="fixed top-0 left-0 w-full h-16 bg-white border-b border-slate-100 z-50 flex items-center">
   <div class="max-w-[1200px] mx-auto w-full flex justify-between items-center px-5">
     <h1 class="font-bold text-primary text-lg">남양주시 문화의집 웹시스템</h1>
   </div>
@@ -81,14 +97,14 @@ body { font-family: 'Paperlogy', sans-serif; background:#f7f9fb; }
 <main class="pt-24 pb-28 max-w-[1200px] mx-auto px-5">
 
 <section class="mb-10">
-  <h2 class="text-3xl font-bold">문화의집 동아리 통합 시스템</h2>
+  <h2 class="text-3xl font-bold text-[#252943]">문화의집 동아리 통합 시스템</h2>
   <p class="text-gray-500 mt-2">출석, 공간 예약, 외부활동을 한곳에서 관리하세요.</p>
 </section>
 
 <div class="bento-grid">
 
   <button onclick="location.href='attendance.html'"
-    class="card-hover bg-primary text-white p-8 rounded-xl text-left overflow-hidden relative md:col-span-2">
+    class="card-hover bg-primary hover:bg-primary-hover text-white p-8 text-left overflow-hidden relative md:col-span-2 !border-primary">
 
     <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
 
@@ -105,27 +121,27 @@ body { font-family: 'Paperlogy', sans-serif; background:#f7f9fb; }
   </button>
 
   <button onclick="location.href='booking.html'"
-    class="card-hover bg-white p-8 rounded-xl text-left border">
+    class="card-hover bg-white p-8 text-left">
 
-    <div class="mb-5 p-3 bg-blue-50 text-blue-600 rounded-lg inline-flex items-center justify-center">
+    <div class="mb-5 p-3 bg-slate-50 text-primary rounded-lg inline-flex items-center justify-center">
       <span class="material-symbols-outlined text-3xl">event_note</span>
     </div>
 
-    <h3 class="text-lg font-bold mb-2">공간 이용 예약</h3>
+    <h3 class="text-lg font-bold mb-2 text-[#252943]">공간 이용 예약</h3>
     <p class="text-gray-500 mb-6">원하는 시간에 필요한 공간을 예약하세요.</p>
-    <div class="text-primary font-bold">예약하기 →</div>
+    <div class="text-primary font-bold hover:text-primary-hover">예약하기 →</div>
   </button>
 
   <button onclick="location.href='external.html'"
-    class="card-hover bg-white p-8 rounded-xl text-left border">
+    class="card-hover bg-accent-bg hover:bg-accent-hover p-8 text-left !border-accent-bg">
 
-    <div class="mb-5 p-3 bg-orange-50 text-orange-600 rounded-lg inline-flex items-center justify-center">
+    <div class="mb-5 p-3 bg-white/40 text-accent-text rounded-lg inline-flex items-center justify-center">
       <span class="material-symbols-outlined text-3xl">share_windows</span>
     </div>
 
-    <h3 class="text-lg font-bold mb-2">외부활동 공유</h3>
-    <p class="text-gray-500 mb-6">다양한 활동 소식을 간편하게 등록하세요.</p>
-    <div class="text-primary font-bold">등록하기 →</div>
+    <h3 class="text-lg font-bold mb-2 text-accent-text">외부활동 공유</h3>
+    <p class="text-accent-text/80 mb-6">다양한 활동 소식을 간편하게 등록하세요.</p>
+    <div class="text-accent-text font-bold">등록하기 →</div>
   </button>
 
 </div>
@@ -139,8 +155,8 @@ body { font-family: 'Paperlogy', sans-serif; background:#f7f9fb; }
   </button>
 
   <button onclick="location.href='calendar.html'"
-    class="w-full py-4 rounded-xl border border-blue-500 text-blue-600 font-bold hover:bg-blue-50 transition flex items-center justify-center gap-2">
-    <span class="material-symbols-outlined text-blue-600 text-xl">calendar_month</span>
+    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2">
+    <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
     <span>동아리 활동 일정 확인</span>
   </button>
 </div>
