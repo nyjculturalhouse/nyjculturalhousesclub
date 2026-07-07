@@ -8,39 +8,55 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=home_app_logo" rel="stylesheet" />
     
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
+    <!-- 💡 [폰트 변경] 매거진 감성의 프리텐다드(Pretendard) 웹폰트 연동 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     
     <script>
+        // 💡 [수정] 메인 페이지와 일치하는 테마 컬러 설정 적용
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: "#2563eb",
-                        bg: "#faf8ff",
+                        primary: {
+                            DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
+                            hover: "#222222"
+                        },
+                        accent: {
+                            bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
+                            text: "#FFFFFF",
+                            hover: "#E04825"
+                        },
+                        bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
                         surface: "#ffffff",
-                        outline: "#e5e7eb"
+                        outline: "#EAEAEA"
                     }
                 }
             }
         }
     </script>
     <style>
-        /* 💡 [수정] 전체 기본 폰트를 Paperlogy로 변경했습니다. */
-        body { font-family: 'Paperlogy', sans-serif; background: #faf8ff; }
+        /* 💡 [수정] 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
+        body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacing: -0.01em; }
         .hidden { display: none; }
         
-        /* 동아리/요일 클릭 시 배경은 유지하되 글자색은 검은색(#0f172a)으로 고정 */
+        /* 💡 [핵심 가이드 적용] 타이틀 전용 힙 매거진 타이포그래피 스타일 */
+        .magazine-title {
+            font-weight: 800 !important;
+            letter-spacing: -0.04em !important;
+            line-height: 1.1 !important;
+        }
+        
+        /* 💡 [수정] 선택되었을 때의 테마를 메인 시스템 스펙에 맞춰 다크 차콜 보더와 은은한 미색 톤으로 정돈 */
         .selected {
-            border: 2px solid #2563eb !important;
-            background: #eff6ff !important;
-            color: #0f172a !important; 
+            border: 2px solid #111111 !important;
+            background: #EAEAEA !important;
+            color: #111111 !important; 
         }
         
         .selected * {
-            color: #0f172a !important;
+            color: #111111 !important;
         }
 
-        /* 💡 [수정] 아이콘 폰트 패밀리가 페이퍼로지로 덮어씌워져 깨지지 않도록 속성을 고정했습니다. */
         .material-symbols-outlined {
             font-family: 'Material Symbols Outlined' !important;
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
@@ -54,37 +70,35 @@
             direction: ltr !important;
         }
 
-        /* 요일 내 한글/영어 위치 및 크기 반전을 위한 스타일 커스텀 */
         #day-buttons button {
             display: flex;
-            flex-direction: column-reverse; /* 영어와 한글의 상하 위치를 반대로 바꿈 */
+            flex-direction: column-reverse;
             align-items: center;
             justify-content: center;
             gap: 2px;
         }
-        /* 큰 글씨(기존 영어 -> 이제 한글이 크게) */
         #day-buttons button span:first-child, 
         #day-buttons button .day-kr {
-            font-size: 1.25rem !important; /* 크기를 크게 */
+            font-size: 1.25rem !important;
             font-weight: 700 !important;
         }
-        /* 작은 글씨(기존 한글 -> 이제 영어가 작게) */
         #day-buttons button span:last-child,
         #day-buttons button .day-en {
-            font-size: 0.85rem !important; /* 크기를 작게 */
+            font-size: 0.85rem !important;
             font-weight: 400 !important;
             opacity: 0.7;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased">
 
-<header class="sticky top-0 z-50 bg-white border-b border-outline">
+<header class="sticky top-0 z-50 bg-[#F4F4F3] border-b border-outline">
     <div class="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="font-bold text-primary text-xl">동아리 출석부</div>
+        <!-- 💡 헤더 타이틀에 매거진 폰트 속성 부여 -->
+        <div class="magazine-title text-primary text-xl">동아리 출석부</div>
         
         <button onclick="location.href='index.html'" 
-                class="p-2 rounded-full hover:bg-gray-100 transition flex items-center justify-center text-gray-600" 
+                class="p-2 rounded-full hover:bg-white/50 transition flex items-center justify-center text-primary" 
                 title="메인으로">
             <span class="material-symbols-outlined">home_app_logo</span>
         </button>
@@ -95,27 +109,32 @@
     <div id="view-attendance" class="space-y-10">
         <section id="step-days">
             <div class="mb-6">
-                <h1 class="text-3xl font-bold">요일 선택</h1>
-                <p class="text-gray-500 mt-1">출석을 등록할 요일을 선택하세요.</p>
+                <!-- 💡 섹션 타이틀에 매거진 폰트 가이드 속성 적용 -->
+                <h1 class="magazine-title text-3xl text-primary">요일 선택</h1>
+                <p class="text-gray-500 mt-2 text-sm font-medium">출석을 등록할 요일을 선택하세요.</p>
             </div>
             <div id="day-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
         </section>
 
         <section id="step-clubs" class="hidden">
             <div class="mb-6">
-                <h1 class="text-3xl font-bold">동아리 선택</h1>
-                <p class="text-gray-500 mt-1">출석을 시작할 동아리를 선택하세요.</p>
+                <!-- 💡 섹션 타이틀에 매거진 폰트 가이드 속성 적용 -->
+                <h1 class="magazine-title text-3xl text-primary">동아리 선택</h1>
+                <p class="text-gray-500 mt-2 text-sm font-medium">출석을 시작할 동아리를 선택하세요.</p>
             </div>
             <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
 
         <section id="step-members" class="hidden">
             <div class="mb-6">
-                <h1 id="club-title" class="text-2xl font-bold text-primary"></h1>
-                <p class="text-gray-500">출석한 회원을 모두 선택하세요.</p>
+                <!-- 💡 동적 타이틀에도 매거진 폰트 가이드 적용 -->
+                <h1 id="club-title" class="magazine-title text-2xl text-primary"></h1>
+                <p class="text-gray-500 mt-2 text-sm font-medium">출석한 회원을 모두 선택하세요.</p>
             </div>
             <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-            <button onclick="window.submitAttendance()" class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
+            
+            <!-- 💡 버튼을 힙 오렌지 레드(Accent) 컬러 스키마로 변경 -->
+            <button onclick="window.submitAttendance()" class="w-full mt-8 bg-accent-bg text-white py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition shadow-sm">
                 출석 제출하기
             </button>
         </section>
