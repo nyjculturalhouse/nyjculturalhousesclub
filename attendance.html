@@ -71,30 +71,35 @@
         }
 
         #day-buttons button {
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
+            display: flex !important;
+            flex-direction: column-reverse !important; /* 위아래 순서 반전 */
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
             padding-top: 16px !important;
             padding-bottom: 16px !important;
         }
         
-        /* 💡 [수정 완료] 한글 요일 글자를 더 키우고, 색상은 기존 영문 측의 무거운 회색 느낌으로 변경 */
+        /* 💡 [핵심 수정] 자바스크립트가 어떤 구조로 생성하든 무조건 스타일을 강제 주입합니다. */
+        
+        /* 1. 한글 요일 처리: 텍스트 길이가 1글자거나 day-kr 클래스를 가졌을 때 (글자 크고 무거운 회색) */
         #day-buttons button span:first-child, 
-        #day-buttons button .day-kr {
-            font-size: 1.6rem !important;
-            font-weight: 700 !important;
+        #day-buttons button .day-kr,
+        #day-buttons button span:not(.day-en):not(:only-child) {
+            font-size: 1.75rem !important;
+            font-weight: 800 !important;
             color: #374151 !important;
+            line-height: 1 !important;
         }
         
-        /* 💡 [수정 완료] 영문 요일 글자는 조금 더 줄이고, 색상은 기존 한글 측의 진한 다크 차콜로 변경 */
+        /* 2. 영문 요일 처리: 텍스트 길이가 길거나 day-en 클래스를 가졌을 때 (글자 작고 진한 차콜) */
         #day-buttons button span:last-child,
         #day-buttons button .day-en {
             font-size: 0.75rem !important;
             font-weight: 600 !important;
             color: #111111 !important;
-            text-transform: uppercase;
+            text-transform: uppercase !important;
+            opacity: 0.9 !important;
         }
     </style>
 </head>
