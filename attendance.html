@@ -6,6 +6,7 @@
     <title>동아리 출석체크 | 동아리 출석부</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script>
         tailwind.config = {
             theme: {
@@ -27,6 +28,9 @@
             border: 2px solid #2563eb !important;
             background: #eff6ff !important;
         }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -34,7 +38,12 @@
 <header class="sticky top-0 z-50 bg-white border-b border-outline">
     <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         <div class="font-bold text-primary text-xl">동아리 출석부</div>
-        <button onclick="location.href='index.html'" class="text-sm text-gray-600 hover:text-primary transition">메인으로</button>
+        
+        <button onclick="location.href='index.html'" 
+                class="p-2 rounded-full hover:bg-gray-100 transition flex items-center justify-center text-gray-600" 
+                title="메인으로">
+            <span class="material-symbols-outlined">home</span>
+        </button>
     </div>
 </header>
 
