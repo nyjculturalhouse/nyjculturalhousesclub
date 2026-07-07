@@ -1,8 +1,18 @@
 const AttendanceApp = (() => {
 
     /* =========================
-       STATE
+       STATE & USER ID GENERATOR
     ========================= */
+    // 브라우저별 고유 UID를 로컬스토리지에 생성/관리하여 IP 차단 버그 우회
+    function getOrCreateUID() {
+        let uid = localStorage.getItem("user_unique_id");
+        if (!uid) {
+            uid = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem("user_unique_id", uid);
+        }
+        return uid;
+    }
+
     let state = {
         day: '',
         club: '',
@@ -163,7 +173,8 @@ const AttendanceApp = (() => {
             mode: "submitAttendance",
             clubName: state.club,
             attendees: state.members,
-            day: state.day
+            day: state.day,
+            uid: getOrCreateUID() // 고유 식별키 전송
         });
 
         if (!res) {
@@ -178,7 +189,7 @@ const AttendanceApp = (() => {
 
         alert("출석이 저장되었습니다.");
         
-        // 초기 상태로 되돌리기
+        // 제출 후 상태 및 스텝 초기화
         state.members = [];
         state.club = '';
         state.day = '';
