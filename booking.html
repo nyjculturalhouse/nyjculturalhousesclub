@@ -42,12 +42,10 @@ body { font-family: 'Inter', sans-serif; }
 <header class="bg-white border-b sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 
-        <!-- LEFT: 타이틀 -->
         <h1 class="text-xl font-bold text-blue-600">
             남양주시 문화의집
         </h1>
 
-        <!-- RIGHT: 시스템 정보 + 홈 -->
         <div class="flex items-center gap-3 text-sm text-gray-500">
 
             <div class="flex items-center gap-1">
@@ -57,7 +55,6 @@ body { font-family: 'Inter', sans-serif; }
                 <span>대관 시스템</span>
             </div>
 
-            <!-- HOME BUTTON -->
             <button onclick="location.href='index.html'"
                 class="p-2 rounded-full hover:bg-gray-100 transition"
                 title="메인으로">
@@ -81,7 +78,6 @@ body { font-family: 'Inter', sans-serif; }
     <button id="tab-calendar-btn" onclick="showBookingTab('calendar')" class="py-3 text-gray-500">캘린더</button>
 </div>
 
-<!-- FORM -->
 <section id="booking-form-section" class="bg-white rounded-2xl border shadow-sm p-8">
 
     <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
@@ -111,21 +107,18 @@ body { font-family: 'Inter', sans-serif; }
             </select>
         </div>
 
-        <!-- ✅ 추가: 사용 일시 -->
         <div>
             <label class="text-sm text-gray-600">사용 일시</label>
             <input id="b_date" type="datetime-local"
                 class="mt-2 w-full rounded-xl border-gray-300">
         </div>
 
-        <!-- ✅ 추가: 사용 시간 -->
         <div>
             <label class="text-sm text-gray-600">사용 시간(시간)</label>
             <input id="b_hours" type="number" min="1" max="3" value="1"
             class="mt-2 w-full rounded-xl border-gray-300">
         </div>
 
-        <!-- ✅ 추가: 대관 사유 -->
         <div class="md:col-span-2">
             <label class="text-sm text-gray-600">대관 사유</label>
             <textarea id="b_content"
@@ -134,10 +127,12 @@ body { font-family: 'Inter', sans-serif; }
                 placeholder="사용 목적을 입력하세요"></textarea>
         </div>
 
+        <input type="text" id="honeypot" class="hidden" style="display:none !important">
+
         <div class="md:col-span-2 mt-4">
             <button id="btn-submit-book"
                 onclick="sendPost('submitBooking')"
-                class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl">
+                class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">
                 대관 신청하기
             </button>
         </div>
@@ -145,14 +140,13 @@ body { font-family: 'Inter', sans-serif; }
     </div>
 </section>
 
-<!-- SCHEDULE -->
 <section id="booking-schedule-section" class="hidden space-y-4">
 
     <div class="flex gap-3">
-        <button onclick="showSchedule('dance')" class="px-4 py-2 rounded-xl bg-gray-200">댄스실</button>
-        <button onclick="showSchedule('music')" class="px-4 py-2 rounded-xl bg-gray-200">음악실</button>
-        <button onclick="showSchedule('clubroom')" class="px-4 py-2 rounded-xl bg-gray-200">동아리방</button>
-        <button onclick="showSchedule('harmony')" class="px-4 py-2 rounded-xl bg-gray-200">어울림방</button>
+        <button onclick="showSchedule('dance')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">댄스실</button>
+        <button onclick="showSchedule('music')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">음악실</button>
+        <button onclick="showSchedule('clubroom')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">동아리방</button>
+        <button onclick="showSchedule('harmony')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">어울림방</button>
     </div>
 
     <div class="bg-white rounded-2xl border shadow-sm p-3">
@@ -164,7 +158,6 @@ body { font-family: 'Inter', sans-serif; }
 
 </section>
 
-<!-- CALENDAR -->
 <section id="booking-calendar-section" class="hidden">
 
     <div class="bg-white rounded-2xl border shadow-sm p-3">
@@ -178,17 +171,22 @@ body { font-family: 'Inter', sans-serif; }
 
 </main>
 
+<script src="js/api.js"></script>
+
 <script>
 function showBookingTab(tab) {
     document.getElementById('booking-form-section').classList.toggle('hidden', tab !== 'form');
     document.getElementById('booking-schedule-section').classList.toggle('hidden', tab !== 'schedule');
     document.getElementById('booking-calendar-section').classList.toggle('hidden', tab !== 'calendar');
+
+    // 탭 선택 스타일 동적 제어
+    document.getElementById('tab-form-btn').className = tab === 'form' ? 'py-3 tab-active' : 'py-3 text-gray-500';
+    document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500';
+    document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500';
 }
 
-// ✅ 이거 추가 (핵심)
 function showSchedule(type) {
     const frame = document.getElementById('schedule-frame');
-
     const urls = {
         dance: "https://drive.google.com/file/d/1LWshNFVdXaKa5D6omvwbOsXFYGocZ3Qq/preview",
         music: "https://drive.google.com/file/d/1pNwsDWqZW7LeFJePMxHT6rnwBEwbYZpv/preview",
@@ -201,28 +199,76 @@ function showSchedule(type) {
     }
 }
 
+// 브라우저별 고유 UID 가져오기 (1분당 요청 제어 목적)
+function getOrCreateUID() {
+    let uid = localStorage.getItem("user_unique_id");
+    if (!uid) {
+        uid = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem("user_unique_id", uid);
+    }
+    return uid;
+}
+
+// 🔥 수정: 실제 구글 서버(api.js)로 데이터를 통신하도록 로직 결합
 async function sendPost(mode) {
-    const data = { mode };
-
     if (mode === 'submitBooking') {
-        data.name = document.getElementById('b_name').value;
-        data.phone = document.getElementById('b_phone').value;
-        data.space = document.getElementById('b_space').value;
-        data.dateTime = document.getElementById('b_date').value;
-        data.hours = document.getElementById('b_hours').value;
-        data.content = document.getElementById('b_content').value;
+        const name = document.getElementById('b_name').value.trim();
+        const phone = document.getElementById('b_phone').value.trim();
+        const space = document.getElementById('b_space').value;
+        const dateTime = document.getElementById('b_date').value;
+        const hours = document.getElementById('b_hours').value;
+        const content = document.getElementById('b_content').value.trim();
 
-        if (!data.name || !data.dateTime) {
-            alert("필수 정보를 입력해주세요.");
+        if (!name || !phone || !dateTime) {
+            alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
             return;
         }
+
+        const btn = document.getElementById('btn-submit-book');
+        btn.innerText = "신청서 전송 중...";
+        btn.disabled = true;
+
+        // api.js의 apiPost 호출하여 GAS 백엔드로 데이터 실전송
+        const res = await apiPost({
+            mode: mode,
+            name: name,
+            phone: phone,
+            space: space,
+            dateTime: dateTime,
+            hours: hours,
+            content: content,
+            agree1: "동의", // 백엔드 시트 구조 호환성 유지용 기본값 설정
+            agree2: "동의",
+            uid: getOrCreateUID()
+        });
+
+        btn.innerText = "대관 신청하기";
+        btn.disabled = false;
+
+        if (!res) {
+            alert("서버 통신 실패. 네트워크 연결을 확인하세요.");
+            return;
+        }
+
+        if (res.error) {
+            alert(res.error);
+            return;
+        }
+
+        // 토스트 알림 노출
+        const toastEl = document.getElementById('toast');
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 3000);
+
+        alert("대관 신청 및 구글 캘린더 자동 등록 완료!");
+
+        // 입력 폼 초기화
+        document.getElementById('b_name').value = "";
+        document.getElementById('b_phone').value = "";
+        document.getElementById('b_date').value = "";
+        document.getElementById('b_hours').value = "1";
+        document.getElementById('b_content').value = "";
     }
-
-    const toastEl = document.getElementById('toast');
-    toastEl.classList.add('show');
-    setTimeout(() => toastEl.classList.remove('show'), 3000);
-
-    alert("구글 캘린더로 자동 등록됩니다.");
 }
 </script>
 
