@@ -24,12 +24,42 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #faf8ff; }
         .hidden { display: none; }
+        
+        /* 동아리/요일 클릭 시 배경은 유지하되 글자색은 검은색(#0f172a)으로 고정 */
         .selected {
             border: 2px solid #2563eb !important;
             background: #eff6ff !important;
+            color: #0f172a !important; 
         }
+        
+        .selected * {
+            color: #0f172a !important;
+        }
+
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* 요일 내 한글/영어 위치 및 크기 반전을 위한 스타일 커스텀 */
+        #day-buttons button {
+            display: flex;
+            flex-direction: column-reverse; /* 영어와 한글의 상하 위치를 반대로 바꿈 */
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+        /* 큰 글씨(기존 영어 -> 이제 한글이 크게) */
+        #day-buttons button span:first-child, 
+        #day-buttons button .day-kr {
+            font-size: 1.25rem !important; /* 크기를 크게 */
+            font-weight: 700 !important;
+        }
+        /* 작은 글씨(기존 한글 -> 이제 영어가 작게) */
+        #day-buttons button span:last-child,
+        #day-buttons button .day-en {
+            font-size: 0.85rem !important; /* 크기를 작게 */
+            font-weight: 400 !important;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -83,7 +113,6 @@
 <script src="js/app.js"></script>
 
 <script>
-    // 페이지가 로드되면 app.js에 정의된 앱을 초기화합니다.
     document.addEventListener("DOMContentLoaded", () => {
         if (window.AttendanceApp) {
             window.AttendanceApp.init();
