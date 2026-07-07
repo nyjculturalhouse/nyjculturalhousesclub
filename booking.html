@@ -32,6 +32,11 @@ body { font-family: 'Inter', sans-serif; }
     color: #2563eb;
     font-weight: 700;
 }
+
+/* 스크롤바 커스텀 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 10px; }
 </style>
 </head>
 
@@ -107,24 +112,68 @@ body { font-family: 'Inter', sans-serif; }
             </select>
         </div>
 
+        <!-- 사용 일시 -->
         <div>
             <label class="text-sm text-gray-600">사용 일시</label>
             <input id="b_date" type="datetime-local"
                 class="mt-2 w-full rounded-xl border-gray-300">
         </div>
 
+        <!-- 사용 시간 -->
         <div>
             <label class="text-sm text-gray-600">사용 시간(시간)</label>
             <input id="b_hours" type="number" min="1" max="3" value="1"
             class="mt-2 w-full rounded-xl border-gray-300">
         </div>
 
+        <!-- 예상 참여 인원 -->
+        <div class="md:col-span-2">
+            <label class="text-sm text-gray-600">예상 참여 인원</label>
+            <div class="relative mt-2">
+                <input id="b_count" type="number" min="1" placeholder="0"
+                    class="w-full rounded-xl border-gray-300 pr-12">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">명</span>
+            </div>
+        </div>
+
+        <!-- 대관 사유 -->
         <div class="md:col-span-2">
             <label class="text-sm text-gray-600">대관 사유</label>
             <textarea id="b_content"
                 class="mt-2 w-full rounded-xl border-gray-300"
                 rows="3"
                 placeholder="사용 목적을 입력하세요"></textarea>
+        </div>
+
+        <!-- 이용 동의문 (Culture Connect 스타일 연동) -->
+        <div class="md:col-span-2 border-t pt-6 mt-2 space-y-4">
+            <h3 class="text-base font-bold text-gray-900">이용 동의문</h3>
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 space-y-4">
+                
+                <!-- 동의 1 -->
+                <div class="flex items-start gap-3">
+                    <input id="b_agree1" type="checkbox" class="mt-1 rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
+                    <div class="text-sm">
+                        <p class="mb-1 text-gray-700 font-medium">남양주시 문화의집 시설을 이용함에 있어 이용수칙과 허가 조건을 준수하고 대관 기간 동안 안전 및 시설 관리에 유의하며 대관자로서의 책임을 성실히 이행하겠습니다.</p>
+                        <span class="text-red-500 font-semibold text-xs">* 필수 동의 사항</span>
+                    </div>
+                </div>
+
+                <!-- 스크롤 텍스트 상자 -->
+                <div class="p-4 bg-white rounded-xl border border-gray-200 text-gray-500 text-xs leading-relaxed space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
+                    <p>① 사전 승인되지 않은 물품 및 장비는 반입하지 않으며 이로 인해 발생하는 사항에 대해서는 책임을 지겠습니다.</p>
+                    <p>② 대관시설 내에서는 취사 및 음식물 반입을 하지 않겠습니다.</p>
+                    <p>③ 정치 종교 활동이나 유료 강습, 특강 등 영리 목적의 시설 사용은 하지 않겠으며 이를 위반할 경우 사용 승인 취소 및 이용 제한 조치에 동의합니다.</p>
+                    <p>④ 시설 이용 후에는 원상복구를 원칙으로 하며, 파손 시 배상 책임을 지겠습니다.</p>
+                </div>
+
+                <!-- 동의 2 -->
+                <div class="flex items-center gap-3 pt-2 border-t border-gray-200">
+                    <input id="b_agree2" type="checkbox" class="rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
+                    <span class="text-sm text-gray-800 font-bold">위 유의사항 및 이용 규칙을 모두 읽었으며 이에 동의합니다.</span>
+                </div>
+
+            </div>
         </div>
 
         <input type="text" id="honeypot" class="hidden" style="display:none !important">
@@ -179,7 +228,6 @@ function showBookingTab(tab) {
     document.getElementById('booking-schedule-section').classList.toggle('hidden', tab !== 'schedule');
     document.getElementById('booking-calendar-section').classList.toggle('hidden', tab !== 'calendar');
 
-    // 탭 선택 스타일 동적 제어
     document.getElementById('tab-form-btn').className = tab === 'form' ? 'py-3 tab-active' : 'py-3 text-gray-500';
     document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500';
     document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500';
@@ -199,7 +247,6 @@ function showSchedule(type) {
     }
 }
 
-// 브라우저별 고유 UID 가져오기 (1분당 요청 제어 목적)
 function getOrCreateUID() {
     let uid = localStorage.getItem("user_unique_id");
     if (!uid) {
@@ -209,7 +256,6 @@ function getOrCreateUID() {
     return uid;
 }
 
-// 🔥 수정: 실제 구글 서버(api.js)로 데이터를 통신하도록 로직 결합
 async function sendPost(mode) {
     if (mode === 'submitBooking') {
         const name = document.getElementById('b_name').value.trim();
@@ -217,10 +263,19 @@ async function sendPost(mode) {
         const space = document.getElementById('b_space').value;
         const dateTime = document.getElementById('b_date').value;
         const hours = document.getElementById('b_hours').value;
+        const count = document.getElementById('b_count').value; // 참여 인원 수 추출
         const content = document.getElementById('b_content').value.trim();
+        
+        const agree1Checked = document.getElementById('b_agree1').checked;
+        const agree2Checked = document.getElementById('b_agree2').checked;
 
         if (!name || !phone || !dateTime) {
             alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
+            return;
+        }
+
+        if (!agree1Checked || !agree2Checked) {
+            alert("모든 필수 약관에 동의하셔야 대관 신청이 가능합니다.");
             return;
         }
 
@@ -228,7 +283,6 @@ async function sendPost(mode) {
         btn.innerText = "신청서 전송 중...";
         btn.disabled = true;
 
-        // api.js의 apiPost 호출하여 GAS 백엔드로 데이터 실전송
         const res = await apiPost({
             mode: mode,
             name: name,
@@ -236,9 +290,10 @@ async function sendPost(mode) {
             space: space,
             dateTime: dateTime,
             hours: hours,
+            count: count, // 구글 시트 백엔드로 인원값 전송 추가
             content: content,
-            agree1: "동의", // 백엔드 시트 구조 호환성 유지용 기본값 설정
-            agree2: "동의",
+            agree1: agree1Checked ? "동의" : "비동의",
+            agree2: agree2Checked ? "동의" : "비동의",
             uid: getOrCreateUID()
         });
 
@@ -255,19 +310,21 @@ async function sendPost(mode) {
             return;
         }
 
-        // 토스트 알림 노출
         const toastEl = document.getElementById('toast');
         toastEl.classList.add('show');
         setTimeout(() => toastEl.classList.remove('show'), 3000);
 
         alert("대관 신청 및 구글 캘린더 자동 등록 완료!");
 
-        // 입력 폼 초기화
+        // 입력 폼 완벽 초기화
         document.getElementById('b_name').value = "";
         document.getElementById('b_phone').value = "";
         document.getElementById('b_date').value = "";
         document.getElementById('b_hours').value = "1";
+        document.getElementById('b_count').value = ""; // 인원수 초기화
         document.getElementById('b_content').value = "";
+        document.getElementById('b_agree1').checked = false;
+        document.getElementById('b_agree2').checked = false;
     }
 }
 </script>
