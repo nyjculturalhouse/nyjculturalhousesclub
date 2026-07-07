@@ -7,17 +7,28 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
 
     <style>
+        /* 💡 [수정] 다른 페이지와 일치하도록 기본 폰트를 Paperlogy로 변경했습니다. */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Paperlogy', sans-serif;
             background: #faf8ff;
         }
 
+        /* 💡 [수정] 아이콘 폰트 패밀리가 페이퍼로지에 덮어씌워져 깨지지 않도록 속성을 고정했습니다. */
         .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-family: 'Material Symbols Outlined' !important;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            text-transform: lowercase !important;
+            font-style: normal !important;
+            letter-spacing: normal !important;
+            word-wrap: normal !important;
+            white-space: nowrap !important;
+            direction: ltr !important;
         }
 
         .glass {
@@ -41,7 +52,7 @@
 <body class="min-h-screen flex flex-col">
 
 <header class="glass sticky top-0 z-50 border-b">
-    <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
         
         <div class="flex items-center gap-2 font-bold text-blue-600">
             남양주시 문화의집
@@ -58,9 +69,7 @@
     </div>
 </header>
 
-<main class="flex-grow flex items-center justify-center p-6">
-
-<div class="w-full max-w-3xl">
+<main class="flex-grow max-w-[1200px] mx-auto w-full px-6 py-10 flex flex-col justify-center">
 
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-gray-900">외부활동 공유하기</h1>
@@ -146,7 +155,6 @@
 
         </form>
     </div>
-</div>
 
 </main>
 
@@ -232,7 +240,7 @@ async function sendPost(mode) {
             return;
         }
 
-        alert("동아리 외부활동 공유 등록 완료!");
+        alert("등록이 완료되었습니다.");
 
         document.getElementById('e_club').value = "";
         document.getElementById('e_phone').value = "";
