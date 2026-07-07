@@ -1,137 +1,361 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>동아리 출석체크 | 동아리 출석부</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=home_app_logo" rel="stylesheet" />
-    
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#2563eb",
-                        bg: "#faf8ff",
-                        surface: "#ffffff",
-                        outline: "#e5e7eb"
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* 💡 [수정] 전체 기본 폰트를 Paperlogy로 변경했습니다. */
-        body { font-family: 'Paperlogy', sans-serif; background: #faf8ff; }
-        .hidden { display: none; }
-        
-        /* 동아리/요일 클릭 시 배경은 유지하되 글자색은 검은색(#0f172a)으로 고정 */
-        .selected {
-            border: 2px solid #2563eb !important;
-            background: #eff6ff !important;
-            color: #0f172a !important; 
-        }
-        
-        .selected * {
-            color: #0f172a !important;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대관 신청 | 문화의집 대관</title>
 
-        /* 💡 [수정] 아이콘 폰트 패밀리가 페이퍼로지로 덮어씌워져 깨지지 않도록 속성을 고정했습니다. */
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined' !important;
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
-            display: inline-block !important;
-            vertical-align: middle !important;
-            text-transform: lowercase !important;
-            font-style: normal !important;
-            letter-spacing: normal !important;
-            word-wrap: normal !important;
-            white-space: nowrap !important;
-            direction: ltr !important;
-        }
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 
-        /* 요일 내 한글/영어 위치 및 크기 반전을 위한 스타일 커스텀 */
-        #day-buttons button {
-            display: flex;
-            flex-direction: column-reverse; /* 영어와 한글의 상하 위치를 반대로 바꿈 */
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-        }
-        /* 큰 글씨(기존 영어 -> 이제 한글이 크게) */
-        #day-buttons button span:first-child, 
-        #day-buttons button .day-kr {
-            font-size: 1.25rem !important; /* 크기를 크게 */
-            font-weight: 700 !important;
-        }
-        /* 작은 글씨(기존 한글 -> 이제 영어가 작게) */
-        #day-buttons button span:last-child,
-        #day-buttons button .day-en {
-            font-size: 0.85rem !important; /* 크기를 작게 */
-            font-weight: 400 !important;
-            opacity: 0.7;
-        }
-    </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
+
+<style>
+/* 💡 전체 기본 폰트를 Paperlogy로 변경했습니다. */
+body { font-family: 'Paperlogy', sans-serif; }
+
+.toast {
+    visibility: hidden;
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111827;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    z-index: 100;
+    font-size: 14px;
+}
+.toast.show { visibility: visible; }
+
+.tab-active {
+    border-bottom: 2px solid #2563eb;
+    color: #2563eb;
+    font-weight: 700;
+}
+
+/* 스크롤바 커스텀 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 10px; }
+
+/* 💡 아이콘 폰트 패밀리 문제를 방지하기 위해 속성을 고정했습니다. */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    text-transform: lowercase !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    word-wrap: normal !important;
+    white-space: nowrap !important;
+    direction: ltr !important;
+}
+</style>
 </head>
-<body class="min-h-screen flex flex-col">
 
-<header class="sticky top-0 z-50 bg-white border-b border-outline">
-    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="font-bold text-primary text-xl">동아리 출석부</div>
-        
-        <button onclick="location.href='index.html'" 
-                class="p-2 rounded-full hover:bg-gray-100 transition flex items-center justify-center text-gray-600" 
+<body class="bg-[#faf8ff] text-gray-900 min-h-screen">
+
+<div id="toast" class="toast">제출 완료 ✅</div>
+
+<header class="bg-white border-b sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+        <h1 class="text-xl font-bold text-blue-600">
+            남양주시 문화의집
+        </h1>
+
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+            <button onclick="location.href='index.html'"
+                class="p-2 rounded-full hover:bg-gray-100 transition"
                 title="메인으로">
-            <span class="material-symbols-outlined">home_app_logo</span>
-        </button>
+                <span class="material-symbols-outlined">home_app_logo</span>
+            </button>
+        </div>
     </div>
 </header>
 
-<main class="flex-1 max-w-5xl mx-auto w-full px-4 py-10">
-    <div id="view-attendance" class="space-y-10">
-        <section id="step-days">
-            <div class="mb-6">
-                <h1 class="text-3xl font-bold">요일 선택</h1>
-                <p class="text-gray-500 mt-1">출석을 등록할 요일을 선택하세요.</p>
-            </div>
-            <div id="day-buttons" class="grid grid-cols-2 gap-3"></div>
-        </section>
+<main class="max-w-6xl mx-auto px-6 py-10">
 
-        <section id="step-clubs" class="hidden">
-            <div class="mb-6">
-                <h1 class="text-3xl font-bold">동아리 선택</h1>
-                <p class="text-gray-500 mt-1">출석을 시작할 동아리를 선택하세요.</p>
-            </div>
-            <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </section>
+<div class="mb-8">
+    <h2 class="text-3xl font-bold tracking-tight">대관 신청</h2>
+    <p class="text-gray-500 mt-1">공간 예약 및 일정 확인 시스템</p>
+</div>
 
-        <section id="step-members" class="hidden">
-            <div class="mb-6">
-                <h1 id="club-title" class="text-2xl font-bold text-primary"></h1>
-                <p class="text-gray-500">출석한 회원을 모두 선택하세요.</p>
+<div class="flex border-b mb-8 gap-6 text-sm font-medium">
+    <button id="tab-form-btn" onclick="showBookingTab('form')" class="py-3 tab-active">신청서</button>
+    <button id="tab-schedule-btn" onclick="showBookingTab('schedule')" class="py-3 text-gray-500">시간표</button>
+    <button id="tab-calendar-btn" onclick="showBookingTab('calendar')" class="py-3 text-gray-500">캘린더</button>
+</div>
+
+<section id="booking-form-section" class="bg-white rounded-2xl border shadow-sm p-8">
+
+    <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+        <span class="material-symbols-outlined text-blue-600">edit_calendar</span>
+        대관 신청서
+    </h3>
+
+    <div class="grid md:grid-cols-2 gap-6">
+
+        <div>
+            <label class="text-sm text-gray-600">신청자 이름</label>
+            <input id="b_name" class="mt-2 w-full rounded-xl border-gray-300" placeholder="이름">
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-600">전화번호</label>
+            <input id="b_phone" type="tel" maxlength="13" class="mt-2 w-full rounded-xl border-gray-300" placeholder="010-0000-0000">
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="text-sm text-gray-600">공간 선택</label>
+            <select id="b_space" class="mt-2 w-full rounded-xl border-gray-300">
+                <option value="어울림방">어울림방</option>
+                <option value="댄스실">댄스실</option>
+                <option value="음악실">음악실</option>
+                <option value="동아리방">동아리방</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-600">사용 일시</label>
+            <input id="b_date" type="datetime-local"
+                class="mt-2 w-full rounded-xl border-gray-300">
+        </div>
+
+        <div>
+            <label class="text-sm text-gray-600">사용 시간(시간)</label>
+            <input id="b_hours" type="number" min="1" max="3" value="1"
+            class="mt-2 w-full rounded-xl border-gray-300">
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="text-sm text-gray-600">예상 참여 인원</label>
+            <div class="relative mt-2">
+                <input id="b_count" type="number" min="1" placeholder="0"
+                    class="w-full rounded-xl border-gray-300 pr-12">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">명</span>
             </div>
-            <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-            <button onclick="window.submitAttendance()" class="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
-                출석 제출하기
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="text-sm text-gray-600">대관 사유</label>
+            <textarea id="b_content"
+                class="mt-2 w-full rounded-xl border-gray-300"
+                rows="3"
+                placeholder="사용 목적을 입력하세요"></textarea>
+        </div>
+
+        <div class="md:col-span-2 border-t pt-6 mt-2 space-y-4">
+            <h3 class="text-base font-bold text-gray-900">이용 동의문 및 약관</h3>
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 space-y-6">
+                
+                <div class="flex items-start gap-3">
+                    <input id="b_agree1" type="checkbox" class="mt-1 rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
+                    <div class="text-sm">
+                        <p class="mb-1 text-gray-700 font-medium">남양주시 문화의집 시설을 이용함에 있어 이용수칙과 허가 조건을 준수하고 대관 기간 동안 안전 및 시설 관리에 유의하며 대관자로서의 책임을 성실히 이행하겠습니다.</p>
+                        <span class="text-red-500 font-semibold text-xs">* 필수 동의 사항</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white rounded-xl border border-gray-200 text-gray-500 text-xs leading-relaxed space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
+                    <p>① 사전 승인되지 않은 물품 및 장비는 반입하지 않으며 이로 인해 발생하는 사항에 대해서는 책임을 지겠습니다.</p>
+                    <p>② 대관시설 내에서는 취사 및 음식물 반입을 하지 않겠습니다.</p>
+                    <p>③ 정치 종교 활동이나 유료 강습, 특강 등 영리 목적의 시설 사용은 하지 않겠으며 이를 위반할 경우 사용 승인 취소 및 이용 제한 조치에 동의합니다.</p>
+                    <p>④ 시설 이용 후에는 원상복구를 원칙으로 하며, 파손 시 배상 책임을 지겠습니다.</p>
+                </div>
+
+                <div class="flex items-start gap-3 pt-4 border-t border-gray-200">
+                    <input id="b_agree2" type="checkbox" class="mt-1 rounded text-blue-600 focus:ring-blue-500 border-gray-300"/>
+                    <div class="text-sm">
+                        <p class="mb-1 text-gray-700 font-medium">개인정보 수집 및 이용 동의</p>
+                        <div class="text-gray-600 text-xs space-y-1 leading-relaxed mb-2">
+                            <p>• <strong>수집 항목:</strong> 신청자 이름, 연락처(전화번호)</p>
+                            <p>• <strong>수집 및 이용 목적:</strong> 문화의집 공간 대관 예약 확인, 이용 스케줄 관리, 긴급 연락 및 안내 문자 발송</p>
+                            <p>• <strong>보유 및 이용 기간:</strong> <span class="text-blue-600 font-bold">대관 신청일로부터 1년간 저장 및 보관</span> 후 안전하게 파기됩니다.</p>
+                            <p>• 귀하는 개인정보 수집 및 이용에 동의하지 않을 권리가 있으나, 동의 거부 시 대관 시스템 예약 서비스 이용이 제한됩니다.</p>
+                        </div>
+                        <span class="text-red-500 font-semibold text-xs">* 필수 동의 사항</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <input type="text" id="honeypot" class="hidden" style="display:none !important">
+
+        <div class="md:col-span-2 mt-4">
+            <button id="btn-submit-book"
+                onclick="sendPost('submitBooking')"
+                class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">
+                대관 신청하기
             </button>
-        </section>
+        </div>
+
     </div>
+</section>
+
+<section id="booking-schedule-section" class="hidden space-y-4">
+
+    <div class="flex gap-3">
+        <button onclick="showSchedule('dance')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">댄스실</button>
+        <button onclick="showSchedule('music')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">음악실</button>
+        <button onclick="showSchedule('clubroom')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">동아리방</button>
+        <button onclick="showSchedule('harmony')" class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition">어울림방</button>
+    </div>
+
+    <div class="bg-white rounded-2xl border shadow-sm p-3">
+        <iframe id="schedule-frame"
+            src="https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview"
+            class="w-full h-[600px] rounded-xl">
+        </iframe>
+    </div>
+
+</section>
+
+<section id="booking-calendar-section" class="hidden">
+
+    <div class="bg-white rounded-2xl border shadow-sm p-3">
+        <iframe
+            src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com"
+            class="w-full h-[600px] rounded-xl">
+        </iframe>
+    </div>
+
+</section>
+
 </main>
 
 <script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        if (window.AttendanceApp) {
-            window.AttendanceApp.init();
+function formatPhoneNumber(value) {
+    if (!value) return value;
+    const phoneNumber = value.replace(/[^\d]/g, '');
+    const phoneNumberLength = phoneNumber.length;
+    if (phoneNumberLength < 4) return phoneNumber;
+    if (phoneNumberLength < 8) {
+        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+    }
+    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7, 11)}`;
+}
+
+document.getElementById('b_phone').addEventListener('input', (e) => {
+    e.target.value = formatPhoneNumber(e.target.value);
+});
+
+function showBookingTab(tab) {
+    document.getElementById('booking-form-section').classList.toggle('hidden', tab !== 'form');
+    document.getElementById('booking-schedule-section').classList.toggle('hidden', tab !== 'schedule');
+    document.getElementById('booking-calendar-section').classList.toggle('hidden', tab !== 'calendar');
+
+    document.getElementById('tab-form-btn').className = tab === 'form' ? 'py-3 tab-active' : 'py-3 text-gray-500';
+    document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500';
+    document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500';
+}
+
+function showSchedule(type) {
+    const frame = document.getElementById('schedule-frame');
+    const urls = {
+        dance: "https://drive.google.com/file/d/1LWshNFVdXaKa5D6omvwbOsXFYGocZ3Qq/preview",
+        music: "https://drive.google.com/file/d/1pNwsDWqZW7LeFJePMxHT6rnwBEwbYZpv/preview",
+        clubroom: "https://drive.google.com/file/d/1gLP-ECVhMrOMKbUNWoWSTVY1N89AXRUQ/preview",
+        harmony: "https://drive.google.com/file/d/1qXmKM_pXyVi-Bkj9Ex08N6AiQElLgLnV/preview"
+    };
+
+    if (urls[type]) {
+        frame.src = urls[type];
+    }
+}
+
+function getOrCreateUID() {
+    let uid = localStorage.getItem("user_unique_id");
+    if (!uid) {
+        uid = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem("user_unique_id", uid);
+    }
+    return uid;
+}
+
+async function sendPost(mode) {
+    if (mode === 'submitBooking') {
+        const name = document.getElementById('b_name').value.trim();
+        const phone = document.getElementById('b_phone').value.trim();
+        const space = document.getElementById('b_space').value;
+        const dateTime = document.getElementById('b_date').value;
+        const hours = document.getElementById('b_hours').value;
+        const count = document.getElementById('b_count').value;
+        const content = document.getElementById('b_content').value.trim();
+        
+        const agree1Checked = document.getElementById('b_agree1').checked;
+        const agree2Checked = document.getElementById('b_agree2').checked;
+
+        if (!name || !phone || !dateTime) {
+            alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
+            return;
         }
-    });
+
+        if (phone.length < 12) {
+            alert("연락처를 올바른 형식(010-0000-0000)으로 정확하게 입력하세요.");
+            return;
+        }
+
+        if (!agree1Checked || !agree2Checked) {
+            alert("모든 필수 약관에 동의하셔야 대관 신청이 가능합니다.");
+            return;
+        }
+
+        const btn = document.getElementById('btn-submit-book');
+        btn.innerText = "신청서 전송 중...";
+        btn.disabled = true;
+
+        const res = await apiPost({
+            mode: mode,
+            name: name,
+            phone: phone,
+            space: space,
+            dateTime: dateTime,
+            hours: hours,
+            count: count,
+            content: content,
+            agree1: agree1Checked ? "동의" : "비동의",
+            agree2: agree2Checked ? "동의" : "비동의",
+            uid: getOrCreateUID()
+        });
+
+        btn.innerText = "대관 신청하기";
+        btn.disabled = false;
+
+        if (!res) {
+            alert("서버 통신 실패. 네트워크 연결을 확인하세요.");
+            return;
+        }
+
+        if (res.error) {
+            alert(res.error);
+            return;
+        }
+
+        const toastEl = document.getElementById('toast');
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 3000);
+
+        alert("대관 신청 및 구글 캘린더 자동 등록 완료!");
+
+        document.getElementById('b_name').value = "";
+        document.getElementById('b_phone').value = "";
+        document.getElementById('b_date').value = "";
+        document.getElementById('b_hours').value = "1";
+        document.getElementById('b_count').value = "";
+        document.getElementById('b_content').value = "";
+        document.getElementById('b_agree1').checked = false;
+        document.getElementById('b_agree2').checked = false;
+    }
+}
 </script>
+
 </body>
 </html>
