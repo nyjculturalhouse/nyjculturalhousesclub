@@ -16,11 +16,10 @@ async function apiGet(mode, params = {}) {
 }
 
 /* =========================
-   POST (핵심 수정)
+   POST (CORS 해결 버전)
 ========================= */
 async function apiPost(data) {
 
-    // 🔥 DOM 의존 제거 (안전하게 처리)
     const honeypotEl = document.getElementById('honeypot');
     const honeypotValue = honeypotEl ? honeypotEl.value : "";
 
@@ -30,21 +29,20 @@ async function apiPost(data) {
     };
 
     try {
+        // 🔥 GAS의 CORS 제한을 우회하기 위해 text/plain 또는 헤더 생략 방식을 사용합니다.
         const res = await fetch(API_URL, {
             method: "POST",
-
-            // 🔥 중요: GAS 안정성 위해 JSON 유지
             headers: {
-                "Content-Type": "application/json"
+                // 원래 application/json 이었던 부분을 text/plain 으로 변경하여 Preflight 차단을 우회합니다.
+                "Content-Type": "text/plain;charset=utf-8"
             },
-
             redirect: "follow",
             body: JSON.stringify(payload)
         });
 
         const text = await res.text();
 
-        // 🔥 JSON 안전 파싱
+        // JSON 안전 파싱
         try {
             return JSON.parse(text);
         } catch {
