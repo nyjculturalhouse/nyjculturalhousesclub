@@ -8,18 +8,55 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
+    
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+    <script>
+        // 💡 [수정] 메인 시스템 스펙과 일치하는 테마 컬러 코드를 주입했습니다.
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
+                            hover: "#222222"
+                        },
+                        accent: {
+                            bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
+                            text: "#FFFFFF",
+                            hover: "#E04825"
+                        },
+                        bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
+                        surface: "#ffffff",
+                        outline: "#EAEAEA"
+                    },
+                    boxShadow: {
+                        soft: "0 8px 30px rgba(0,0,0,0.03)"
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
+        /* 💡 [수정] 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
         body {
-            font-family: 'Paperlogy', sans-serif;
-            background: #f8fafc;
+            font-family: 'Pretendard', sans-serif;
+            background: #F4F4F3;
+            letter-spacing: -0.01em;
         }
         .hidden { display: none !important; }
 
+        /* 💡 [요구사항 반영] 폰트 두께를 800에서 200으로 전면 축소하여 슬림하고 모던한 타이포 무드 연출 */
+        .magazine-title {
+            font-weight: 200 !important;
+            letter-spacing: -0.02em !important;
+            line-height: 1.2 !important;
+        }
+
         .material-symbols-outlined {
             font-family: 'Material Symbols Outlined' !important;
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
             display: inline-block !important;
             vertical-align: middle !important;
             text-transform: lowercase !important;
@@ -32,27 +69,30 @@
 
         .card {
             transition: all .2s ease;
+            background: #ffffff;
+            border: 1px solid #EAEAEA;
         }
 
         .card:hover {
             transform: translateY(-4px);
+            border-color: #111111 !important;
         }
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-900">
+<body class="text-primary antialiased">
 
-<header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+<header class="sticky top-0 z-50 bg-[#F4F4F3] border-b border-outline">
     <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg bg-blue-600"></div>
-            <h1 class="font-bold text-lg text-blue-600">남양주시 문화의집</h1>
+        <div class="flex items-center gap-3" onclick="location.href='index.html'" class="cursor-pointer">
+            <div class="w-6 h-6 rounded bg-primary"></div>
+            <h1 class="magazine-title text-lg text-primary">남양주시 문화의집</h1>
         </div>
 
         <div class="flex items-center gap-4">
-            <span class="text-sm text-slate-500">관리자 페이지</span>
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">관리자 페이지</span>
             <button onclick="location.href='index.html'"
-                    class="p-2 rounded-full hover:bg-slate-100 transition flex items-center justify-center text-slate-700"
+                    class="p-2 rounded-full hover:bg-white/50 transition flex items-center justify-center text-primary"
                     title="메인으로">
                 <span class="material-symbols-outlined">home</span>
             </button>
@@ -63,71 +103,66 @@
 <main class="max-w-[1200px] mx-auto px-6 py-10">
 
     <div class="mb-10">
-        <h2 class="text-4xl font-bold text-slate-900 mb-2">관리자 페이지</h2>
-        <p class="text-slate-500">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
+        <h2 class="magazine-title text-4xl text-primary mb-2">관리자 페이지</h2>
+        <p class="text-gray-500 text-sm font-medium">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
 
-        <div onclick="showAdminTab('stats')"
-             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
-            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                <span class="material-symbols-outlined text-blue-600">monitoring</span>
+        <div onclick="showAdminTab('stats')" class="card p-6 rounded-2xl cursor-pointer shadow-soft">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-primary text-xl">monitoring</span>
             </div>
-            <h4 class="font-bold text-lg mb-1">동아리 출석 통계 현황</h4>
-            <p class="text-sm text-slate-500">주간 및 월간 참여 지표 분석</p>
+            <h4 class="magazine-title text-xl mb-1 text-primary">동아리 출석 통계 현황</h4>
+            <p class="text-xs text-gray-400 font-medium">주간 및 월간 참여 지표 분석</p>
         </div>
 
-        <div onclick="showAdminTab('attendance-check')"
-             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
-            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                <span class="material-symbols-outlined text-blue-600">how_to_reg</span>
+        <div onclick="showAdminTab('attendance-check')" class="card p-6 rounded-2xl cursor-pointer shadow-soft">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-primary text-xl">how_to_reg</span>
             </div>
-            <h4 class="font-bold text-lg mb-1">출석 체크 현황</h4>
-            <p class="text-sm text-slate-500">QR / 수동 출석 관리</p>
+            <h4 class="magazine-title text-xl mb-1 text-primary">출석 체크 현황</h4>
+            <p class="text-xs text-gray-400 font-medium">QR / 수동 출석 관리</p>
         </div>
 
-        <div onclick="showAdminTab('calendar')"
-             class="card bg-white p-6 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500">
-            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                <span class="material-symbols-outlined text-blue-600">calendar_month</span>
+        <div onclick="showAdminTab('calendar')" class="card p-6 rounded-2xl cursor-pointer shadow-soft">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
             </div>
-            <h4 class="font-bold text-lg mb-1">대관 캘린더</h4>
-            <p class="text-sm text-slate-500">시설 예약 일정 관리</p>
+            <h4 class="magazine-title text-xl mb-1 text-primary">대관 캘린더</h4>
+            <p class="text-xs text-gray-400 font-medium">시설 예약 일정 관리</p>
         </div>
 
     </div>
 
-    <div id="admin-content-area" class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+    <div id="admin-content-area" class="bg-white p-6 md:p-8 rounded-2xl border border-outline shadow-soft">
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="p-5 rounded-xl bg-blue-50 border border-blue-100" title="총 회원 수 473명 대비 누적 출석 데이터">
-                <p class="text-sm text-slate-500">전체 누적 출석 인원 / 총원</p>
-                <p class="text-3xl font-bold text-blue-600"><span id="stats-total">-</span> <span class="text-lg font-normal text-slate-400">/ 473명</span></p>
+            <div class="p-5 rounded-xl bg-gray-50 border border-outline" title="총 회원 수 473명 대비 누적 출석 데이터">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">전체 누적 출석 인원 / 총원</p>
+                <p class="text-3xl font-light text-primary mt-1"><span id="stats-total" class="font-medium">-</span> <span class="text-sm font-normal text-gray-400">/ 473명</span></p>
             </div>
 
-            <div class="p-5 rounded-xl bg-slate-50 border border-slate-200">
-                <p class="text-sm text-slate-500">이번 주 동아리 출석률 (완료/전체)</p>
-                <p class="text-3xl font-bold text-slate-900" id="stats-rate">-</p>
+            <div class="p-5 rounded-xl bg-gray-50 border border-outline">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">이번 주 동아리 출석률</p>
+                <p class="text-3xl font-light text-primary mt-1" id="stats-rate">-</p>
             </div>
 
-            <div class="p-5 rounded-xl bg-emerald-50 border border-emerald-100">
-                <p class="text-sm text-slate-500 flex items-center gap-1">
-                    등록 동아리 수 
-                </p>
-                <p class="text-3xl font-bold text-emerald-600" id="stats-clubs">46개</p>
+            <div class="p-5 rounded-xl bg-[#FF5A36]/5 border border-[#FF5A36]/10">
+                <p class="text-xs font-bold text-[#FF5A36] uppercase tracking-wider">등록 동아리 수</p>
+                <p class="text-3xl font-light text-accent-bg mt-1" id="stats-clubs">46개</p>
             </div>
         </div>
 
         <div id="admin-stats-section" class="hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
-                <h3 class="text-xl font-bold">동아리 출석 현황 통계</h3>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-outline">
+                <h3 class="magazine-title text-2xl text-primary">동아리 출석 현황 통계</h3>
                 
-                <div class="flex bg-slate-100 p-1 rounded-xl w-fit">
-                    <button id="btn-filter-week" onclick="toggleStatsPeriod('week')" class="px-4 py-2 text-sm font-bold rounded-lg bg-white text-blue-600 shadow-sm transition">
+                <div class="flex bg-gray-100 p-1 rounded-xl w-fit border border-outline">
+                    <button id="btn-filter-week" onclick="toggleStatsPeriod('week')" class="px-4 py-2 text-xs font-bold rounded-lg bg-white text-primary shadow-sm transition">
                         매주 조회 (토~금)
                     </button>
-                    <button id="btn-filter-month" onclick="toggleStatsPeriod('month')" class="px-4 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition">
+                    <button id="btn-filter-month" onclick="toggleStatsPeriod('month')" class="px-4 py-2 text-xs font-medium rounded-lg text-gray-500 hover:text-primary transition">
                         매달 조회 (월별)
                     </button>
                 </div>
@@ -137,15 +172,15 @@
         </div>
 
         <div id="admin-attendance-check-section" class="hidden">
-            <h3 class="text-xl font-bold mb-4">출석 체크 현황</h3>
+            <h3 class="magazine-title text-2xl text-primary mb-6">출석 체크 현황</h3>
             <div id="attendance-check-content" class="overflow-x-auto">
-                <p class="text-slate-500">불러오는 중...</p>
+                <p class="text-gray-400 text-sm">불러오는 중...</p>
             </div>
         </div>
 
         <div id="admin-calendar-section" class="hidden">
-            <h3 class="text-xl font-bold mb-4">대관 캘린더</h3>
-            <div class="w-full h-[600px] rounded-xl overflow-hidden border">
+            <h3 class="magazine-title text-2xl text-primary mb-6">대관 캘린더</h3>
+            <div class="w-full h-[600px] rounded-xl overflow-hidden border border-outline">
                 <iframe
                     src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com&ctz=Asia%2FSeoul"
                     class="w-full h-full border-0">
@@ -161,7 +196,6 @@
 <script src="js/app.js"></script>
 
 <script>
-    // 💡 [데이터 반영] 전체 동아리 수 46개 변수 설정 고정
     const TOTAL_CLUBS_COUNT = 46; 
     let currentStatsPeriod = 'week'; 
     let cachedRawStatsData = [];
@@ -191,16 +225,15 @@
             statsData.forEach(d => {
                 totalAttendancePeople += Number(d.total || 0);
             });
-            document.getElementById("stats-total").innerText = totalAttendancePeople + "명";
+            document.getElementById("stats-total").innerHTML = `<span class="font-medium">${totalAttendancePeople}명</span> <span class="text-sm font-normal text-gray-400">/ 473명</span>`;
 
-            // 💡 [수정] 이번주 출석률 분모를 고정된 TOTAL_CLUBS_COUNT(46)로 설정하여 정확히 동적 연동합니다.
             let completedCount = 0;
             attendanceStatusData.forEach(d => {
                 if(d.thisWeek === true || d.thisWeek === '완료') completedCount++;
             });
             
             const attendanceRate = TOTAL_CLUBS_COUNT > 0 ? Math.round((completedCount / TOTAL_CLUBS_COUNT) * 100) : 0;
-            document.getElementById("stats-rate").innerText = attendanceRate + "%" + ` (${completedCount}/${TOTAL_CLUBS_COUNT})`;
+            document.getElementById("stats-rate").innerHTML = `<span class="font-medium">${attendanceRate}%</span>` + ` <span class="text-xs text-gray-400 font-normal">(${completedCount}/${TOTAL_CLUBS_COUNT} 완료)</span>`;
 
             showAdminTab('stats');
 
@@ -231,16 +264,15 @@
         const btnMonth = document.getElementById('btn-filter-month');
 
         if (period === 'week') {
-            btnWeek.className = "px-4 py-2 text-sm font-bold rounded-lg bg-white text-blue-600 shadow-sm transition";
-            btnMonth.className = "px-4 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition";
+            btnWeek.className = "px-4 py-2 text-xs font-bold rounded-lg bg-white text-primary shadow-sm transition";
+            btnMonth.className = "px-4 py-2 text-xs font-medium rounded-lg text-gray-500 hover:text-primary transition";
         } else {
-            btnMonth.className = "px-4 py-2 text-sm font-bold rounded-lg bg-white text-blue-600 shadow-sm transition";
-            btnWeek.className = "px-4 py-2 text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition";
+            btnMonth.className = "px-4 py-2 text-xs font-bold rounded-lg bg-white text-primary shadow-sm transition";
+            btnWeek.className = "px-4 py-2 text-xs font-medium rounded-lg text-gray-500 hover:text-primary transition";
         }
         renderStatsTable();
     }
 
-    // 💡 [규칙] 토요일 시작 ~ 금요일 종료 커스텀 주차 계산 처리기
     function getCustomWeekRange(dateStr) {
         if(!dateStr) return "미지정 주차";
         const current = new Date(dateStr);
@@ -264,7 +296,7 @@
         if (!box) return;
 
         if (!cachedRawStatsData || cachedRawStatsData.length === 0) {
-            box.innerHTML = `<p class="text-slate-500 p-4">출석 통계 데이터가 없습니다.</p>`;
+            box.innerHTML = `<p class="text-gray-400 p-4 text-sm">출석 통계 데이터가 없습니다.</p>`;
             return;
         }
 
@@ -298,20 +330,20 @@
 
         let html = `
             <table class="w-full text-sm text-left">
-                <thead class="bg-slate-50 border-b border-slate-200">
+                <thead class="bg-gray-50 border-b border-outline">
                     <tr>
-                        <th class="py-3 px-4 font-semibold text-slate-700">${currentStatsPeriod === 'week' ? '주차 일자 (토~금)' : '해당 월'}</th>
-                        <th class="py-3 px-4 font-semibold text-slate-700">총 출석 누적 인원</th>
+                        <th class="py-3 px-4 font-bold text-gray-600 text-xs tracking-wider uppercase">${currentStatsPeriod === 'week' ? '주차 일자 (토~금)' : '해당 월'}</th>
+                        <th class="py-3 px-4 font-bold text-gray-600 text-xs tracking-wider uppercase">총 출석 누적 인원</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-outline">
         `;
 
         sortedKeys.forEach(key => {
             html += `
-                <tr class="hover:bg-slate-50/80 transition">
-                    <td class="py-3 px-4 text-slate-900 font-medium">${key}</td>
-                    <td class="py-3 px-4 font-bold text-blue-600">${summaryMap[key]}명</td>
+                <tr class="hover:bg-gray-50/50 transition">
+                    <td class="py-3 px-4 text-primary font-medium">${key}</td>
+                    <td class="py-3 px-4 font-semibold text-primary">${summaryMap[key]}명</td>
                 </tr>
             `;
         });
@@ -322,26 +354,26 @@
 
     async function loadAttendanceCheckList() {
         const box = document.getElementById('attendance-check-content');
-        box.innerHTML = `<p class="text-slate-500 p-4">데이터 로딩 중...</p>`;
+        box.innerHTML = `<p class="text-gray-400 p-4 text-sm">데이터 로딩 중...</p>`;
 
         try {
             const data = await apiGet("getAttendanceStatus") || [];
 
             if(data.length === 0) {
-                box.innerHTML = `<p class="text-slate-500 p-4">출석 대상 동아리 내역이 없습니다.</p>`;
+                box.innerHTML = `<p class="text-gray-400 p-4 text-sm">출석 대상 동아리 내역이 없습니다.</p>`;
                 return;
             }
 
             let html = `
                 <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 border-b border-slate-200">
+                <thead class="bg-gray-50 border-b border-outline">
                     <tr>
-                        <th class="py-3 px-4 font-semibold text-slate-700">동아리 명</th>
-                        <th class="py-3 px-4 font-semibold text-slate-700">지난주 현황</th>
-                        <th class="py-3 px-4 font-semibold text-slate-700">이번주 현황</th>
+                        <th class="py-3 px-4 font-bold text-gray-600 text-xs tracking-wider uppercase">동아리 명</th>
+                        <th class="py-3 px-4 font-bold text-gray-600 text-xs tracking-wider uppercase">지난주 현황</th>
+                        <th class="py-3 px-4 font-bold text-gray-600 text-xs tracking-wider uppercase">이번주 현황</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-outline">
             `;
 
             data.forEach(d => {
@@ -349,16 +381,16 @@
                 const isThisCheck = (d.thisWeek === true || d.thisWeek === '완료');
 
                 html += `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="py-3 px-4 font-medium text-slate-900">${d.club}</td>
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="py-3 px-4 font-medium text-primary">${d.club}</td>
                         <td class="py-3 px-4">
-                            <span class="${isLastCheck ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-600'} text-xs font-bold px-2.5 py-1 rounded-md">
-                                ${isLastCheck ? '출석 완료' : '미체크'}
+                            <span class="${isLastCheck ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-400'} text-[10px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">
+                                ${isLastCheck ? '완료' : '미체크'}
                             </span>
                         </td>
                         <td class="py-3 px-4">
-                            <span class="${isThisCheck ? 'bg-blue-600 text-white' : 'bg-red-50 text-red-600'} text-xs font-bold px-2.5 py-1 rounded-md">
-                                ${isThisCheck ? '출석 완료' : '미체크'}
+                            <span class="${isThisCheck ? 'bg-accent-bg text-white' : 'bg-gray-100 text-gray-400'} text-[10px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">
+                                ${isThisCheck ? '완료' : '미체크'}
                             </span>
                         </td>
                     </tr>
@@ -370,7 +402,7 @@
 
         } catch(e) {
             console.error(e);
-            box.innerHTML = `<p class="text-red-500 p-4">데이터 로딩 중 에러가 발생했습니다.</p>`;
+            box.innerHTML = `<p class="text-accent-bg p-4 text-sm font-medium">데이터 로딩 중 에러가 발생했습니다.</p>`;
         }
     }
 </script>
