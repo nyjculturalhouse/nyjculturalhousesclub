@@ -9,10 +9,10 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=calendar_month,check_circle,event_note,home_app_logo,share_windows" />
 
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
+<!-- 💡 [폰트 변경] 요즘 가장 힙한 브랜드/IT 서비스 표준인 Pretendard 폰트를 연동합니다 -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
 <script>
-// 💡 [수정] 오직 컬러칩과 미니멀한 그림자, 라운딩 스펙만 테일윈드 테마로 변경했습니다.
 tailwind.config = {
   theme: {
     extend: {
@@ -31,7 +31,7 @@ tailwind.config = {
         onSurface: "#111111"
       },
       boxShadow: {
-        soft: "0 8px 30px rgba(0,0,0,0.03)" // 플랫한 느낌을 살리는 미니멀 그림자
+        soft: "0 8px 30px rgba(0,0,0,0.03)" // 플랫함을 살리는 미니멀 그림자
       }
     }
   }
@@ -39,10 +39,16 @@ tailwind.config = {
 </script>
 
 <style>
-/* 💡 [수정] 배경 컬러만 미색이 도는 부드러운 화이트로 매칭했습니다. */
-body { font-family: 'Paperlogy', sans-serif; background:#F4F4F3; }
+/* 💡 전체 폰트를 Pretendard로 지정하고 기본 자간을 살짝 당겨 정돈합니다. */
+body { font-family: 'Pretendard', sans-serif; background:#F4F4F3; letter-spacing: -0.01em; }
 
-/* 💡 기존 디자인 스펙을 그대로 유지하되 색상/그림자 값만 연동했습니다. */
+/* 💡 [핵심 가이드 적용] 타이틀 전용 힙 매거진 타이포그래피 클래스 */
+.magazine-title {
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.1 !important;
+}
+
 .card-hover {
   transition: all .25s ease;
 }
@@ -82,19 +88,22 @@ body { font-family: 'Paperlogy', sans-serif; background:#F4F4F3; }
 
 <header class="fixed top-0 left-0 w-full h-16 bg-[#F4F4F3] border-b border-gray-200 z-50 flex items-center">
   <div class="max-w-[1200px] mx-auto w-full flex justify-between items-center px-5">
-    <h1 class="font-bold text-primary text-lg">남양주시 문화의집 웹시스템</h1>
+    <!-- 💡 메인 헤더 타이틀에 가이드 속성 적용 -->
+    <h1 class="magazine-title text-primary text-xl">남양주시 문화의집 웹시스템</h1>
   </div>
 </header>
 
 <main class="pt-24 pb-28 max-w-[1200px] mx-auto px-5">
 
+<!-- 💡 메인 섹션 타이틀에 가이드 속성 적용 -->
 <section class="mb-10">
-  <h2 class="text-3xl font-bold text-primary">문화의집 동아리 통합 시스템</h2>
-  <p class="text-gray-500 mt-2">출석, 공간 예약, 외부활동을 한곳에서 관리하세요.</p>
+  <h2 class="magazine-title text-4xl text-primary">문화의집 동아리 통합 시스템</h2>
+  <p class="text-gray-500 mt-3 text-sm font-medium">출석, 공간 예약, 외부활동을 한곳에서 관리하세요.</p>
 </section>
 
 <div class="bento-grid">
 
+  <!-- 1. 동아리 출석부 -->
   <button onclick="location.href='attendance.html'"
     class="card-hover bg-primary hover:bg-primary-hover text-white p-8 rounded-xl text-left overflow-hidden relative md:col-span-2">
 
@@ -104,14 +113,16 @@ body { font-family: 'Paperlogy', sans-serif; background:#F4F4F3; }
       <span class="material-symbols-outlined text-3xl">check_circle</span>
     </div>
 
-    <h3 class="text-xl font-bold mb-2">동아리 출석부</h3>
-    <p class="text-white/80 mb-6">빠르고 정확한 출석 관리</p>
+    <!-- 💡 내부 카드 타이틀 가이드 속성 적용 -->
+    <h3 class="magazine-title text-2xl mb-2">동아리 출석부</h3>
+    <p class="text-white/80 text-sm mb-6">빠르고 정확한 출석 관리</p>
 
-    <div class="font-bold flex items-center gap-2">
+    <div class="font-bold flex items-center gap-2 text-sm">
       출석 등록하기 →
     </div>
   </button>
 
+  <!-- 2. 공간 이용 예약 -->
   <button onclick="location.href='booking.html'"
     class="card-hover bg-white p-8 rounded-xl text-left border border-gray-200 shadow-soft">
 
@@ -119,11 +130,13 @@ body { font-family: 'Paperlogy', sans-serif; background:#F4F4F3; }
       <span class="material-symbols-outlined text-3xl">event_note</span>
     </div>
 
-    <h3 class="text-lg font-bold mb-2 text-primary">공간 이용 예약</h3>
-    <p class="text-gray-500 mb-6">원하는 시간에 필요한 공간을 예약하세요.</p>
-    <div class="text-primary font-bold">예약하기 →</div>
+    <!-- 💡 내부 카드 타이틀 가이드 속성 적용 -->
+    <h3 class="magazine-title text-xl mb-2 text-primary">공간 이용 예약</h3>
+    <p class="text-gray-500 text-sm mb-6">원하는 시간에 필요한 공간을 예약하세요.</p>
+    <div class="text-primary font-bold text-sm">예약하기 →</div>
   </button>
 
+  <!-- 3. 외부활동 공유 -->
   <button onclick="location.href='external.html'"
     class="card-hover bg-accent-bg hover:bg-accent-hover text-white p-8 rounded-xl text-left border border-transparent shadow-soft">
 
@@ -131,23 +144,24 @@ body { font-family: 'Paperlogy', sans-serif; background:#F4F4F3; }
       <span class="material-symbols-outlined text-3xl">share_windows</span>
     </div>
 
-    <h3 class="text-lg font-bold mb-2 text-white">외부활동 공유</h3>
-    <p class="text-white/90 mb-6">다양한 활동 소식을 간편하게 등록하세요.</p>
-    <div class="text-white font-bold">등록하기 →</div>
+    <!-- 💡 내부 카드 타이틀 가이드 속성 적용 -->
+    <h3 class="magazine-title text-xl mb-2 text-white">외부활동 공유</h3>
+    <p class="text-white/90 text-sm mb-6">다양한 활동 소식을 간편하게 등록하세요.</p>
+    <div class="text-white font-bold text-sm">등록하기 →</div>
   </button>
 
 </div>
 
 <div class="mt-10 space-y-4">
   <button onclick="window.open('https://www.nyjcf.or.kr/www/1', '_blank')"
-    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-white/50 transition flex items-center justify-center gap-2">
+    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-white/50 transition flex items-center justify-center gap-2 text-sm">
     <span class="material-symbols-outlined text-primary text-xl">home_app_logo</span>
     <span>남양주문화재단</span>
-    <span class="text-sm font-medium text-primary/80 ml-1">남양주시 문화예술 확인하기 ▶</span>
+    <span class="text-xs font-medium text-primary/80 ml-1">남양주시 문화예술 확인하기 ▶</span>
   </button>
 
   <button onclick="location.href='calendar.html'"
-    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-white/50 transition flex items-center justify-center gap-2">
+    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-white/50 transition flex items-center justify-center gap-2 text-sm">
     <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
     <span>동아리 활동 일정 확인</span>
   </button>
@@ -155,8 +169,8 @@ body { font-family: 'Paperlogy', sans-serif; background:#F4F4F3; }
 
 <div class="mt-10 text-center">
   <button onclick="location.href='admin.html'"
-    class="text-sm text-gray-400 hover:text-gray-600 underline">
-    관리자 전용
+    class="text-xs text-gray-400 hover:text-gray-600 underline font-medium tracking-wide">
+    ADMIN SYSTEM
   </button>
 </div>
 
