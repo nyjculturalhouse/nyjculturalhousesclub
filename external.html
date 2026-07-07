@@ -42,10 +42,20 @@
 
 <header class="glass sticky top-0 z-50 border-b">
     <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+        
         <div class="flex items-center gap-2 font-bold text-blue-600">
             <span class="material-symbols-outlined">hub</span>
             남양주시 문화의집 외부활동 공유
         </div>
+
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+            <button onclick="location.href='index.html'"
+                class="p-2 rounded-full hover:bg-gray-100 transition"
+                title="메인으로">
+                <span class="material-symbols-outlined">home</span>
+            </button>
+        </div>
+
     </div>
 </header>
 
@@ -128,7 +138,7 @@
                 <button type="button"
                         onclick="location.href='index.html'"
                         class="px-6 py-3 bg-gray-200 rounded-xl font-medium hover:bg-gray-300 transition">
-                    취소
+                    메인으로
                 </button>
 
             </div>
@@ -155,20 +165,17 @@ function getOrCreateUID() {
 
 async function sendPost(mode) {
     if (mode === 'submitExternal') {
-        // 허니팟 필드 검증 (스팸봇 차단)
         const honeypot = document.getElementById('honeypot').value;
         if (honeypot) {
             return; 
         }
 
-        // 입력 엘리먼트 데이터 수집
         const club = document.getElementById('e_club').value.trim();
         const phone = document.getElementById('e_phone').value.trim();
         const eventName = document.getElementById('e_event').value.trim();
         const content = document.getElementById('e_content').value.trim();
         const dateTime = document.getElementById('e_date').value;
 
-        // 필수 필드 무결성 검증
         if (!club || !phone || !eventName || !dateTime) {
             alert("동아리 이름, 연락처, 행사명, 행사 일시는 필수 기입 사항입니다.");
             return;
@@ -178,7 +185,6 @@ async function sendPost(mode) {
         btn.innerText = "공유 처리 중...";
         btn.disabled = true;
 
-        // apiPost 라이브러리를 통해 구글 웹앱 백엔드 연동 전송
         const res = await apiPost({
             mode: mode,
             club: club,
@@ -204,7 +210,6 @@ async function sendPost(mode) {
 
         alert("동아리 외부활동 공유 등록 완료!");
 
-        // 양식 제출 완료 후 폼 리셋 처리
         document.getElementById('e_club').value = "";
         document.getElementById('e_phone').value = "";
         document.getElementById('e_event').value = "";
