@@ -8,16 +8,51 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Paperlogy-All.css">
+    
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+    <script>
+        // 💡 [수정] 메인 및 타 페이지와 일치하는 테마 컬러 설정 적용
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
+                            hover: "#222222"
+                        },
+                        accent: {
+                            bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
+                            text: "#FFFFFF",
+                            hover: "#E04825"
+                        },
+                        bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
+                        surface: "#ffffff",
+                        outline: "#EAEAEA"
+                    },
+                    boxShadow: {
+                        soft: "0 8px 30px rgba(0,0,0,0.03)"
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        /* 💡 [수정] 다른 페이지와 일치하도록 기본 폰트를 Paperlogy로 변경했습니다. */
+        /* 💡 [수정] 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
         body {
-            font-family: 'Paperlogy', sans-serif;
-            background: #faf8ff;
+            font-family: 'Pretendard', sans-serif;
+            background: #F4F4F3;
+            letter-spacing: -0.01em;
         }
 
-        /* 💡 [수정] 아이콘 폰트 패밀리가 페이퍼로지에 덮어씌워져 깨지지 않도록 속성을 고정했습니다. */
+        /* 💡 [핵심 가이드 적용] 타이틀 전용 힙 매거진 타이포그래피 스타일 */
+        .magazine-title {
+            font-weight: 800 !important;
+            letter-spacing: -0.04em !important;
+            line-height: 1.1 !important;
+        }
+
         .material-symbols-outlined {
             font-family: 'Material Symbols Outlined' !important;
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
@@ -32,35 +67,37 @@
         }
 
         .glass {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid #e5e7eb;
+            border: 1px solid #EAEAEA;
         }
 
-        input:focus, textarea:focus {
+        /* 인풋 포커스 시 매거진 무드에 맞는 미니멀 블랙 보더 처리 */
+        input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: #3182f6 !important;
-            box-shadow: 0 0 0 4px rgba(49,130,246,0.12);
+            border-color: #111111 !important;
+            box-shadow: 0 0 0 4px rgba(17,17,17,0.05) !important;
         }
 
+        /* 💡 히어로 영역을 그라데이션 대신 매거진 스타일의 차분하고 플랫한 다크 차콜로 수정 */
         .hero {
-            background: linear-gradient(135deg,#3182f6,#004ac6);
+            background: #111111;
         }
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased">
 
-<header class="glass sticky top-0 z-50 border-b">
+<header class="bg-[#F4F4F3] border-b border-outline sticky top-0 z-50">
     <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
         
-        <div class="flex items-center gap-2 font-bold text-blue-600">
+        <h1 class="magazine-title text-primary text-xl">
             남양주시 문화의집
-        </div>
+        </h1>
 
         <div class="flex items-center gap-3 text-sm text-gray-500">
             <button onclick="location.href='index.html'"
-                class="p-2 rounded-full hover:bg-gray-100 transition"
+                class="p-2 rounded-full hover:bg-white/50 transition text-primary"
                 title="메인으로">
                 <span class="material-symbols-outlined">home</span>
             </button>
@@ -71,16 +108,16 @@
 
 <main class="flex-grow max-w-[1200px] mx-auto w-full px-6 py-10 flex flex-col justify-center">
 
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">외부활동 공유하기</h1>
-        <p class="text-gray-500 mt-1">동아리 활동을 등록하고 공유하세요</p>
+    <div class="mb-8">
+        <h2 class="magazine-title text-3xl text-primary">외부활동 공유하기</h2>
+        <p class="text-gray-500 mt-2 text-sm font-medium">동아리 활동을 등록하고 공유하세요</p>
     </div>
 
-    <div class="glass rounded-2xl shadow-xl overflow-hidden">
+    <div class="glass rounded-2xl shadow-soft overflow-hidden">
 
         <div class="hero px-6 py-4 text-white flex items-center gap-2">
-            <span class="material-symbols-outlined">info</span>
-            <span class="font-bold">행사 기본 정보 입력</span>
+            <span class="material-symbols-outlined text-xl">info</span>
+            <span class="magazine-title text-sm tracking-wide uppercase">행사 기본 정보 입력</span>
         </div>
 
         <form id="ext-form" class="p-6 space-y-5" onsubmit="return false;">
@@ -88,18 +125,18 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                 <div>
-                    <label class="text-sm text-gray-600">동아리 이름</label>
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">동아리 이름</label>
                     <input id="e_club"
-                        class="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3"
+                        class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm h-11"
                         placeholder="동아리 명을 입력하세요"
                         required
                         type="text"/>
                 </div>
 
                 <div>
-                    <label class="text-sm text-gray-600">연락처</label>
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">연락처</label>
                     <input id="e_phone"
-                        class="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3"
+                        class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm h-11"
                         placeholder="010-0000-0000"
                         maxlength="13"
                         required
@@ -109,27 +146,27 @@
             </div>
 
             <div>
-                <label class="text-sm text-gray-600">행사명</label>
+                <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">행사명</label>
                 <input id="e_event"
-                    class="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3"
+                    class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm h-11"
                     placeholder="행사 제목을 입력하세요"
                     required
                     type="text"/>
             </div>
 
             <div>
-                <label class="text-sm text-gray-600">상세 내용</label>
+                <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">상세 내용</label>
                 <textarea id="e_content"
-                    class="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3"
+                    class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm"
                     rows="4"
                     placeholder="상세 정보를 입력하세요 (필수 입력)"
                     required></textarea>
             </div>
 
             <div>
-                <label class="text-sm text-gray-600">행사 일시</label>
+                <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">행사 일시</label>
                 <input id="e_date"
-                    class="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3"
+                    class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm h-11"
                     type="datetime-local"
                     required/>
             </div>
@@ -140,7 +177,7 @@
                 <button type="button"
                         id="btn-submit-ext"
                         onclick="sendPost('submitExternal')"
-                        class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-md">
+                        class="w-full bg-accent-bg text-white py-4 rounded-xl font-bold hover:bg-accent-hover transition shadow-sm text-sm">
                     공유하기
                 </button>
             </div>
@@ -206,14 +243,13 @@ async function sendPost(mode) {
         btn.innerText = "공유 처리 중...";
         btn.disabled = true;
 
-        // 💡 [해결 조치] 백엔드 매핑 필드 불일치 방지를 위해 예상되는 키들을 모두 채워서 전송합니다.
         const res = await apiPost({
             mode: mode,
             club: club,
             phone: phone,
-            eventName: eventName, // 기존 키명
-            event: eventName,     // 대체 키명 1
-            title: eventName,     // 대체 키명 2
+            eventName: eventName, 
+            event: eventName,     
+            title: eventName,     
             content: content,
             dateTime: dateTime,
             uid: getOrCreateUID()
