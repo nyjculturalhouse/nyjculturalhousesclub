@@ -311,15 +311,21 @@
                 summaryMap[label] = (summaryMap[label] || 0) + Number(d.total || 0);
             });
         } else {
+            // 💡 [수정 완료] 원본 2026-07 형태의 문자열 포맷팅을 "2026년 07월" 형식으로 깔끔하게 연동
             cachedRawStatsData.forEach(d => {
+                let targetTargetStr = d.week || d.date || "";
                 let monthLabel = "기간 미지정";
-                if(d.week && d.week.includes('-')) {
-                    monthLabel = d.week.substring(0, 7) + "월 통계";
-                } else if(d.date) {
-                    monthLabel = d.date.substring(0, 7) + "월 통계";
-                } else {
-                    monthLabel = (d.week || "기타").substring(0, 4) + "월 집계";
+                
+                if (targetTargetStr && targetTargetStr.length >= 7 && targetTargetStr.includes('-')) {
+                    const parts = targetTargetStr.split('-');
+                    monthLabel = `${parts[0]}년 ${parts[1]}월`;
+                } else if (targetTargetStr) {
+                    // 안전 장치: 대시(-)가 없는 포맷인 경우 가공 유도
+                    const year = targetTargetStr.substring(0, 4);
+                    const month = targetTargetStr.substring(5, 7) || "01";
+                    monthLabel = `${year}년 ${month}월`;
                 }
+                
                 summaryMap[monthLabel] = (summaryMap[monthLabel] || 0) + Number(d.total || 0);
             });
         }
