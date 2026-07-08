@@ -33,7 +33,8 @@ tailwind.config = {
                 outline: "#EAEAEA"
             },
             boxShadow: {
-                soft: "0 8px 30px rgba(0,0,0,0.03)"
+                soft: "0 8px 30px rgba(0,0,0,0.03)",
+                modal: "0 20px 50px rgba(0, 0, 0, 0.15)"
             }
         }
     }
@@ -103,7 +104,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 </style>
 </head>
 
-<body class="text-gray-900 min-h-screen antialiased">
+<body class="text-gray-900 min-h-screen antialiased relative">
 
 <div id="toast" class="toast">제출 완료 ✅</div>
 
@@ -269,10 +270,101 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 
 </main>
 
+<!-- 💡 [추가 스펙] 시스템 테마 컬러 기반의 웹진 모달 레이어 구조 설계 -->
+<div id="booking-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="closeBookingModal()">
+    <div class="bg-white rounded-2xl border border-outline shadow-modal max-w-md w-full overflow-hidden transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+        
+        <!-- 상단 라인 (공간 색상에 따라 JS에서 동적으로 매핑) -->
+        <div id="modal-top-bar" class="h-1.5 w-full bg-primary"></div>
+        
+        <div class="p-6 md:p-8">
+            <div class="flex justify-between items-start gap-4 mb-6">
+                <div>
+                    <span id="modal-space-badge" class="inline-block px-2.5 py-1 text-xs font-bold rounded-md text-white tracking-wide mb-2">공간명</span>
+                    <h3 id="modal-booking-title" class="magazine-title text-2xl text-primary leading-snug">예약자 정보</h3>
+                </div>
+                <button onclick="closeBookingModal()" class="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-primary transition">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+            
+            <div class="space-y-4 border-t border-outline pt-6 text-sm">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-gray-400 mt-0.5">schedule</span>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">이용 시간</p>
+                        <p id="modal-booking-time" class="text-primary font-medium mt-0.5">2026년 00월 00일 00:00</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <button onclick="closeBookingModal()" class="w-full bg-[#111111] text-white font-bold py-3.5 rounded-xl hover:bg-[#222222] transition shadow-sm text-sm">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="w-full py-8 text-center text-xs text-gray-400 font-medium tracking-wider border-t border-outline/40">
+    <p>© 2026 Culture Connect. All rights reserved.</p>
+</footer>
+
 <script src="js/api.js"></script>
 
 <script>
 let calendar = null;
+
+// 💡 타임스탬프를 직관적인 한국어 날짜 형식으로 세탁해 주는 가공 엔진
+function formatKoreanDateTime(dateStr) {
+    if (!dateStr) return "-";
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        
+        return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+    } catch(e) {
+        return dateStr;
+    }
+}
+
+// 💡 대관 확인 웹진 모달 제어 핸들러
+function openBookingModal(spaceName, titleText, rawStart) {
+    const badge = document.getElementById('modal-space-badge');
+    const topBar = document.getElementById('modal-top-bar');
+    
+    badge.innerText = spaceName || "공간 미지정";
+    document.getElementById('modal-booking-title').innerText = titleText || "대관 정보 없음";
+    document.getElementById('modal-booking-time').innerText = formatKoreanDateTime(rawStart);
+    
+    // 공간 고유 색상을 배지와 모달 바에 매핑
+    const color = getSpaceColor(spaceName);
+    badge.style.backgroundColor = color;
+    topBar.style.backgroundColor = color;
+    
+    const modal = document.getElementById('booking-modal');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.querySelector('div').classList.remove('scale-95');
+    }, 10);
+}
+
+function closeBookingModal() {
+    const modal = document.getElementById('booking-modal');
+    modal.classList.add('opacity-0');
+    modal.querySelector('div').classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
 
 function formatPhoneNumber(value) {
     if (!value) return value;
@@ -351,11 +443,10 @@ function initFullCalendar() {
         editable: false,
         selectable: true,
         
-        // 💡 [추가 스펙] 대관 일정을 클릭했을 때 뜨는 상세 내역 팝업창 구현
+        // 💡 [연동 완료] 기존 원시 alert 구조를 철거하고 고급 모달 시스템 탑재
         eventClick: function(info) {
-            const detailTitle = info.event.title || "대관 정보 없음";
-            
-            alert(`📌 [공간 대관 정보]\n\n• 예약 내용: ${detailTitle}`);
+            const props = info.event.extendedProps;
+            openBookingModal(props.space, info.event.title, props.rawStart);
         },
 
         events: async function(info, successCallback, failureCallback) {
@@ -367,12 +458,15 @@ function initFullCalendar() {
                     return;
                 }
 
-                // 💡 GAS 내부 'getBookingSheetData'에서 가공한 오브젝트의 키(title, start)와 완벽 동기화
                 const events = bookingData.map(item => {
                     return {
-                        title: item.title,               // GAS에서 이미 '[공간] 이름' 형태로 가공하여 보내줌
-                        start: item.start,               // GAS에서 이미 규격 세탁 완료한 ISO 타임스탬프 스펙 연동
-                        color: getSpaceColor(item.space) // 공간별 스타일 컬러 매핑
+                        title: item.title,               // GAS 가공 완료 스트링 적용
+                        start: item.start,               // 타임스탬프 원본 전달
+                        color: getSpaceColor(item.space), // 공간별 테마 디자인 자동 빌딩
+                        extendedProps: {
+                            space: item.space,
+                            rawStart: item.start
+                        }
                     };
                 });
 
