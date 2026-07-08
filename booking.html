@@ -332,7 +332,7 @@ function getOrCreateUID() {
     return uid;
 }
 
-// 💡 [수정 보완] FullCalendar 구동 및 GAS 연동을 위한 독립 구동 로직 복구
+// 🔥 FullCalendar 구동 및 대관 신청 데이터 연동 로직으로 수정
 function initFullCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
@@ -355,34 +355,29 @@ function initFullCalendar() {
         selectable: true,
         events: async function(info, successCallback, failureCallback) {
             try {
-                // api.js의 apiGet 함수를 활용하여 구글 스프레드시트 통계 통신 연동
-                const stats = await apiGet("getStats");
-                if (!stats || stats.error || !Array.isArray(stats)) {
+                // 💡 [변경] 출석부 통계("getStats") 대신 대관 리스트를 가져오는 명령어로 교체합니다.
+                // ※ api.js 또는 GAS(구글앱스스크립트) 내부에서 대관 목록을 반환하는 액션명(예: getBookings 등)에 맞게 수정해 주세요.
+                const bookingData = await apiGet("getBookings"); 
+                
+                if (!bookingData || bookingData.error || !Array.isArray(bookingData)) {
                     successCallback([]);
                     return;
                 }
 
-                const events = [];
-                stats.forEach(item => {
-                    const match = item.week.match(/(\d+)년\s+(\d+)월\s+(\d+)주차/);
-                    if (match) {
-                        const year = parseInt(match[1]);
-                        const month = parseInt(match[2]) - 1;
-                        const weekNum = parseInt(match[3]);
-
-                        let targetDate = new Date(year, month, 1);
-                        const firstDayObj = targetDate.getDay(); 
-                        let dayOffset = ((weekNum - 1) * 7) + (3 - firstDayObj);
-                        targetDate.setDate(targetDate.getDate() + dayOffset);
-
-                        events.push({
-                            title: `📊 ${match[2]}월 ${weekNum}주차 합계: ${item.total}명`,
-                            start: targetDate.toISOString().split('T')[0],
-                            allDay: true,
-                            color: '#111111'
-                        });
-                    }
+                // 💡 대관 신청 시트 데이터를 FullCalendar 포맷으로 변환
+                const events = bookingData.map(item => {
+                    // item.dateTime 형식이 "2026-07-08T14:00" 형태라고 가정합니다.
+                    // 만약 날짜와 시간이 분리되어 있다면 해당 키값에 맞게 매칭해야 합니다.
+                    const startISO = item.dateTime ? item.dateTime.replace(" ", "T") : "";
+                    
+                    return {
+                        title: `🔒 [${item.space || '대관'}] ${item.name || '예약 완료'}`, // 달력에 표시될 문구
+                        start: startISO, // 시작 일시
+                        // 만약 종료 시간(item.hours)이 있다면 연산하여 end 지정을 해줄 수도 있습니다.
+                        color: getSpaceColor(item.space) // 공간별 색상 구분 (하단 함수 참고)
+                    };
                 });
+
                 successCallback(events);
             } catch (error) {
                 console.error("Calendar data fetch error:", error);
@@ -391,6 +386,17 @@ function initFullCalendar() {
         }
     });
     calendar.render();
+}
+
+// 💡 공간별로 달력의 막대 색상을 다르게 주어 가독성을 높이는 보조 함수
+function getSpaceColor(space) {
+    switch(space) {
+        case '댄스실': return '#FF5A36'; // 힙한 오렌지
+        case '음악실': return '#2563EB'; // 블루
+        case '동아리방': return '#16A34A'; // 그린
+        case '어울림방': return '#7C3AED'; // 퍼플
+        default: return '#111111';
+    }
 }
 
 async function sendPost(mode) {
