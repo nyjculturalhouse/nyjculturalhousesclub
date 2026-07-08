@@ -9,6 +9,8 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    
     <script>
         // 💡 [수정] 메인 시스템 스펙과 완전히 일치하는 테마 컬러 코드를 주입했습니다.
         tailwind.config = {
@@ -52,8 +54,13 @@
             vertical-align: middle; 
         }
         
-        .calendar-wrapper { position: relative; padding-bottom: 75%; height: 0; overflow: hidden; }
-        .calendar-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        /* FullCalendar 내부 미세 스타일 조정 (기존 디자인 무스킨 유지) */
+        .fc { font-family: 'Pretendard', sans-serif; }
+        .fc .fc-button-primary { background-color: #111111; border-color: #111111; }
+        .fc .fc-button-primary:hover { background-color: #222222; border-color: #222222; }
+        .fc .fc-button-primary:disabled { background-color: #cccccc; border-color: #cccccc; }
+        .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
+        .fc th { font-weight: 600; color: #555555; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -76,14 +83,8 @@
         <p class="text-gray-500 mt-2 text-sm font-medium">실시간으로 동아리 활동 일정을 확인하세요.</p>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-soft border border-outline p-2 md:p-3">
-        <div class="calendar-wrapper rounded-xl overflow-hidden">
-            <iframe 
-                src="https://calendar.google.com/calendar/embed?src=50489bb94f6692f724424cec2456fc1cc336bebd077ead18d09bba1f3ef2d4b7@group.calendar.google.com&ctz=Asia/Seoul&mode=AGENDA&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0"
-                frameborder="0"
-                scrolling="no"
-            ></iframe>
-        </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-outline p-4 md:p-6">
+        <div id="calendar"></div>
     </div>
 </main>
 
@@ -94,5 +95,40 @@
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/app.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'ko',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            buttonText: {
+                today: '오늘',
+                month: '월',
+                week: '주',
+                list: '목록'
+            },
+            editable: false,
+            selectable: true,
+            events: async function(info, successCallback, failureCallback) {
+                try {
+                    // 외부 api.js나 app.js 구조에 맞추어 연동할 수 있도록 기본 fetch 구조 대기설정
+                    // 추후 필요 시 이 부분에 이벤트를 받아오는 통신 코드가 위치하게 됩니다.
+                    successCallback([]); 
+                } catch (error) {
+                    failureCallback(error);
+                }
+            }
+        });
+        
+        calendar.render();
+    });
+</script>
 </body>
 </html>
