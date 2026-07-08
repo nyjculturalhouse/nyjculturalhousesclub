@@ -31,7 +31,8 @@
                         outline: "#EAEAEA"
                     },
                     boxShadow: {
-                        soft: "0 8px 30px rgba(0,0,0,0.03)"
+                        soft: "0 8px 30px rgba(0,0,0,0.03)",
+                        modal: "0 20px 50px rgba(0, 0, 0, 0.15)"
                     }
                 }
             }
@@ -63,7 +64,7 @@
         .fc th { font-weight: 600; color: #555555; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col antialiased relative">
 
 <header class="w-full top-0 sticky bg-[#F4F4F3] border-b border-outline z-50">
     <div class="flex justify-between items-center px-6 py-4 max-w-[1200px] mx-auto">
@@ -87,6 +88,49 @@
     </div>
 </main>
 
+<div id="activity-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="closeActivityModal(event)">
+    <div class="bg-white rounded-2xl border border-outline shadow-modal max-w-md w-full overflow-hidden transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+        
+        <div class="h-1.5 bg-accent-bg w-full"></div>
+        
+        <div class="p-6 md:p-8">
+            <div class="flex justify-between items-start gap-4 mb-6">
+                <div>
+                    <span id="modal-club-badge" class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-[#111111] text-white tracking-wide mb-2">동아리명</span>
+                    <h3 id="modal-event-title" class="magazine-title text-2xl text-primary leading-snug">활동 내용명</h3>
+                </div>
+                <button onclick="closeActivityModal()" class="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-primary transition">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+            
+            <div class="space-y-4 border-t border-outline pt-6 text-sm">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-gray-400 mt-0.5">schedule</span>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">시작 일시</p>
+                        <p id="modal-start-time" class="text-primary font-medium mt-0.5">2026년 00월 00일 00:00</p>
+                    </div>
+                </div>
+                
+                <div id="modal-end-container" class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-gray-400 mt-0.5">event_busy</span>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">종료 일시</p>
+                        <p id="modal-end-time" class="text-primary font-medium mt-0.5">2026년 00월 00일 00:00</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <button onclick="closeActivityModal()" class="w-full bg-[#111111] text-white font-bold py-3.5 rounded-xl hover:bg-[#222222] transition shadow-sm text-sm">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer class="w-full py-8 text-center text-xs text-gray-400 font-medium tracking-wider border-t border-outline/40">
     <p>© 2026 Culture Connect. All rights reserved.</p>
 </footer>
@@ -96,6 +140,62 @@
 <script src="js/app.js"></script>
 
 <script>
+    // 💡 날짜 데이터를 웹진 뷰어 형식에 맞춰 정교하게 포맷팅하는 헬퍼 함수
+    function formatKoreanDateTime(dateStr, isAllDay) {
+        if (!dateStr) return "-";
+        try {
+            // 빈칸 스페이스를 T포맷으로 완화해 크로스브라우징 파싱 유도
+            const d = new Date(dateStr.replace(" ", "T"));
+            if (isNaN(d.getTime())) return dateStr;
+            
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            
+            if (isAllDay) {
+                return `${year}년 ${month}월 ${day}일 (종일)`;
+            } else {
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+            }
+        } catch(e) {
+            return dateStr;
+        }
+    }
+
+    // 💡 모달 열기 핸들러
+    function openActivityModal(club, eventName, start, end, isAllDay) {
+        document.getElementById('modal-club-badge').innerText = club || "지정 안 됨";
+        document.getElementById('modal-event-title').innerText = eventName || "내용 없음";
+        document.getElementById('modal-start-time').innerText = formatKoreanDateTime(start, isAllDay);
+        
+        const endContainer = document.getElementById('modal-end-container');
+        if (end) {
+            endContainer.classList.remove('hidden');
+            document.getElementById('modal-end-time').innerText = formatKoreanDateTime(end, isAllDay);
+        } else {
+            endContainer.classList.add('hidden');
+        }
+        
+        const modal = document.getElementById('activity-modal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+        }, 10);
+    }
+
+    // 💡 모달 닫기 핸들러
+    function closeActivityModal() {
+        const modal = document.getElementById('activity-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return; 
@@ -117,12 +217,16 @@
             editable: false,
             selectable: true,
             
-            // 💡 [추가 스펙] 달력 내부 일정을 누르면 디테일한 정보를 직관적으로 출력하는 알림 팝업창 구현
+            // 💡 [연동 완료] 커스텀 모달 호출 파트
             eventClick: function(info) {
-                const clubName = info.event.extendedProps.club || "지정 안 됨";
-                const eventTitle = info.event.extendedProps.event || "내용 없음";
-                
-                alert(`📌 [외부 활동 정보]\n\n• 동아리명: ${clubName}\n• 활동내용: ${eventTitle}`);
+                const props = info.event.extendedProps;
+                openActivityModal(
+                    props.club, 
+                    props.event, 
+                    props.rawStart, 
+                    props.rawEnd, 
+                    info.event.allDay
+                );
             },
 
             events: async function(info, successCallback, failureCallback) {
@@ -142,10 +246,12 @@
                           allDay: act.allDay === "true" || act.allDay === true,
                           color: '#FF5A36',
                           
-                          // 💡 [중요 데이터 매핑] 클릭 핸들러에서 안전하게 원본 데이터를 가공해서 읽을 수 있도록 세팅합니다.
+                          // 원본 타임스탬프 유실 방지를 위한 순수 데이터 보관소 바인딩
                           extendedProps: {
                               club: act.club,
-                              event: act.event
+                              event: act.event,
+                              rawStart: act.dateTime,
+                              rawEnd: act.endDateTime
                           }
                         };
                     });
