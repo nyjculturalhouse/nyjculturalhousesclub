@@ -3,7 +3,6 @@ const AttendanceApp = (() => {
     /* =========================
         STATE & USER ID GENERATOR
     ========================= */
-    // 브라우저별 고유 UID를 로컬스토리지에 생성/관리하여 IP 차단 버그 우회
     function getOrCreateUID() {
         let uid = localStorage.getItem("user_unique_id");
         if (!uid) {
@@ -174,7 +173,7 @@ const AttendanceApp = (() => {
             clubName: state.club,
             attendees: state.members,
             day: state.day,
-            uid: getOrCreateUID() // 고유 식별키 전송
+            uid: getOrCreateUID()
         });
 
         if (!res) {
@@ -189,7 +188,6 @@ const AttendanceApp = (() => {
 
         alert("출석이 저장되었습니다.");
         
-        // 제출 후 상태 및 스텝 초기화
         state.members = [];
         state.club = '';
         state.day = '';
@@ -206,61 +204,4 @@ const AttendanceApp = (() => {
 window.AttendanceApp = AttendanceApp;
 window.submitAttendance = AttendanceApp.submit;
 
-
-/* ==========================================================
-    🔥 [교정 완료] calendar.html 전용 - 동아리 외부활동 공유 캘린더 연동 스크립트
-========================================================== */
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarEl = document.getElementById('calendar');
-    if (!calendarEl) return; 
-    
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'ko',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,listWeek'
-        },
-        buttonText: {
-            today: '오늘',
-            month: '월',
-            week: '주',
-            list: '목록'
-        },
-        editable: false,
-        selectable: true,
-        events: async function(info, successCallback, failureCallback) {
-            try {
-                // 💡 [중요 수정] GAS 백엔드의 submitExternal에서 저장하는 양식 구조와 매칭되도록 "getActivities" 부분이 유지되거나 연동을 보장합니다.
-                const activities = await apiGet("getActivities");
-                
-                if (!activities || activities.error || !Array.isArray(activities)) {
-                    successCallback([]);
-                    return;
-                }
-
-                const events = activities.map(act => {
-                    // 구글 스프레드시트 날짜 규격을 ISO 형식(T)으로 가공
-                    const startIso = act.dateTime ? act.dateTime.replace(" ", "T") : "";
-                    
-                    return {
-                        // 외부활동 전용 캘린더 타이틀 포맷 (GAS의 submitExternal 데이터 규격인 d.event, d.club 매칭 반영)
-                        title: `[${act.club || '동아리'}] ${act.event || '외부활동'}`,
-                        start: startIso,
-                        end: act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined,
-                        allDay: act.allDay === "true" || act.allDay === true, // 하루 종일 이벤트 처리 여부
-                        color: '#FF5A36' // 문화의집 메인 시그니처 컬러(힙 오렌지)로 통일
-                    };
-                });
-
-                successCallback(events);
-            } catch (error) {
-                console.error("외부활동 캘린더 로드 실패:", error);
-                failureCallback(error);
-            }
-        }
-    });
-    
-    calendar.render();
-});
+// 💡 [안내] calendar.html 자체 캘린더 구동 로직과의 충돌 방지를 위해 app.js 내부의 중복 이벤트 바인딩 코드는 제거되었습니다.
