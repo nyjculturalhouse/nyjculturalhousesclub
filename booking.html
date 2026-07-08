@@ -14,7 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
 <script>
-// 💡 [수정] 메인 시스템 스펙과 완전히 일치하는 테마 컬러 코드를 주입했습니다.
+// 💡 메인 시스템 스펙과 완전히 일치하는 테마 컬러 코드를 주입했습니다.
 tailwind.config = {
     theme: {
         extend: {
@@ -41,10 +41,10 @@ tailwind.config = {
 </script>
 
 <style>
-/* 💡 [수정] 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
+/* 💡 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
 body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacing: -0.01em; }
 
-/* 💡 [수정 완료] 이전 요청 사항과 일치하도록 font-weight를 800에서 300으로 줄였습니다. */
+/* 💡 타이틀 font-weight를 300으로 일치 정돈 */
 .magazine-title {
     font-weight: 300 !important;
     letter-spacing: -0.04em !important;
@@ -79,7 +79,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #111111/20; border-radius: 10px; }
 
-/* 💡 [수정 완료] 다른 페이지 스펙과 무드를 일치시키기 위해 아이콘 폰트 가중치 정돈 */
+/* 💡 아이콘 폰트 가중치 정돈 */
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined' !important;
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
@@ -93,7 +93,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     direction: ltr !important;
 }
 
-/* 💡 [수정 보완] FullCalendar 전용 테마 무스킨 스타일을 이식하여 대관 캘린더의 일체감을 높였습니다. */
+/* 💡 FullCalendar 전용 테마 무스킨 스타일 이식 */
 .fc { font-family: 'Pretendard', sans-serif; }
 .fc .fc-button-primary { background-color: #111111 !important; border-color: #111111 !important; }
 .fc .fc-button-primary:hover { background-color: #222222 !important; border-color: #222222 !important; }
@@ -272,7 +272,6 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 <script src="js/api.js"></script>
 
 <script>
-// 💡 [수정 보완] FullCalendar 객체 핸들러 관리를 위한 전역 변수 설정
 let calendar = null;
 
 function formatPhoneNumber(value) {
@@ -299,7 +298,6 @@ function showBookingTab(tab) {
     document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
     document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
 
-    // 💡 [수정 보완] 숨겨져 있던 캘린더 탭이 활성화될 때 레이아웃이 찌그러지거나 안 보이지 않도록 동적으로 FullCalendar 엔진을 구동하고 동기화합니다.
     if (tab === 'calendar') {
         if (!calendar) {
             initFullCalendar();
@@ -332,7 +330,6 @@ function getOrCreateUID() {
     return uid;
 }
 
-// 🔥 FullCalendar 구동 및 대관 신청 데이터 연동 로직으로 수정
 function initFullCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
@@ -355,8 +352,6 @@ function initFullCalendar() {
         selectable: true,
         events: async function(info, successCallback, failureCallback) {
             try {
-                // 💡 [변경] 출석부 통계("getStats") 대신 대관 리스트를 가져오는 명령어로 교체합니다.
-                // ※ api.js 또는 GAS(구글앱스스크립트) 내부에서 대관 목록을 반환하는 액션명(예: getBookings 등)에 맞게 수정해 주세요.
                 const bookingData = await apiGet("getBookings"); 
                 
                 if (!bookingData || bookingData.error || !Array.isArray(bookingData)) {
@@ -364,17 +359,12 @@ function initFullCalendar() {
                     return;
                 }
 
-                // 💡 대관 신청 시트 데이터를 FullCalendar 포맷으로 변환
+                // 💡 [교정 완료] GAS 내부 'getBookingSheetData'에서 가공한 오브젝트의 키(title, start)와 완벽 동기화
                 const events = bookingData.map(item => {
-                    // item.dateTime 형식이 "2026-07-08T14:00" 형태라고 가정합니다.
-                    // 만약 날짜와 시간이 분리되어 있다면 해당 키값에 맞게 매칭해야 합니다.
-                    const startISO = item.dateTime ? item.dateTime.replace(" ", "T") : "";
-                    
                     return {
-                        title: `🔒 [${item.space || '대관'}] ${item.name || '예약 완료'}`, // 달력에 표시될 문구
-                        start: startISO, // 시작 일시
-                        // 만약 종료 시간(item.hours)이 있다면 연산하여 end 지정을 해줄 수도 있습니다.
-                        color: getSpaceColor(item.space) // 공간별 색상 구분 (하단 함수 참고)
+                        title: item.title,               // GAS에서 이미 '[공간] 이름' 형태로 가공하여 보내줌
+                        start: item.start,               // GAS에서 이미 규격 세탁 완료한 ISO 타임스탬프 스펙 연동
+                        color: getSpaceColor(item.space) // 공간별 스타일 컬러 매핑
                     };
                 });
 
@@ -388,7 +378,6 @@ function initFullCalendar() {
     calendar.render();
 }
 
-// 💡 공간별로 달력의 막대 색상을 다르게 주어 가독성을 높이는 보조 함수
 function getSpaceColor(space) {
     switch(space) {
         case '댄스실': return '#FF5A36'; // 힙한 오렌지
@@ -473,7 +462,6 @@ async function sendPost(mode) {
         document.getElementById('b_agree1').checked = false;
         document.getElementById('b_agree2').checked = false;
 
-        // 💡 [수정 보완] 새 예약 추가 완료 후 달력 데이터 자동 갱신 리로드
         if (calendar) {
             calendar.refetchEvents();
         }
