@@ -350,6 +350,14 @@ function initFullCalendar() {
         },
         editable: false,
         selectable: true,
+        
+        // 💡 [추가 스펙] 대관 일정을 클릭했을 때 뜨는 상세 내역 팝업창 구현
+        eventClick: function(info) {
+            const detailTitle = info.event.title || "대관 정보 없음";
+            
+            alert(`📌 [공간 대관 정보]\n\n• 예약 내용: ${detailTitle}`);
+        },
+
         events: async function(info, successCallback, failureCallback) {
             try {
                 const bookingData = await apiGet("getBookings"); 
@@ -359,7 +367,7 @@ function initFullCalendar() {
                     return;
                 }
 
-                // 💡 [교정 완료] GAS 내부 'getBookingSheetData'에서 가공한 오브젝트의 키(title, start)와 완벽 동기화
+                // 💡 GAS 내부 'getBookingSheetData'에서 가공한 오브젝트의 키(title, start)와 완벽 동기화
                 const events = bookingData.map(item => {
                     return {
                         title: item.title,               // GAS에서 이미 '[공간] 이름' 형태로 가공하여 보내줌
