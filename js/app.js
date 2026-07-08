@@ -1,7 +1,7 @@
 const AttendanceApp = (() => {
 
     /* =========================
-       STATE & USER ID GENERATOR
+        STATE & USER ID GENERATOR
     ========================= */
     // 브라우저별 고유 UID를 로컬스토리지에 생성/관리하여 IP 차단 버그 우회
     function getOrCreateUID() {
@@ -20,7 +20,7 @@ const AttendanceApp = (() => {
     };
 
     /* =========================
-       STEP CONTROL
+        STEP CONTROL
     ========================= */
     function showStep(step) {
         document.getElementById("step-days")?.classList.add("hidden");
@@ -31,7 +31,7 @@ const AttendanceApp = (() => {
     }
 
     /* =========================
-       INIT
+        INIT
     ========================= */
     function init() {
         showStep("step-days");
@@ -39,12 +39,12 @@ const AttendanceApp = (() => {
     }
 
     /* =========================
-       STEP 1 - DAYS
+        STEP 1 - DAYS
     ========================= */
     function renderDays() {
         const days = [
             { key: "화", en: "Tuesday", ko: "화요일" },
-            { key: "수", en: "Wednesday", ko: "수요일" },
+            { key: "수", en: "Wednesday", ko: "요일" },
             { key: "목", en: "Thursday", ko: "목요일" },
             { key: "금", en: "Friday", ko: "금요일" },
             { key: "토", en: "Saturday", ko: "토요일" },
@@ -75,7 +75,7 @@ const AttendanceApp = (() => {
     }
 
     /* =========================
-       STEP 2 - CLUBS
+        STEP 2 - CLUBS
     ========================= */
     async function loadClubs(day) {
         state.club = '';
@@ -112,7 +112,7 @@ const AttendanceApp = (() => {
     }
 
     /* =========================
-       STEP 3 - MEMBERS
+        STEP 3 - MEMBERS
     ========================= */
     async function loadMembers(club) {
         state.members = [];
@@ -157,7 +157,7 @@ const AttendanceApp = (() => {
     }
 
     /* =========================
-       SUBMIT
+        SUBMIT
     ========================= */
     async function submit() {
         if (!state.club) {
@@ -205,3 +205,59 @@ const AttendanceApp = (() => {
 
 window.AttendanceApp = AttendanceApp;
 window.submitAttendance = AttendanceApp.submit;
+
+
+/* ==========================================================
+   🔥 FullCalendar 구글 연동 전용 스크립트 결합 (디자인 변형 없음)
+========================================================== */
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return; // 달력 ID가 화면에 없으면 실행 중지
+    
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        buttonText: {
+            today: '오늘',
+            month: '월',
+            week: '주',
+            list: '목록'
+        },
+        editable: false,
+        selectable: true,
+        events: async function(info, successCallback, failureCallback) {
+            try {
+                // api.js를 통해 주간 통계 및 출석 현황을 기반으로 일정 데이터 조회
+                const stats = await apiGet("getStats");
+                
+                if (!stats || stats.error) {
+                    successCallback([]);
+                    return;
+                }
+
+                // 구글 시트 데이터를 FullCalendar 표준 일정 포맷으로 치환
+                const events = stats.map(item => {
+                    // 주차 데이터(예: "2026년 7월 2주차")를 연동 표기 형태로 변환 처리
+                    return {
+                        title: `${item.week} 합계: ${item.total}명`,
+                        start: new Date(), // 기본 현재 시점 배치 설정
+                        allDay: true,
+                        color: '#111111' // 기존 테마 스펙 다크 차콜 유지
+                    };
+                });
+
+                successCallback(events);
+            } catch (error) {
+                console.error("Calendar load error:", error);
+                failureCallback(error);
+            }
+        }
+    });
+    
+    calendar.render();
+});
