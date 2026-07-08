@@ -144,15 +144,16 @@
     function formatKoreanDateTime(dateStr, isAllDay) {
         if (!dateStr) return "-";
         try {
-            // 빈칸 스페이스를 T포맷으로 완화해 크로스브라우징 파싱 유도
-            const d = new Date(dateStr.replace(" ", "T"));
+            // 빈칸 스페이스를 T포맷으로 완화해 크로스브라우징 파싱 유도 및 동기화 안정성 보정
+            const cleanStr = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T");
+            const d = new Date(cleanStr);
             if (isNaN(d.getTime())) return dateStr;
             
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             
-            if (isAllDay) {
+            if (isAllDay === true || isAllDay === "true") {
                 return `${year}년 ${month}월 ${day}일 (종일)`;
             } else {
                 const hours = String(d.getHours()).padStart(2, '0');
@@ -160,18 +161,19 @@
                 return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
             }
         } catch(e) {
+            console.error("날짜 변환 실패:", e);
             return dateStr;
         }
     }
 
-    // 💡 모달 열기 핸들러
+    // 💡 모달 열기 핸들러 (undefined 유실 예외처리 강화)
     function openActivityModal(club, eventName, start, end, isAllDay) {
         document.getElementById('modal-club-badge').innerText = club || "지정 안 됨";
         document.getElementById('modal-event-title').innerText = eventName || "내용 없음";
         document.getElementById('modal-start-time').innerText = formatKoreanDateTime(start, isAllDay);
         
         const endContainer = document.getElementById('modal-end-container');
-        if (end) {
+        if (end && end !== "undefined" && end !== "null") {
             endContainer.classList.remove('hidden');
             document.getElementById('modal-end-time').innerText = formatKoreanDateTime(end, isAllDay);
         } else {
@@ -217,7 +219,7 @@
             editable: false,
             selectable: true,
             
-            // 💡 [연동 완료] 커스텀 모달 호출 파트
+            // 💡 [수정 완료] 데이터 유실이 없도록 순수 상태로 가공된 extendedProps 명시 매핑
             eventClick: function(info) {
                 const props = info.event.extendedProps;
                 openActivityModal(
@@ -225,7 +227,7 @@
                     props.event, 
                     props.rawStart, 
                     props.rawEnd, 
-                    info.event.allDay
+                    props.isAllDay
                 );
             },
 
@@ -239,19 +241,24 @@
                     }
 
                     const events = activities.map(act => {
+                        const isAllDayEvent = act.allDay === "true" || act.allDay === true;
+                        const parsedStart = act.dateTime ? act.dateTime.replace(" ", "T") : undefined;
+                        const parsedEnd = act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined;
+
                         return {
                           title: `[${act.club || '동아리'}] ${act.event || '외부활동'}`,
-                          start: act.dateTime,
-                          end: act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined,
-                          allDay: act.allDay === "true" || act.allDay === true,
+                          start: parsedStart,
+                          end: parsedEnd,
+                          allDay: isAllDayEvent,
                           color: '#FF5A36',
                           
-                          // 원본 타임스탬프 유실 방지를 위한 순수 데이터 보관소 바인딩
+                          // 외부 변수 참조 누락 필터를 완벽히 방어하기 위해 프롭스 구조 정규화
                           extendedProps: {
-                              club: act.club,
-                              event: act.event,
-                              rawStart: act.dateTime,
-                              rawEnd: act.endDateTime
+                              club: act.club || "지정 안 됨",
+                              event: act.event || "내용 없음",
+                              rawStart: act.dateTime || "",
+                              rawEnd: act.endDateTime || "",
+                              isAllDay: isAllDayEvent
                           }
                         };
                     });
