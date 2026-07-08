@@ -21,11 +21,11 @@
                             hover: "#222222"
                         },
                         accent: {
-                            bg: "#FF5A36",      // 힙한 오렌지 Redmond 포인트
+                            bg: "#FF5A36",     // 힙한 오렌지 Redmond 포인트
                             text: "#FFFFFF",
                             hover: "#E04825"
                         },
-                        bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
+                        bg: "#F4F4F3",         // 미색이 도는 부드러운 화이트 배경
                         surface: "#ffffff",
                         outline: "#EAEAEA"
                     }
@@ -80,14 +80,12 @@
             padding-bottom: 16px !important;
         }
         
-        /* 💡 [핵심 수정] 자바스크립트가 어떤 구조로 생성하든 무조건 스타일을 강제 주입합니다. */
-        
-        /* 1. 한글 요일 처리: 텍스트 길이가 1글자거나 day-kr 클래스를 가졌을 때 (글자 크고 무거운 회색) */
+        /* 💡 [수정] 요일 폰트 사이즈를 축소하여 전체 균형을 맞췄습니다. */
         #day-buttons button span:first-child, 
         #day-buttons button .day-kr,
         #day-buttons button span:not(.day-en):not(:only-child) {
-            font-size: 1.75rem !important;
-            font-weight: 800 !important;
+            font-size: 1.25rem !important;
+            font-weight: 700 !important;
             color: #374151 !important;
             line-height: 1 !important;
         }
