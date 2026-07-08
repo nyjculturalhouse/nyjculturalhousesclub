@@ -118,10 +118,38 @@
             selectable: true,
             events: async function(info, successCallback, failureCallback) {
                 try {
-                    // 외부 api.js나 app.js 구조에 맞추어 연동할 수 있도록 기본 fetch 구조 대기설정
-                    // 추후 필요 시 이 부분에 이벤트를 받아오는 통신 코드가 위치하게 됩니다.
-                    successCallback([]); 
+                    // 💡 [인원체크 통계 대신 대관/활동 내역 API로 매핑 교정]
+                    const bookings = await apiGet("getBookings"); 
+                    
+                    if (!bookings || bookings.error || !Array.isArray(bookings)) {
+                        successCallback([]);
+                        return;
+                    }
+
+                    // 공간별 캘린더 라벨 컬러 디자인 스펙
+                    const spaceColors = {
+                        "댄스실": "#FF5A36",   // 시그니처 오렌지
+                        "음악실": "#2563EB",   // 블루
+                        "어울림방": "#16A34A", // 그린
+                        "동아리방": "#7C3AED"  // 바이올렛
+                    };
+
+                    const events = bookings.map(b => {
+                        // 날짜 포맷팅 표준화
+                        const startIso = b.dateTime ? b.dateTime.replace(" ", "T") : "";
+                        
+                        return {
+                            title: `[${b.space || '대관'}] ${b.name || '예약'} - ${b.count || 1}명`,
+                            start: startIso,
+                            end: startIso ? new Date(new Date(startIso).getTime() + (parseInt(b.hours || 1) * 60 * 60 * 1000)).toISOString() : undefined,
+                            color: spaceColors[b.space] || "#111111",
+                            allDay: false
+                        };
+                    });
+
+                    successCallback(events);
                 } catch (error) {
+                    console.error("Calendar 외부활동 로드 실패:", error);
                     failureCallback(error);
                 }
             }
