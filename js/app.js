@@ -63,12 +63,12 @@ const AttendanceApp = (() => {
     ========================= */
     function renderDays() {
         const days = [
-            { key: "화", en: "TUE", ko: "화" },
-            { key: "수", en: "WED", ko: "수" },
-            { key: "목", en: "THU", ko: "목" },
-            { key: "금", en: "FRI", ko: "금" },
-            { key: "토", en: "SAT", ko: "토" },
-            { key: "일", en: "SUN", ko: "일" }
+            { key: "화요일", en: "TUE", ko: "화요일" },
+            { key: "수요일", en: "WED", ko: "수요일" },
+            { key: "목요일", en: "THU", ko: "목요일" },
+            { key: "금요일", en: "FRI", ko: "금요일" },
+            { key: "토요일", en: "SAT", ko: "토요일" },
+            { key: "일요일", en: "SUN", ko: "일요일" }
         ];
 
         const box = document.getElementById("day-buttons");
