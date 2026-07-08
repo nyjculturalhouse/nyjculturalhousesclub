@@ -161,5 +161,15 @@
         }
     });
 </script>
+    <div id="result-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all">
+        <div id="modal-icon" class="text-4xl mb-4"></div>
+        <h3 id="modal-title" class="text-xl font-bold text-primary mb-2"></h3>
+        <p id="modal-desc" class="text-gray-600 text-sm mb-6"></p>
+        <button onclick="closeModal()" class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-hover transition">
+            확인
+        </button>
+    </div>
+</div>
 </body>
 </html>
