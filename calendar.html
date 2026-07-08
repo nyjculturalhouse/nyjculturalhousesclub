@@ -96,9 +96,12 @@
 <script src="js/app.js"></script>
 
 <script>
+    // 💡 [교정] app.js 하단에 선언된 정형화된 외부활동(getActivities) 규격과 완전히 매칭하여 데이터를 바르게 로드합니다.
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) return; 
         
+        // app.js 내부 스크립트와 중복 실행을 방지하고 정확한 규격 매핑을 보장합니다.
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'ko',
@@ -117,38 +120,29 @@
             selectable: true,
             events: async function(info, successCallback, failureCallback) {
                 try {
-                    const bookings = await apiGet("getBookings"); 
+                    // app.js 규칙대로 getActivities 호출
+                    const activities = await apiGet("getActivities");
                     
-                    if (!bookings || bookings.error || !Array.isArray(bookings)) {
+                    if (!activities || activities.error || !Array.isArray(activities)) {
                         successCallback([]);
                         return;
                     }
 
-                    // 💡 [수정] 대관 목적의 데이터는 제외하고 "외부활동"만 필터링하여 노출합니다.
-                    const externalActivities = bookings.filter(b => b.purpose === "외부활동" || b.type === "외부활동");
-
-                    const spaceColors = {
-                        "댄스실": "#FF5A36",   
-                        "음악실": "#2563EB",   
-                        "어울림방": "#16A34A", 
-                        "동아리방": "#7C3AED"  
-                    };
-
-                    const events = externalActivities.map(b => {
-                        const startIso = b.dateTime ? b.dateTime.replace(" ", "T") : "";
+                    const events = activities.map(act => {
+                        const startIso = act.dateTime ? act.dateTime.replace(" ", "T") : "";
                         
                         return {
-                            title: `[${b.space || '대관'}] ${b.name || '예약'} - ${b.count || 1}명`,
+                            title: `[${act.club || '동아리'}] ${act.event || '외부활동'}`,
                             start: startIso,
-                            end: startIso ? new Date(new Date(startIso).getTime() + (parseInt(b.hours || 1) * 60 * 60 * 1000)).toISOString() : undefined,
-                            color: spaceColors[b.space] || "#111111",
-                            allDay: false
+                            end: act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined,
+                            allDay: act.allDay === "true" || act.allDay === true,
+                            color: '#FF5A36' // 시그니처 힙 오렌지 테마 컬러 유지
                         };
                     });
 
                     successCallback(events);
                 } catch (error) {
-                    console.error("Calendar 외부활동 로드 실패:", error);
+                    console.error("외부활동 캘린더 로드 실패:", error);
                     failureCallback(error);
                 }
             }
