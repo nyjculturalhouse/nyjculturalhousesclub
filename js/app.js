@@ -208,7 +208,7 @@ window.submitAttendance = AttendanceApp.submit;
 
 
 /* ==========================================================
-   🔥 FullCalendar 구글 연동 전용 스크립트 결합 (데이터 쏠림 버그 수정 완료)
+    🔥 [교정 완료] calendar.html 전용 - 동아리 외부활동 공유 캘린더 연동 스크립트
 ========================================================== */
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
@@ -232,45 +232,31 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: true,
         events: async function(info, successCallback, failureCallback) {
             try {
-                // 주간 통계 데이터를 가져옵니다.
-                const stats = await apiGet("getStats");
+                // 💡 [중요 수정] GAS 백엔드의 submitExternal에서 저장하는 양식 구조와 매칭되도록 "getActivities" 부분이 유지되거나 연동을 보장합니다.
+                const activities = await apiGet("getActivities");
                 
-                if (!stats || stats.error || !Array.isArray(stats)) {
+                if (!activities || activities.error || !Array.isArray(activities)) {
                     successCallback([]);
                     return;
                 }
 
-                const events = [];
-
-                stats.forEach(item => {
-                    // 주차 텍스트(예: "2026년 6월 2주차") 분석 엔진
-                    const match = item.week.match(/(\d+)년\s+(\d+)월\s+(\d+)주차/);
-                    if (match) {
-                        const year = parseInt(match[1]);
-                        const month = parseInt(match[2]) - 1; // JS 월은 0부터 시작
-                        const weekNum = parseInt(match[3]);
-
-                        // 해당 월의 1일 날짜 구하기
-                        let targetDate = new Date(year, month, 1);
-                        // 1일의 요일 획득
-                        const firstDayObj = targetDate.getDay(); 
-                        
-                        // 주차 계산 공식 역산하여 해당 주차의 수요일쯤 배치되도록 날짜 정밀 정렬
-                        let dayOffset = ((weekNum - 1) * 7) + (3 - firstDayObj);
-                        targetDate.setDate(targetDate.getDate() + dayOffset);
-
-                        events.push({
-                            title: `📊 ${match[2]}월 ${weekNum}주차 합계: ${item.total}명`,
-                            start: targetDate.toISOString().split('T')[0], // YYYY-MM-DD 형식 매핑
-                            allDay: true,
-                            color: '#111111' 
-                        });
-                    }
+                const events = activities.map(act => {
+                    // 구글 스프레드시트 날짜 규격을 ISO 형식(T)으로 가공
+                    const startIso = act.dateTime ? act.dateTime.replace(" ", "T") : "";
+                    
+                    return {
+                        // 외부활동 전용 캘린더 타이틀 포맷 (GAS의 submitExternal 데이터 규격인 d.event, d.club 매칭 반영)
+                        title: `[${act.club || '동아리'}] ${act.event || '외부활동'}`,
+                        start: startIso,
+                        end: act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined,
+                        allDay: act.allDay === "true" || act.allDay === true, // 하루 종일 이벤트 처리 여부
+                        color: '#FF5A36' // 문화의집 메인 시그니처 컬러(힙 오렌지)로 통일
+                    };
                 });
 
                 successCallback(events);
             } catch (error) {
-                console.error("Calendar load error:", error);
+                console.error("외부활동 캘린더 로드 실패:", error);
                 failureCallback(error);
             }
         }
