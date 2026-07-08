@@ -96,12 +96,10 @@
 <script src="js/app.js"></script>
 
 <script>
-    // 💡 [교정] app.js 하단에 선언된 정형화된 외부활동(getActivities) 규격과 완전히 매칭하여 데이터를 바르게 로드합니다.
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return; 
         
-        // app.js 내부 스크립트와 중복 실행을 방지하고 정확한 규격 매핑을 보장합니다.
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'ko',
@@ -120,7 +118,7 @@
             selectable: true,
             events: async function(info, successCallback, failureCallback) {
                 try {
-                    // app.js 규칙대로 getActivities 호출
+                    // 💡 GAS에서 단독 분리한 외부활동 명령어인 "getActivities"로 통신합니다.
                     const activities = await apiGet("getActivities");
                     
                     if (!activities || activities.error || !Array.isArray(activities)) {
@@ -129,14 +127,12 @@
                     }
 
                     const events = activities.map(act => {
-                        const startIso = act.dateTime ? act.dateTime.replace(" ", "T") : "";
-                        
                         return {
-                            title: `[${act.club || '동아리'}] ${act.event || '외부활동'}`,
-                            start: startIso,
-                            end: act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined,
-                            allDay: act.allDay === "true" || act.allDay === true,
-                            color: '#FF5A36' // 시그니처 힙 오렌지 테마 컬러 유지
+                          title: `[${act.club || '동아리'}] ${act.event || '외부활동'}`,
+                          start: act.dateTime,
+                          end: act.endDateTime ? act.endDateTime.replace(" ", "T") : undefined,
+                          allDay: act.allDay === "true" || act.allDay === true,
+                          color: '#FF5A36'
                         };
                     });
 
