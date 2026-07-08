@@ -93,7 +93,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     direction: ltr !important;
 }
 
-/* FullCalendar 디자인 무스킨 동화 설정 */
+/* 💡 [수정 보완] FullCalendar 전용 테마 무스킨 스타일을 이식하여 대관 캘린더의 일체감을 높였습니다. */
 .fc { font-family: 'Pretendard', sans-serif; }
 .fc .fc-button-primary { background-color: #111111 !important; border-color: #111111 !important; }
 .fc .fc-button-primary:hover { background-color: #222222 !important; border-color: #222222 !important; }
@@ -256,7 +256,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         <iframe id="schedule-frame"
             src="https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview"
             class="w-full h-[600px] rounded-xl">
-         iframe>
+        </iframe>
     </div>
 
 </section>
@@ -272,7 +272,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 <script src="js/api.js"></script>
 
 <script>
-// 🔥 FullCalendar 전역 변수 선언 및 객체 대기
+// 💡 [수정 보완] FullCalendar 객체 핸들러 관리를 위한 전역 변수 설정
 let calendar = null;
 
 function formatPhoneNumber(value) {
@@ -299,7 +299,7 @@ function showBookingTab(tab) {
     document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
     document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
 
-    // 🔥 캘린더 탭이 활성화될 때 레이아웃 왜곡 방지 및 렌더링 호출
+    // 💡 [수정 보완] 숨겨져 있던 캘린더 탭이 활성화될 때 레이아웃이 찌그러지거나 안 보이지 않도록 동적으로 FullCalendar 엔진을 구동하고 동기화합니다.
     if (tab === 'calendar') {
         if (!calendar) {
             initFullCalendar();
@@ -332,7 +332,7 @@ function getOrCreateUID() {
     return uid;
 }
 
-// 🔥 FullCalendar 독립 초기화 및 구글 연동 함수 구동
+// 💡 [수정 보완] FullCalendar 구동 및 GAS 연동을 위한 독립 구동 로직 복구
 function initFullCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
@@ -355,7 +355,7 @@ function initFullCalendar() {
         selectable: true,
         events: async function(info, successCallback, failureCallback) {
             try {
-                // api.js의 apiGet 함수를 이용해 구글 통계 및 상태 연동
+                // api.js의 apiGet 함수를 활용하여 구글 스프레드시트 통계 통신 연동
                 const stats = await apiGet("getStats");
                 if (!stats || stats.error || !Array.isArray(stats)) {
                     successCallback([]);
@@ -384,96 +384,3 @@ function initFullCalendar() {
                     }
                 });
                 successCallback(events);
-            } catch (error) {
-                console.error("Calendar data fetch error:", error);
-                failureCallback(error);
-            }
-        }
-    });
-    calendar.render();
-}
-
-async function sendPost(mode) {
-    if (mode === 'submitBooking') {
-        const name = document.getElementById('b_name').value.trim();
-        const phone = document.getElementById('b_phone').value.trim();
-        const space = document.getElementById('b_space').value;
-        const dateTime = document.getElementById('b_date').value;
-        const hours = document.getElementById('b_hours').value;
-        const count = document.getElementById('b_count').value;
-        const content = document.getElementById('b_content').value.trim();
-        
-        const agree1Checked = document.getElementById('b_agree1').checked;
-        const agree2Checked = document.getElementById('b_agree2').checked;
-
-        if (!name || !phone || !dateTime) {
-            alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
-            return;
-        }
-
-        if (phone.length < 12) {
-            alert("연락처를 올바른 형식(010-0000-0000)으로 정확하게 입력하세요.");
-            return;
-        }
-
-        if (!agree1Checked || !agree2Checked) {
-            alert("모든 필수 약관에 동의하셔야 대관 신청이 가능합니다.");
-            return;
-        }
-
-        const btn = document.getElementById('btn-submit-book');
-        btn.innerText = "신청서 전송 중...";
-        btn.disabled = true;
-
-        const res = await apiPost({
-            mode: mode,
-            name: name,
-            phone: phone,
-            space: space,
-            dateTime: dateTime,
-            hours: hours,
-            count: count,
-            content: content,
-            agree1: agree1Checked ? "동의" : "비동의",
-            agree2: agree2Checked ? "동의" : "비동의",
-            uid: getOrCreateUID()
-        });
-
-        btn.innerText = "대관 신청하기";
-        btn.disabled = false;
-
-        if (!res) {
-            alert("서버 통신 실패. 네트워크 연결을 확인하세요.");
-            return;
-        }
-
-        if (res.error) {
-            alert(res.error);
-            return;
-        }
-
-        const toastEl = document.getElementById('toast');
-        toastEl.classList.add('show');
-        setTimeout(() => toastEl.classList.remove('show'), 3000);
-
-        alert("공간 예약과 캘린더 등록이 완료되었습니다.");
-
-        document.getElementById('b_name').value = "";
-        document.getElementById('b_phone').value = "";
-        document.getElementById('b_date').value = "";
-        document.getElementById('b_hours').value = "1";
-        document.getElementById('b_count').value = "";
-        document.getElementById('b_content').value = "";
-        document.getElementById('b_agree1').checked = false;
-        document.getElementById('b_agree2').checked = false;
-
-        // 🔥 새 대관 신청 성공 시 달력 데이터 실시간 동기화 리로드
-        if (calendar) {
-            calendar.refetchEvents();
-        }
-    }
-}
-</script>
-
-</body>
-</html>
