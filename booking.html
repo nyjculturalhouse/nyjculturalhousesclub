@@ -11,6 +11,8 @@
 
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
 <script>
 // 💡 [수정] 메인 시스템 스펙과 완전히 일치하는 테마 컬러 코드를 주입했습니다.
 tailwind.config = {
@@ -90,6 +92,14 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     white-space: nowrap !important;
     direction: ltr !important;
 }
+
+/* FullCalendar 디자인 무스킨 동화 설정 */
+.fc { font-family: 'Pretendard', sans-serif; }
+.fc .fc-button-primary { background-color: #111111 !important; border-color: #111111 !important; }
+.fc .fc-button-primary:hover { background-color: #222222 !important; border-color: #222222 !important; }
+.fc .fc-button-primary:disabled { background-color: #cccccc !important; border-color: #cccccc !important; }
+.fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
+.fc th { font-weight: 600; color: #555555; }
 </style>
 </head>
 
@@ -246,20 +256,15 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         <iframe id="schedule-frame"
             src="https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview"
             class="w-full h-[600px] rounded-xl">
-        </iframe>
+         iframe>
     </div>
 
 </section>
 
 <section id="booking-calendar-section" class="hidden">
-
-    <div class="bg-white rounded-2xl border border-outline shadow-soft p-2">
-        <iframe
-            src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com"
-            class="w-full h-[600px] rounded-xl">
-        </iframe>
+    <div class="bg-white rounded-2xl border border-outline shadow-soft p-4 md:p-6">
+        <div id="calendar"></div>
     </div>
-
 </section>
 
 </main>
@@ -267,6 +272,9 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 <script src="js/api.js"></script>
 
 <script>
+// 🔥 FullCalendar 전역 변수 선언 및 객체 대기
+let calendar = null;
+
 function formatPhoneNumber(value) {
     if (!value) return value;
     const phoneNumber = value.replace(/[^\d]/g, '');
@@ -290,6 +298,15 @@ function showBookingTab(tab) {
     document.getElementById('tab-form-btn').className = tab === 'form' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
     document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
     document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
+
+    // 🔥 캘린더 탭이 활성화될 때 레이아웃 왜곡 방지 및 렌더링 호출
+    if (tab === 'calendar') {
+        if (!calendar) {
+            initFullCalendar();
+        } else {
+            calendar.updateSize();
+        }
+    }
 }
 
 function showSchedule(type) {
@@ -313,6 +330,67 @@ function getOrCreateUID() {
         localStorage.setItem("user_unique_id", uid);
     }
     return uid;
+}
+
+// 🔥 FullCalendar 독립 초기화 및 구글 연동 함수 구동
+function initFullCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
+
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        buttonText: {
+            today: '오늘',
+            month: '월',
+            week: '주',
+            list: '목록'
+        },
+        editable: false,
+        selectable: true,
+        events: async function(info, successCallback, failureCallback) {
+            try {
+                // api.js의 apiGet 함수를 이용해 구글 통계 및 상태 연동
+                const stats = await apiGet("getStats");
+                if (!stats || stats.error || !Array.isArray(stats)) {
+                    successCallback([]);
+                    return;
+                }
+
+                const events = [];
+                stats.forEach(item => {
+                    const match = item.week.match(/(\d+)년\s+(\d+)월\s+(\d+)주차/);
+                    if (match) {
+                        const year = parseInt(match[1]);
+                        const month = parseInt(match[2]) - 1;
+                        const weekNum = parseInt(match[3]);
+
+                        let targetDate = new Date(year, month, 1);
+                        const firstDayObj = targetDate.getDay(); 
+                        let dayOffset = ((weekNum - 1) * 7) + (3 - firstDayObj);
+                        targetDate.setDate(targetDate.getDate() + dayOffset);
+
+                        events.push({
+                            title: `📊 ${match[2]}월 ${weekNum}주차 합계: ${item.total}명`,
+                            start: targetDate.toISOString().split('T')[0],
+                            allDay: true,
+                            color: '#111111'
+                        });
+                    }
+                });
+                successCallback(events);
+            } catch (error) {
+                console.error("Calendar data fetch error:", error);
+                failureCallback(error);
+            }
+        }
+    });
+    calendar.render();
 }
 
 async function sendPost(mode) {
@@ -388,6 +466,11 @@ async function sendPost(mode) {
         document.getElementById('b_content').value = "";
         document.getElementById('b_agree1').checked = false;
         document.getElementById('b_agree2').checked = false;
+
+        // 🔥 새 대관 신청 성공 시 달력 데이터 실시간 동기화 리로드
+        if (calendar) {
+            calendar.refetchEvents();
+        }
     }
 }
 </script>
