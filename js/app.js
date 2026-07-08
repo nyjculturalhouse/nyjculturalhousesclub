@@ -44,7 +44,7 @@ const AttendanceApp = (() => {
     function renderDays() {
         const days = [
             { key: "화", en: "Tuesday", ko: "화요일" },
-            { key: "수", en: "Wednesday", ko: "요일" },
+            { key: "수", en: "Wednesday", ko: "수요일" },
             { key: "목", en: "Thursday", ko: "목요일" },
             { key: "금", en: "Friday", ko: "금요일" },
             { key: "토", en: "Saturday", ko: "토요일" },
@@ -208,11 +208,11 @@ window.submitAttendance = AttendanceApp.submit;
 
 
 /* ==========================================================
-   🔥 FullCalendar 구글 연동 전용 스크립트 결합 (디자인 변형 없음)
+   🔥 FullCalendar 구글 연동 전용 스크립트 결합 (데이터 쏠림 버그 수정 완료)
 ========================================================== */
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
-    if (!calendarEl) return; // 달력 ID가 화면에 없으면 실행 중지
+    if (!calendarEl) return; 
     
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -232,23 +232,40 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: true,
         events: async function(info, successCallback, failureCallback) {
             try {
-                // api.js를 통해 주간 통계 및 출석 현황을 기반으로 일정 데이터 조회
+                // 주간 통계 데이터를 가져옵니다.
                 const stats = await apiGet("getStats");
                 
-                if (!stats || stats.error) {
+                if (!stats || stats.error || !Array.isArray(stats)) {
                     successCallback([]);
                     return;
                 }
 
-                // 구글 시트 데이터를 FullCalendar 표준 일정 포맷으로 치환
-                const events = stats.map(item => {
-                    // 주차 데이터(예: "2026년 7월 2주차")를 연동 표기 형태로 변환 처리
-                    return {
-                        title: `${item.week} 합계: ${item.total}명`,
-                        start: new Date(), // 기본 현재 시점 배치 설정
-                        allDay: true,
-                        color: '#111111' // 기존 테마 스펙 다크 차콜 유지
-                    };
+                const events = [];
+
+                stats.forEach(item => {
+                    // 주차 텍스트(예: "2026년 6월 2주차") 분석 엔진
+                    const match = item.week.match(/(\d+)년\s+(\d+)월\s+(\d+)주차/);
+                    if (match) {
+                        const year = parseInt(match[1]);
+                        const month = parseInt(match[2]) - 1; // JS 월은 0부터 시작
+                        const weekNum = parseInt(match[3]);
+
+                        // 해당 월의 1일 날짜 구하기
+                        let targetDate = new Date(year, month, 1);
+                        // 1일의 요일 획득
+                        const firstDayObj = targetDate.getDay(); 
+                        
+                        // 주차 계산 공식 역산하여 해당 주차의 수요일쯤 배치되도록 날짜 정밀 정렬
+                        let dayOffset = ((weekNum - 1) * 7) + (3 - firstDayObj);
+                        targetDate.setDate(targetDate.getDate() + dayOffset);
+
+                        events.push({
+                            title: `📊 ${match[2]}월 ${weekNum}주차 합계: ${item.total}명`,
+                            start: targetDate.toISOString().split('T')[0], // YYYY-MM-DD 형식 매핑
+                            allDay: true,
+                            color: '#111111' 
+                        });
+                    }
                 });
 
                 successCallback(events);
