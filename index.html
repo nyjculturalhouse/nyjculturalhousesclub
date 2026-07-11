@@ -1,90 +1,122 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>소소책방 | 홈</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { pretendard: ['Pretendard', 'sans-serif'] },
-          colors: {
-            primary: { DEFAULT: "#111111", hover: "#222222" },
-            accent: { bg: "#FF5A36", text: "#FFFFFF", hover: "#E04825" },
-            surface: "#F4F4F3",
-            container: "#FFFFFF",
-            onSurface: "#111111"
-          },
-          boxShadow: { soft: "0 8px 30px rgba(0,0,0,0.03)" },
-          borderRadius: { xl: "18px" }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
-  <link rel="stylesheet" href="./css/style.css">
-  <script src="./js/app.js" defer></script>
-  <script src="./js/api.js" defer></script>
-  <script src="./js/ui.js" defer></script>
-  <script src="./js/utils.js" defer></script>
-</head>
-<body class="bg-surface text-onSurface font-pretendard">
-  <!-- Header -->
-  <header class="bg-container shadow-soft sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-      <a href="index.html" class="text-xl font-bold tracking-tight">📚 소소책방</a>
-      <nav class="hidden md:flex items-center gap-6 font-medium text-sm">
-        <a href="index.html" class="text-accent-bg font-bold">홈</a>
-        <a href="books.html" class="hover:text-accent-bg transition-colors">도서대여</a>
-        <a href="rentals.html" class="hover:text-accent-bg transition-colors">대여현황</a>
-        <a href="profile.html" class="hover:text-accent-bg transition-colors">내정보</a>
-        <button id="logoutBtn" class="text-gray-400 hover:text-red-500 transition-colors">로그아웃</button>
-      </nav>
-      <button id="mobileMenuBtn" class="md:hidden material-symbols-outlined">menu</button>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>남양주시 문화의집 웹시스템</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=calendar_month,check_circle,event_note,home_app_logo,share_windows" />
+
+<!-- 💡 [폰트 변경] 요즘 가장 힙한 브랜드/IT 서비스 표준인 Pretendard 폰트를 연동합니다 -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<script>
+@@ -42,9 +41,9 @@
+/* 💡 전체 폰트를 Pretendard로 지정하고 기본 자간을 살짝 당겨 정돈합니다. */
+body { font-family: 'Pretendard', sans-serif; background:#F4F4F3; letter-spacing: -0.01em; }
+
+/* 💡 [핵심 가이드 적용] 타이틀 전용 힙 매거진 타이포그래피 클래스 */
+/* 💡 [수정 완료] 기존 font-weight: 800에서 요청하신 300으로 줄였습니다. */
+.magazine-title {
+  font-weight: 800 !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.1 !important;
+}
+@@ -88,22 +87,19 @@
+
+<header class="fixed top-0 left-0 w-full h-16 bg-[#F4F4F3] border-b border-gray-200 z-50 flex items-center">
+  <div class="max-w-[1200px] mx-auto w-full flex justify-between items-center px-5">
+    <!-- 💡 메인 헤더 타이틀에 가이드 속성 적용 -->
+    <h1 class="magazine-title text-primary text-xl">남양주시 문화의집 웹시스템</h1>
+  </div>
+</header>
+
+<main class="pt-24 pb-28 max-w-[1200px] mx-auto px-5">
+
+<!-- 💡 메인 섹션 타이틀에 가이드 속성 적용 -->
+<section class="mb-10">
+  <h2 class="magazine-title text-4xl text-primary">문화의집 동아리 통합 시스템</h2>
+  <p class="text-gray-500 mt-3 text-sm font-medium">출석, 공간 예약, 외부활동을 한곳에서 관리하세요.</p>
+</section>
+
+<div class="bento-grid">
+
+  <!-- 1. 동아리 출석부 -->
+  <button onclick="location.href='attendance.html'"
+    class="card-hover bg-primary hover:bg-primary-hover text-white p-8 rounded-xl text-left overflow-hidden relative md:col-span-2">
+
+@@ -113,7 +109,6 @@
+      <span class="material-symbols-outlined text-3xl">check_circle</span>
     </div>
-  </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-10 flex flex-col gap-16">
-    <!-- 검색 히어로 -->
-    <section class="text-center flex flex-col items-center gap-6 py-6">
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">오늘은 어떤 책을 만나볼까요?</h1>
-      <form id="homeSearchForm" class="relative w-full max-w-lg">
-        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-        <input type="text" id="homeSearchInput" placeholder="도서명, 저자, 출판사, ISBN" class="w-full h-14 pl-12 pr-4 bg-container rounded-xl shadow-soft border-none outline-none focus:ring-2 focus:ring-accent-bg text-sm">
-      </form>
-    </section>
+    <!-- 💡 내부 카드 타이틀 가이드 속성 적용 -->
+    <h3 class="magazine-title text-2xl mb-2">동아리 출석부</h3>
+    <p class="text-white/80 text-sm mb-6">빠르고 정확한 출석 관리</p>
 
-    <!-- 카테고리 바로가기 -->
-    <section>
-      <div id="categoryList" class="flex gap-3 overflow-x-auto pb-2">
-        <div class="h-10 w-24 skeleton shrink-0"></div>
-        <div class="h-10 w-24 skeleton shrink-0"></div>
-        <div class="h-10 w-24 skeleton shrink-0"></div>
-      </div>
-    </section>
+@@ -122,63 +117,59 @@
+    </div>
+  </button>
 
-    <!-- 신간 도서 -->
-    <section>
-      <div class="flex items-center justify-between mb-5">
-        <h2 class="text-lg font-bold">신간 도서</h2>
-        <a href="books.html?sort=new" class="text-xs text-gray-400 hover:text-accent-bg transition-colors">전체보기</a>
-      </div>
-      <div id="newBooksList" class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
-    </section>
+  <!-- 2. 공간 이용 예약 -->
+  <button onclick="location.href='booking.html'"
+    class="card-hover bg-white p-8 rounded-xl text-left border border-gray-200 shadow-soft">
 
-    <!-- 인기 도서 TOP5 -->
-    <section>
-      <div class="flex items-center justify-between mb-5">
-        <h2 class="text-lg font-bold">인기 도서 TOP 5</h2>
-        <a href="books.html?sort=popular" class="text-xs text-gray-400 hover:text-accent-bg transition-colors">전체보기</a>
-      </div>
-      <div id="popularBooksList" class="flex flex-col gap-3"></div>
-    </section>
-  </main>
+    <div class="mb-5 p-3 bg-gray-100 text-primary rounded-lg inline-flex items-center justify-center">
+      <span class="material-symbols-outlined text-3xl">event_note</span>
+    </div>
 
-  <div id="toastContainer" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2"></div>
+    <!-- 💡 내부 카드 타이틀 가이드 속성 적용 -->
+    <h3 class="magazine-title text-xl mb-2 text-primary">공간 이용 예약</h3>
+    <p class="text-gray-500 text-sm mb-6">원하는 시간에 필요한 공간을 예약하세요.</p>
+    <div class="text-primary font-bold text-sm">예약하기 →</div>
+  </button>
+
+  <!-- 3. 외부활동 공유 -->
+  <button onclick="location.href='external.html'"
+    class="card-hover bg-accent-bg hover:bg-accent-hover text-white p-8 rounded-xl text-left border border-transparent shadow-soft">
+
+    <div class="mb-5 p-3 bg-white/20 text-white rounded-lg inline-flex items-center justify-center">
+      <span class="material-symbols-outlined text-3xl">share_windows</span>
+    </div>
+
+    <!-- 💡 내부 카드 타이틀 가이드 속성 적용 -->
+    <h3 class="magazine-title text-xl mb-2 text-white">외부활동 공유</h3>
+    <p class="text-white/90 text-sm mb-6">다양한 활동 소식을 간편하게 등록하세요.</p>
+    <div class="text-white font-bold text-sm">등록하기 →</div>
+  </button>
+
+</div>
+
+<div class="mt-10 space-y-4">
+  <button onclick="window.open('https://www.nyjcf.or.kr/www/1', '_blank')"
+    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-white/50 transition flex items-center justify-center gap-2 text-sm">
+    <span class="material-symbols-outlined text-primary text-xl">home_app_logo</span>
+    <span>남양주문화재단</span>
+    <span class="text-xs font-medium text-primary/80 ml-1">남양주시 문화예술 확인하기 ▶</span>
+  </button>
+
+  <button onclick="location.href='calendar.html'"
+    class="w-full py-4 rounded-xl border border-primary text-primary font-bold hover:bg-white/50 transition flex items-center justify-center gap-2 text-sm">
+    <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
+    <span>동아리 활동 일정 확인</span>
+  </button>
+</div>
+
+<div class="mt-10 text-center">
+  <button onclick="location.href='admin.html'"
+    class="text-xs text-gray-400 hover:text-gray-600 underline font-medium tracking-wide">
+    관리자 페이지
+  </button>
+</div>
+
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>
