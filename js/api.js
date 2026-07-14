@@ -1,5 +1,4 @@
-// 💡 config.js 파일이 api.js와 같은 폴더(js/) 안에 있으므로 경로를 ./config.js로 수정합니다.
-import { API_URL } from './config.js'; 
+const API_URL = "https://script.google.com/macros/s/AKfycbw8TIvA_grDjk0Lu98nSh3gplAUBHezY5rp5ANDlxu4Fk7b2x6VRd0Lbw6wgFNA-NvL9A/exec";
 
 /* =========================
    GET
@@ -56,6 +55,3 @@ async function apiPost(data) {
         return { error: "네트워크 오류" };
     }
 }
-
-// 외부 파일에서 모듈로 호출하여 사용할 수 있도록 내보냅니다.
-export { apiGet, apiPost };
