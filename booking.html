@@ -318,7 +318,17 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     <p>© 2026 Culture Connect. All rights reserved.</p>
 </footer>
 
-<script src="js/api.js"></script>
+<!-- 기존 <script src="js/api.js"></script> 구문은 삭제하거나 주석 처리하고, 아래와 같이 작성합니다. -->
+<script type="module">
+    // api.js에서 함수를 직접 가져옵니다.
+    import { apiGet, apiPost } from './js/api.js';
+    
+    // 만약 기존 HTML 코드 내 script 영역에서 apiGet, apiPost를 사용하고 있었다면 
+    // 이 type="module" 블록 안으로 해당 실행 코드(예: sendPost 등)를 함께 옮기거나, 
+    // 브라우저 전역 변수(window)에 등록해 주어야 정상 작동합니다.
+    window.apiGet = apiGet;
+    window.apiPost = apiPost;
+</script>
 
 <script>
 let calendar = null;
