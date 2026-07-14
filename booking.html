@@ -664,73 +664,48 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             const agree1Checked = document.getElementById('b_agree1').checked;
             const agree2Checked = document.getElementById('b_agree2').checked;
 
-            if (!name || !phone || !dateTime) {
-                alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
-                return;
-            }
-
-            if (phone.length < 12) {
-                alert("연락처를 올바른 형식(010-0000-0000)으로 정확하게 입력하세요.");
+            if (!name || !phone || !dateTime || !hours || !count) {
+                alert("필수 입력 항목을 모두 채워주세요.");
                 return;
             }
 
             if (!agree1Checked || !agree2Checked) {
-                alert("모든 필수 약관에 동의하셔야 대관 신청이 가능합니다.");
+                alert("필수 약관 및 동의 사항에 동의해야 합니다.");
                 return;
             }
+
+            const payload = {
+                action: "createBooking",
+                uid: getOrCreateUID(),
+                name,
+                phone,
+                space,
+                dateTime,
+                hours,
+                count,
+                content
+            };
 
             const btn = document.getElementById('btn-submit-book');
-            btn.innerText = "신청서 전송 중...";
             btn.disabled = true;
+            btn.innerText = "처리 중...";
 
-            const res = await apiPost({
-                mode: mode,
-                name: name,
-                phone: phone,
-                space: space,
-                dateTime: dateTime,
-                hours: hours,
-                count: count,
-                content: content,
-                agree1: agree1Checked ? "동의" : "비동의",
-                agree2: agree2Checked ? "동의" : "비동의",
-                uid: getOrCreateUID()
-            });
-
-            btn.innerText = "대관 신청하기";
+            const res = await apiPost(payload);
             btn.disabled = false;
+            btn.innerText = "대관 신청하기";
 
-            if (!res) {
-                alert("서버 통신 실패. 네트워크 연결을 확인하세요.");
-                return;
-            }
-
-            if (res.error) {
-                alert(res.error);
-                return;
-            }
-
-            const toastEl = document.getElementById('toast');
-            toastEl.classList.add('show');
-            setTimeout(() => toastEl.classList.remove('show'), 3000);
-
-            alert("공간 예약과 캘린더 등록이 완료되었습니다.");
-
-            document.getElementById('b_name').value = "";
-            document.getElementById('b_phone').value = "";
-            document.getElementById('b_date').value = "";
-            document.getElementById('b_hours').value = "1";
-            document.getElementById('b_count').value = "";
-            document.getElementById('b_content').value = "";
-            document.getElementById('b_agree1').checked = false;
-            document.getElementById('b_agree2').checked = false;
-
-            if (calendar) {
-                calendar.refetchEvents();
+            if (res && !res.error) {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    location.reload();
+                }, 1500);
+            } else {
+                alert(res.error || "대관 신청 중 오류가 발생했습니다.");
             }
         }
     }
 </script>
-
 </body>
 </html>
