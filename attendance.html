@@ -296,15 +296,15 @@
 
 </main>
 
-
-
-<!-- 원래의 일반 스크립트 호출 방식으로 원상복구합니다 -->
-<script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
+<script src="js/api.js?v=1.0.1"></script>
+<script src="js/ui.js?v=1.0.1"></script>
+<script src="js/app.js?v=1.0.1"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        // api.js가 제대로 로드되었는지 콘솔로 실시간 진단합니다.
+        console.log("apiGet 존재 여부:", typeof window.apiGet); 
+        
         if (window.AttendanceApp) {
             window.AttendanceApp.init();
         }
