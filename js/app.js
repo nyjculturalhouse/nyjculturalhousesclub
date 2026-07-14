@@ -62,8 +62,6 @@ const AttendanceApp = (() => {
         STEP 1 - DAYS
     ========================= */
     function renderDays() {
-        // 💡 [수정] 시트의 요일 표기("화", "수", "목"...)와 완벽히 매칭되도록 key를 한 글자로 변경했습니다.
-        // 디자인(ko: "화요일")은 이전과 완전히 동일하게 유지되므로 레이아웃 손상이나 텍스트 유실이 전혀 없습니다.
         const days = [
             { key: "화", en: "TUE", ko: "화요일" },
             { key: "수", en: "WED", ko: "수요일" },
@@ -107,7 +105,14 @@ const AttendanceApp = (() => {
         if (!box) return;
         box.innerHTML = '<p class="text-gray-500 p-4">불러오는 중...</p>';
 
-        const clubs = await apiGet("getClubs", { day });
+        // 💡 [안전 보강] 전역 window 객체에서 apiGet 함수를 명시적으로 가져옵니다.
+        const getFn = window.apiGet || apiGet;
+        if (typeof getFn !== "function") {
+            box.innerHTML = "<p class='text-red-500 p-4'>API 로드 오류: 페이지를 새로고침 해주세요.</p>";
+            return;
+        }
+
+        const clubs = await getFn("getClubs", { day });
         box.innerHTML = "";
 
         if (!clubs || clubs.length === 0) {
@@ -143,7 +148,14 @@ const AttendanceApp = (() => {
         if (!box) return;
         box.innerHTML = '<p class="text-gray-500 p-4">불러오는 중...</p>';
 
-        let members = await apiGet("getMembers", { club });
+        // 💡 [안전 보강] 전역 window 객체에서 apiGet 함수를 명시적으로 가져옵니다.
+        const getFn = window.apiGet || apiGet;
+        if (typeof getFn !== "function") {
+            box.innerHTML = "<p class='text-red-500 p-4'>API 로드 오류</p>";
+            return;
+        }
+
+        let members = await getFn("getMembers", { club });
         box.innerHTML = "";
 
         if (members?.length === 1 && typeof members[0] === "string") {
@@ -187,7 +199,14 @@ const AttendanceApp = (() => {
             return;
         }
 
-        const res = await apiPost({
+        // 💡 [안전 보강] 전역 window 객체에서 apiPost 함수를 명시적으로 가져옵니다.
+        const postFn = window.apiPost || apiPost;
+        if (typeof postFn !== "function") {
+            alert("API 데이터 전송 함수가 준비되지 않았습니다. 새로고침 후 다시 시도해 주세요.");
+            return;
+        }
+
+        const res = await postFn({
             mode: "submitAttendance",
             clubName: state.club,
             attendees: state.members,
