@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbw8TIvA_grDjk0Lu98nSh3gplAUBHezY5rp5ANDlxu4Fk7b2x6VRd0Lbw6wgFNA-NvL9A/exec";
+import { API_URL } from '../config.js'; // 혹은 이전 경로
 
 /* =========================
    GET
