@@ -56,10 +56,7 @@ async function apiPost(data) {
     }
 }
 
-// 💡 [수정부분] 일반 스크립트 환경(window)과 ES 모듈 환경(export) 둘 다 완벽하게 호환되도록 처리
-if (typeof window !== "undefined") {
-    window.apiGet = apiGet;
-    window.apiPost = apiPost;
-}
-
-export { apiGet, apiPost };
+// 💡 [수정] 일반 브라우저 환경에서 충돌 없이 함수를 전역 객체로 바로 등록합니다.
+// 맨 하단에 에러를 유발하던 'export' 구문을 완전히 제거하여 브라우저 호환성을 확보했습니다.
+window.apiGet = apiGet;
+window.apiPost = apiPost;
