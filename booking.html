@@ -95,10 +95,9 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
 .fc th { font-weight: 600; color: #555555; }
 
-/* 💡 [수정] Grid를 완전히 한 묶음으로 제어할 수 있도록 셋팅 (헤더와 바디의 컬럼 크기 일치) */
 .timetable-grid {
     display: grid;
-    grid-template-columns: 80px repeat(20, minmax(60px, 1fr));
+    grid-template-columns: 80px repeat(20, minmax(65px, 1fr));
     border-top: 1px solid #EAEAEA;
     border-left: 1px solid #EAEAEA;
     background-color: #ffffff;
@@ -106,6 +105,13 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 .grid-cell-header {
     border-right: 1px solid #EAEAEA;
     border-bottom: 1px solid #EAEAEA;
+}
+
+/* 💡 [추정/추가] 주말 미운영 구역 사선 패턴 표시용 스타일 */
+.bg-striped {
+    background-image: linear-gradient(135deg, #f9f9f9 25%, transparent 25%, transparent 50%, #f9f9f9 50%, #f9f9f9 75%, transparent 75%, transparent);
+    background-size: 8px 8px;
+    background-color: #fcfcfc;
 }
 </style>
 </head>
@@ -260,7 +266,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     </div>
 
     <div class="bg-white rounded-2xl border border-outline shadow-soft p-6 overflow-x-auto custom-scrollbar">
-        <div id="timetable-view-container" class="min-w-[1050px]"></div>
+        <div id="timetable-view-container" class="min-w-[1100px]"></div>
     </div>
 
 </section>
@@ -404,11 +410,11 @@ function showBookingTab(tab) {
 const fixedSchedules = {
     dance: {
         title: "댄스실 시간표",
-        colorClass: "bg-orange-50 border-orange-400 text-orange-800",
+        colorClass: "bg-orange-50 border-orange-400 text-orange-900",
         data: [
             { day: "화", records: [{ name: "천하제일", time: "10:00~14:00" }, { name: "나래예술단", time: "14:00~16:00" }, { name: "아사모", time: "16:00~18:00" }] },
-            { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }, { name: "라니훌라", time: "18:30~19:30" }] },
-            { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }, { name: "훌라센스", time: "18:30~19:30" }] },
+            { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }] }, // 토/일 규정 적용을 위해 18:30 제거
+            { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }] }, 
             { day: "금", records: [{ name: "타울림", time: "10:00~13:00" }, { name: "라인나와유", time: "13:30~15:30" }, { name: "해피하모니", time: "15:30~17:00" }, { name: "덩더쿵사가지", time: "17:00~19:30" }] },
             { day: "토", records: [{ name: "훌라센스", time: "12:00~14:00" }] },
             { day: "일", records: [{ name: "궁채와열채사이", time: "10:00~13:00" }, { name: "소리노리", time: "13:00~15:00" }] }
@@ -416,7 +422,7 @@ const fixedSchedules = {
     },
     music: {
         title: "음악실 시간표",
-        colorClass: "bg-blue-50 border-blue-400 text-blue-800",
+        colorClass: "bg-blue-50 border-blue-400 text-blue-900",
         data: [
             { day: "화", records: [] },
             { day: "수", records: [{ name: "기타동동", time: "10:00~13:00" }, { name: "바람소리앙상블", time: "14:00~16:30" }] },
@@ -428,11 +434,11 @@ const fixedSchedules = {
     },
     clubroom: {
         title: "동아리방 시간표",
-        colorClass: "bg-green-50 border-green-400 text-green-800",
+        colorClass: "bg-green-50 border-green-400 text-green-900",
         data: [
             { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
             { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }] },
-            { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }, { name: "재미방", time: "18:00~19:30" }] },
+            { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }] }, 
             { day: "금", records: [{ name: "묵향", time: "10:00~14:00" }, { name: "꽃길명리", time: "15:00~17:30" }] },
             { day: "토", records: [] },
             { day: "일", records: [] }
@@ -440,19 +446,18 @@ const fixedSchedules = {
     },
     harmony: {
         title: "어울림방(커뮤니티) 시간표",
-        colorClass: "bg-purple-50 border-purple-400 text-purple-800",
+        colorClass: "bg-purple-50 border-purple-400 text-purple-900",
         data: [
             { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
             { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }, { name: "새로이음", time: "13:30~17:30" }] },
-            { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }, { name: "업:써", time: "18:00~19:30" }] },
+            { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }] }, 
             { day: "금", records: [{ name: "상록수", time: "10:00~11:30" }, { name: "우쿨오하나", time: "12:00~13:00" }, { name: "코인마술동아리", time: "14:00~18:00" }] },
             { day: "토", records: [] },
-            { day: "일", records: [] }
+            { day: "일", records: [{ name: "소리노리", time: "11:00~13:00" }] }
         ]
     }
 };
 
-// 💡 [수정] 완전히 1개의 Grid 랩퍼 구조 안에서 절대 행 정렬 방식으로 레이아웃 전면 수정
 function showSchedule(type) {
     const container = document.getElementById('timetable-view-container');
     const schedule = fixedSchedules[type];
@@ -476,7 +481,7 @@ function showSchedule(type) {
     let gridHtml = `
         <div class="mb-4 flex items-center justify-between">
             <h4 class="magazine-title text-lg text-primary">${schedule.title}</h4>
-            <span class="text-xs text-gray-400 font-medium">* 가로 스크롤을 통해 전체 배정 현황을 볼 수 있습니다.</span>
+            <span class="text-xs text-gray-400 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
         </div>
         <div class="timetable-grid text-sm text-center">
             <div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80">요일</div>
@@ -490,45 +495,69 @@ function showSchedule(type) {
         return baseIndex + Math.floor(diffMinutes / 30);
     }
 
-    // 각 요일마다 명확히 다른 행 인덱스(Grid Row)를 부여하여 요소가 겹치지 않게 조절
-    rowIdx = 2; // 1번은 헤더 라인
+    let rowIdx = 2; 
 
     schedule.data.forEach(row => {
-        // 요일 칸 배치
+        const isWeekend = (row.day === "토" || row.day === "일");
+
+        // 요일 칸 생성
         gridHtml += `
-            <div class="flex items-center justify-center font-bold bg-gray-50/50 border-right border-b border-outline py-4" 
-                 style="grid-column: 1; grid-row: ${rowIdx}; min-height: 78px;">${row.day}</div>
+            <div class="flex items-center justify-center font-bold bg-gray-50/50 border-right border-b border-outline py-4 text-sm" 
+                 style="grid-column: 1; grid-row: ${rowIdx}; min-height: 84px;">${row.day}</div>
         `;
 
-        // 배경 투명 가이드 셸 20칸 생성 (한 줄 내부 서브 그리드처럼 배치되도록 정렬)
+        // 배경 가이드 격자 20칸 생성
         for (let j = 0; j < 20; j++) {
-            gridHtml += `<div class="border-right border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+            // 💡 [수정] 토요일, 일요일 15시 이후(10개째 컬럼 이후) 미운영 스타일(bg-striped) 바인딩
+            if (isWeekend && j >= 10) {
+                gridHtml += `<div class="border-right border-b border-outline bg-striped" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+            } else {
+                gridHtml += `<div class="border-right border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+            }
         }
 
-        // 실제 이벤트 바인딩 (요일 칸과 완벽하게 동일한 grid-row 값을 타겟팅)
+        // 주말 미운영 텍스트 표시용 배너 바인딩 (15시부터 20시 범위 = Column index 12 ~ 22)
+        if (isWeekend) {
+            gridHtml += `
+                <div class="text-[12px] font-bold text-gray-400 bg-gray-100/40 flex items-center justify-center border-b border-outline tracking-wider pointer-events-none" 
+                     style="grid-column: 12 / 22; grid-row: ${rowIdx}; z-index: 5;">
+                    3시 이후 미운영
+                </div>
+            `;
+        }
+
+        // 카드 컴포넌트 렌더링
         row.records.forEach(ev => {
             const [startStr, endStr] = ev.time.split('~');
             const startCol = timeToColumnIndex(startStr);
             const endCol = timeToColumnIndex(endStr);
 
-            // 💡 [수정] 텍스트가 가로/세로로 밀려 겹치거나 잘리는 현상을 방지하기 위해 padding 및 flex 정돈
+            // 💡 [수정] 폰트 크기 증대 (text-[11px]->text-[13px], text-[9px]->text-[11px]) 및 여백 확장
             gridHtml += `
                 <div class="p-1 flex flex-col justify-center" 
                      style="grid-column: ${startCol} / ${endCol}; grid-row: ${rowIdx}; z-index: 10;">
-                    <div class="event px-2 py-1.5 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.01] ${schedule.colorClass} flex flex-col justify-center overflow-hidden" 
+                    <div class="event px-2.5 py-2 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.01] ${schedule.colorClass} flex flex-col justify-center overflow-hidden" 
                          style="height: calc(100% - 2px);">
-                        <strong class="font-bold text-[11px] md:text-xs truncate text-gray-900 tracking-tight" title="${ev.name}">${ev.name}</strong>
-                        <span class="text-[9px] font-mono opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
+                        <strong class="font-extrabold text-[13px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
+                        <span class="text-[11px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
                     </div>
                 </div>
             `;
         });
 
-        if (row.records.length === 0) {
+        if (!isWeekend && row.records.length === 0) {
             gridHtml += `
-                <div class="text-[11px] text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
+                <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
                      style="grid-column: 2 / 22; grid-row: ${rowIdx};">
                     배정된 고정 일정이 없습니다.
+                </div>
+            `;
+        } else if (isWeekend && row.records.length === 0) {
+            // 주말인데 3시 전에도 스케줄이 비어있을 때 빈 격자 텍스트 처리
+            gridHtml += `
+                <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
+                     style="grid-column: 2 / 12; grid-row: ${rowIdx};">
+                    일정 없음
                 </div>
             `;
         }
