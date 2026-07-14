@@ -101,6 +101,14 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 .fc .fc-button-primary:disabled { background-color: #cccccc !important; border-color: #cccccc !important; }
 .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
 .fc th { font-weight: 600; color: #555555; }
+
+/* 💡 고정 시간표 공간 전용 커스텀 레이아웃 그리드 스타일 */
+.timetable-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(10, minmax(100px, 1fr));
+    border-top: 1px solid #EAEAEA;
+    border-left: 1px solid #EAEAEA;
+}
 </style>
 </head>
 
@@ -247,17 +255,15 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 <section id="booking-schedule-section" class="hidden space-y-4">
 
     <div class="flex flex-wrap gap-2">
-        <button onclick="showSchedule('dance')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-outline hover:bg-primary hover:text-white transition">댄스실</button>
-        <button onclick="showSchedule('music')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-outline hover:bg-primary hover:text-white transition">음악실</button>
-        <button onclick="showSchedule('clubroom')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-outline hover:bg-primary hover:text-white transition">동아리방</button>
-        <button onclick="showSchedule('harmony')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-outline hover:bg-primary hover:text-white transition">어울림방</button>
+        <button id="btn-sched-dance" onclick="showSchedule('dance')" class="px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white border border-outline transition">댄스실</button>
+        <button id="btn-sched-music" onclick="showSchedule('music')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition">음악실</button>
+        <button id="btn-sched-clubroom" onclick="showSchedule('clubroom')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition">동아리방</button>
+        <button id="btn-sched-harmony" onclick="showSchedule('harmony')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition">어울림방</button>
     </div>
 
-    <div class="bg-white rounded-2xl border border-outline shadow-soft p-2">
-        <iframe id="schedule-frame"
-            src="https://drive.google.com/file/d/1yxM0hEBg6i5G9soy5fTbP0brCFh0smhn/preview"
-            class="w-full h-[600px] rounded-xl">
-        </iframe>
+    <!-- 💡 iframe 대신 디자인 시스템 맞춤형 네이티브 타임라인 컨테이너 배치 -->
+    <div class="bg-white rounded-2xl border border-outline shadow-soft p-6 overflow-x-auto custom-scrollbar">
+        <div id="timetable-view-container" class="min-w-[1000px]"></div>
     </div>
 
 </section>
@@ -390,6 +396,10 @@ function showBookingTab(tab) {
     document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
     document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
 
+    if (tab === 'schedule') {
+        showSchedule('dance'); // 기본값으로 댄스실 상시 렌더링
+    }
+
     if (tab === 'calendar') {
         if (!calendar) {
             initFullCalendar();
@@ -399,18 +409,113 @@ function showBookingTab(tab) {
     }
 }
 
-function showSchedule(type) {
-    const frame = document.getElementById('schedule-frame');
-    const urls = {
-        dance: "https://drive.google.com/file/d/1LWshNFVdXaKa5D6omvwbOsXFYGocZ3Qq/preview",
-        music: "https://drive.google.com/file/d/1pNwsDWqZW7LeFJePMxHT6rnwBEwbYZpv/preview",
-        clubroom: "https://drive.google.com/file/d/1gLP-ECVhMrOMKbUNWoWSTVY1N89AXRUQ/preview",
-        harmony: "https://drive.google.com/file/d/1qXmKM_pXyVi-Bkj9Ex08N6AiQElLgLnV/preview"
-    };
-
-    if (urls[type]) {
-        frame.src = urls[type];
+// 💡 각 공간별 고정 스케줄러 데이터셋 빌더 정의
+const fixedSchedules = {
+    dance: {
+        title: "댄스실 고정 시간표",
+        colorClass: "bg-orange-100 border-orange-500 text-orange-700",
+        data: [
+            { day: "화", records: [{ name: "천하제일", time: "10:00~14:00" }, { name: "나래예술단", time: "14:00~16:00" }, { name: "아사모", time: "16:00~18:00" }] },
+            { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }, { name: "라니훌라", time: "18:30~19:30" }] },
+            { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }, { name: "훌라센스", time: "18:30~19:30" }] },
+            { day: "금", records: [{ name: "타울림", time: "10:00~13:00" }, { name: "라인나와유", time: "13:30~15:30" }, { name: "해피하모니", time: "15:30~17:00" }, { name: "덩더쿵사가지", time: "17:00~19:30" }] },
+            { day: "토", records: [{ name: "훌라센스", time: "12:00~14:00" }] },
+            { day: "일", records: [{ name: "궁채와열채사이", time: "10:00~13:00" }, { name: "소리노리", time: "13:00~15:00" }] }
+        ]
+    },
+    music: {
+        title: "음악실 고정 시간표",
+        colorClass: "bg-blue-100 border-blue-500 text-blue-700",
+        data: [
+            { day: "화", records: [] },
+            { day: "수", records: [{ name: "기타동동", time: "10:00~13:00" }, { name: "바람소리앙상블", time: "14:00~16:30" }] },
+            { day: "목", records: [{ name: "* 오톳이 (1,3주)", time: "10:00~13:00" }] },
+            { day: "금", records: [{ name: "버킷피아노", time: "11:30~13:00" }, { name: "여섯줄사랑", time: "13:00~17:00" }] },
+            { day: "토", records: [{ name: "오쏠리", time: "10:00~14:00" }] },
+            { day: "일", records: [] }
+        ]
+    },
+    clubroom: {
+        title: "동아리방 고정 시간표",
+        colorClass: "bg-green-100 border-green-500 text-green-700",
+        data: [
+            { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
+            { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }] },
+            { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }, { name: "재미방", time: "18:00~19:30" }] },
+            { day: "금", records: [{ name: "묵향", time: "10:00~14:00" }, { name: "꽃길명리", time: "15:00~17:30" }] },
+            { day: "토", records: [] },
+            { day: "일", records: [] }
+        ]
+    },
+    harmony: {
+        title: "어울림방(커뮤니티) 고정 시간표",
+        colorClass: "bg-purple-100 border-purple-500 text-purple-700",
+        data: [
+            { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
+            { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }, { name: "새로이음", time: "13:30~17:30" }] },
+            { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }, { name: "업:써", time: "18:00~19:30" }] },
+            { day: "금", records: [{ name: "상록수", time: "10:00~11:30" }, { name: "우쿨오하나", time: "12:00~13:00" }, { name: "코인마술동아리", time: "14:00~18:00" }] },
+            { day: "토", records: [] },
+            { day: "일", records: [{ name: "소리노리", time: "11:00~13:00" }] }
+        ]
     }
+};
+
+// 💡 구글 드라이브 아이프레임 연동 로직 철거 및 전용 데이터 컴포넌트 이식 가동
+function showSchedule(type) {
+    const container = document.getElementById('timetable-view-container');
+    const schedule = fixedSchedules[type];
+    if (!schedule) return;
+
+    // 상단 탭 버튼 활성화 상태 제어
+    const types = ['dance', 'music', 'clubroom', 'harmony'];
+    types.forEach(t => {
+        const btn = document.getElementById(`btn-sched-${t}`);
+        if(t === type) {
+            btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white border border-outline transition";
+        } else {
+            btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition";
+        }
+    });
+
+    const hoursHeader = Array.from({length: 10}, (_, i) => `<div class="grid-header text-xs">${10 + i}:00</div>`).join('');
+
+    let gridHtml = `
+        <div class="mb-4 flex items-center justify-between">
+            <h4 class="magazine-title text-lg text-primary">${schedule.title}</h4>
+            <span class="text-xs text-gray-400 font-medium">* 가로 스크롤로 전체 시간대를 확인할 수 있습니다.</span>
+        </div>
+        <div class="timetable-grid text-sm text-center">
+            <div class="grid-header text-xs">요일</div>
+            ${hoursHeader}
+    `;
+
+    schedule.data.forEach(row => {
+        gridHtml += `
+            <div class="flex items-center justify-center font-bold bg-gray-50 border-right border-b border-outline py-4">${row.day}</div>
+        `;
+
+        for (let h = 10; h <= 19; h++) {
+            const matchedEvents = row.records.filter(e => {
+                const startHour = parseInt(e.time.split('~')[0].split(':')[0]);
+                return startHour === h;
+            });
+
+            gridHtml += `<div class="p-1 border-right border-b border-outline flex flex-col justify-center gap-1 bg-white min-h-[70px]">`;
+            matchedEvents.forEach(ev => {
+                gridHtml += `
+                    <div class="event p-1.5 rounded text-left border-l-4 text-[11px] leading-tight flex flex-col ${schedule.colorClass}">
+                        <strong class="font-bold overflow-hidden text-ellipsis whitespace-nowrap">${ev.name}</strong>
+                        <span class="text-[9px] opacity-80">${ev.time}</span>
+                    </div>
+                `;
+            });
+            gridHtml += `</div>`;
+        }
+    });
+
+    gridHtml += `</div>`;
+    container.innerHTML = gridHtml;
 }
 
 function getOrCreateUID() {
