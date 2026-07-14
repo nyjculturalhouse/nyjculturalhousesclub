@@ -55,3 +55,5 @@ async function apiPost(data) {
         return { error: "네트워크 오류" };
     }
 }
+
+export { apiGet, apiPost };
