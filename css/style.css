@@ -2,33 +2,37 @@
    style.css (Culture Connect Attendance)
    ========================= */
 
-/* 1. 기본 폰트 */
+/* 1. 기본 폰트 & 배경 (Pretendard 적용 및 미색 배경 매핑) */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
-    background: #faf8ff;
+    background: #F4F4F3; /* 매거진 스타일의 부드러운 화이트 미색 */
+    color: #111111;
+    letter-spacing: -0.01em;
 }
 
 /* =========================
    2. 핵심 버튼 스타일 (JS 생성용 필수)
    ========================= */
 .btn {
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
+    padding: 12px 16px;
+    border: 1px solid #EAEAEA;
     border-radius: 12px;
     background: #ffffff;
     cursor: pointer;
     font-weight: 500;
     text-align: left;
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     display: block;
     width: 100%;
     font-size: 14px;
+    color: #111111;
 }
 
+/* 호버 시: 테마 컬러인 깊은 차콜(#111111) 라인 피드백 */
 .btn:hover {
-    border-color: #2563eb;
-    background: #eff6ff;
+    border-color: #111111;
+    background: #fafafa;
     transform: translateY(-1px);
 }
 
@@ -37,27 +41,30 @@ body {
     transform: scale(0.98);
 }
 
-/* 선택된 상태 */
+/* 선택된 상태: 오렌지 레드 포인트 매핑으로 직관성 향상 */
 .btn.selected {
-    border: 2px solid #2563eb !important;
-    background: #eff6ff !important;
-    color: #2563eb;
+    border: 2px solid #FF5A36 !important; /* 힙한 오렌지 레드 테두리 */
+    background: #FFF8F6 !important;        /* 아주 옅은 오렌지 틴트 배경 */
+    color: #FF5A36;
+    font-weight: 700;
 }
 
 /* =========================
    3. 카드/글래스 UI (확장용)
    ========================= */
 .card {
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
     transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
 }
 
 .glass {
     background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 /* =========================
@@ -65,20 +72,22 @@ body {
    ========================= */
 .glass-card {
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(234, 234, 234, 0.8);
 }
 
 /* =========================
-   5. 토스트 애니메이션
+   5. 토스트 애니메이션 (차콜 모던 스타일)
    ========================= */
 #toast {
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #toast.hidden {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate(-50%, 20px) !important; /* 가로 중앙 정렬 유지용 세이프 가드 */
     pointer-events: none;
 }
 
@@ -86,7 +95,7 @@ body {
    6. 오버레이
    ========================= */
 #overlay {
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s ease;
 }
 
 /* =========================
@@ -97,8 +106,24 @@ body {
 }
 
 /* =========================
-   8. 스크롤 UX 개선 (선택)
+   8. 스크롤 UX 개선 & 스크롤바 커스텀
    ========================= */
 html {
     scroll-behavior: smooth;
+}
+
+/* 크롬, 사파리 브라우저 맞춤형 미니멀 스크롤바 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(17, 17, 17, 0.1);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(17, 17, 17, 0.3);
 }
