@@ -1,184 +1,345 @@
 <!DOCTYPE html>
+
 <html lang="ko">
+
 <head>
+
     <meta charset="utf-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>동아리 출석체크 | 동아리 출석부</title>
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
     
+
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200&icon_names=home_app_logo" rel="stylesheet" />
+
     
+
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
     
+
     <script>
+
+        // 💡 [수정] 메인 페이지와 일치하는 테마 컬러 설정 적용
+
         tailwind.config = {
+
             theme: {
+
                 extend: {
+
                     colors: {
+
                         primary: {
-                            DEFAULT: "#111111", 
+
+                            DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
+
                             hover: "#222222"
+
                         },
+
                         accent: {
-                            bg: "#FF5A36",      
+
+                            bg: "#FF5A36",     // 힙한 오렌지 Redmond 포인트
+
                             text: "#FFFFFF",
+
                             hover: "#E04825"
+
                         },
-                        bg: "#F4F4F3",          
+
+                        bg: "#F4F4F3",         // 미색이 도는 부드러운 화이트 배경
+
                         surface: "#ffffff",
+
                         outline: "#EAEAEA"
+
                     }
+
                 }
+
             }
+
         }
+
     </script>
+
     <style>
+
+        /* 💡 [수정] 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
+
         body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacing: -0.01em; }
+
         .hidden { display: none; }
+
         
+
+        /* 💡 [수정 완료] 요청하신 대로 800에서 300으로 두께를 얇게 조절했습니다. */
+
         .magazine-title {
+
             font-weight: 300 !important;
+
             letter-spacing: -0.04em !important;
+
             line-height: 1.1 !important;
+
         }
+
         
+
+        /* 💡 [수정] 선택되었을 때의 테마를 메인 시스템 스펙에 맞춰 다크 차콜 보더와 은은한 미색 톤으로 정돈 */
+
         .selected {
+
             border: 2px solid #111111 !important;
+
             background: #EAEAEA !important;
+
             color: #111111 !important; 
+
         }
+
         
+
         .selected * {
+
             color: #111111 !important;
+
         }
+
+
+
+        /* 💡 [수정] 아이콘 폰트 두께가 너무 연하게 보이지 않도록 wght 값을 600(진하게)으로 상향 교체 */
 
         .material-symbols-outlined {
+
             font-family: 'Material Symbols Outlined' !important;
+
             font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24 !important;
+
             display: inline-block !important;
+
             vertical-align: middle !important;
+
             text-transform: lowercase !important;
+
             font-style: normal !important;
+
             letter-spacing: normal !important;
+
             word-wrap: normal !important;
+
             white-space: nowrap !important;
+
             direction: ltr !important;
+
         }
+
+
 
         #day-buttons button {
+
             display: flex !important;
-            flex-direction: column-reverse !important; 
+
+            flex-direction: column-reverse !important; /* 위아래 순서 반전 */
+
             align-items: center !important;
+
             justify-content: center !important;
+
             gap: 6px !important;
+
             padding-top: 16px !important;
+
             padding-bottom: 16px !important;
+
         }
+
         
+
+        /* 💡 [수정] 요일 폰트 사이즈를 축소하여 전체 균형을 맞췄습니다. */
+
         #day-buttons button span:first-child, 
+
         #day-buttons button .day-kr,
+
         #day-buttons button span:not(.day-en):not(:only-child) {
+
             font-size: 1.25rem !important;
+
             font-weight: 700 !important;
+
             color: #374151 !important;
+
             line-height: 1 !important;
+
         }
+
         
+
+        /* 2. 영문 요일 처리: 텍스트 길이가 길거나 day-en 클래스를 가졌을 때 (글자 작고 진한 차콜) */
+
         #day-buttons button span:last-child,
+
         #day-buttons button .day-en {
+
             font-size: 0.75rem !important;
+
             font-weight: 600 !important;
+
             color: #111111 !important;
+
             text-transform: uppercase !important;
+
             opacity: 0.9 !important;
+
         }
+
     </style>
+
 </head>
+
 <body class="min-h-screen flex flex-col antialiased">
 
+
+
 <header class="sticky top-0 z-50 bg-[#F4F4F3] border-b border-outline">
+
     <div class="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
+
         <div class="magazine-title text-primary text-xl">동아리 출석부</div>
+
         
+
         <button onclick="location.href='index.html'" 
+
                 class="p-2 rounded-full hover:bg-white/50 transition flex items-center justify-center text-primary" 
+
                 title="메인으로">
+
             <span class="material-symbols-outlined">home_app_logo</span>
+
         </button>
+
     </div>
+
 </header>
 
+
+
 <main class="flex-1 max-w-[1200px] mx-auto w-full px-4 py-10">
+
     <div id="view-attendance" class="space-y-10">
+
         
+
         <section id="step-days">
+
             <div class="mb-6">
+
                 <h1 class="magazine-title text-2xl text-primary">요일 선택</h1>
+
                 <p class="text-gray-700 mt-2 text-sm font-semibold">출석을 등록할 요일을 선택하세요.</p>
+
             </div>
+
             <div id="day-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+
         </section>
+
+
 
         <section id="step-clubs" class="hidden">
+
             <div class="mb-6">
+
                 <h1 class="magazine-title text-2xl text-primary">동아리 선택</h1>
+
                 <p class="text-gray-700 mt-2 text-sm font-semibold">출석을 시작할 동아리를 선택하세요.</p>
+
             </div>
+
             <div id="club-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+
         </section>
+
+
 
         <section id="step-members" class="hidden">
+
             <div class="mb-6">
+
                 <h1 id="club-title" class="magazine-title text-2xl text-primary"></h1>
+
                 <p class="text-gray-700 mt-2 text-sm font-semibold">출석한 회원을 모두 선택하세요.</p>
+
             </div>
+
             <div id="member-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+
             
+
             <button onclick="window.submitAttendance()" class="w-full mt-8 bg-accent-bg text-white py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition shadow-sm">
+
                 출석 제출하기
+
             </button>
+
         </section>
+
     </div>
+
 </main>
 
-<!-- 모달 레이어 -->
-<div id="result-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all">
-        <div id="modal-icon" class="text-4xl mb-4"></div>
-        <h3 id="modal-title" class="text-xl font-bold text-primary mb-2"></h3>
-        <p id="modal-desc" class="text-gray-600 text-sm mb-6"></p>
-        <button onclick="closeModal()" class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-hover transition">
-            확인
-        </button>
-    </div>
-</div>
 
-<!-- 💡 스크립트 연결 방식을 Module 타입에 안전하게 맞추어 선언합니다 -->
-<script type="module" src="js/api.js"></script>
-<script type="module" src="js/ui.js"></script>
-<script type="module" src="js/app.js"></script>
 
-<script type="module">
-    // ESM 환경에서 전역 모달 닫기 함수 연결
-    window.closeModal = function() {
-        const modal = document.getElementById('result-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-        }
-    };
+<script src="js/api.js"></script>
+
+<script src="js/ui.js"></script>
+
+<script src="js/app.js"></script>
+
+
+
+<script>
 
     document.addEventListener("DOMContentLoaded", () => {
-        // App이 전역 범위에 정상 초기화될 수 있도록 체크 및 실행
+
         if (window.AttendanceApp) {
+
             window.AttendanceApp.init();
-        } else {
-            // ESM 로딩 지연 등으로 아직 window 등록이 안 되었을 시점 대비 실행 예약
-            setTimeout(() => {
-                if (window.AttendanceApp) window.AttendanceApp.init();
-            }, 100);
+
         }
+
     });
+
 </script>
 
+    <div id="result-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all">
+
+        <div id="modal-icon" class="text-4xl mb-4"></div>
+
+        <h3 id="modal-title" class="text-xl font-bold text-primary mb-2"></h3>
+
+        <p id="modal-desc" class="text-gray-600 text-sm mb-6"></p>
+
+        <button onclick="closeModal()" class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-hover transition">
+
+            확인
+
+        </button>
+
+    </div>
+
+</div>
+
 </body>
-</html>
+
+</html> 
