@@ -56,4 +56,10 @@ async function apiPost(data) {
     }
 }
 
+// 💡 [수정부분] 일반 스크립트 환경(window)과 ES 모듈 환경(export) 둘 다 완벽하게 호환되도록 처리
+if (typeof window !== "undefined") {
+    window.apiGet = apiGet;
+    window.apiPost = apiPost;
+}
+
 export { apiGet, apiPost };
