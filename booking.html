@@ -14,21 +14,20 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
 <script>
-// 💡 메인 시스템 스펙과 완전히 일치하는 테마 컬러 코드를 주입했습니다.
 tailwind.config = {
     theme: {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
+                    DEFAULT: "#111111", 
                     hover: "#222222"
                 },
                 accent: {
-                    bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
+                    bg: "#FF5A36",      
                     text: "#FFFFFF",
                     hover: "#E04825"
                 },
-                bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
+                bg: "#F4F4F3",          
                 surface: "#ffffff",
                 outline: "#EAEAEA"
             },
@@ -42,10 +41,8 @@ tailwind.config = {
 </script>
 
 <style>
-/* 💡 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
 body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacing: -0.01em; }
 
-/* 💡 타이틀 font-weight를 300으로 일치 정돈 */
 .magazine-title {
     font-weight: 300 !important;
     letter-spacing: -0.04em !important;
@@ -68,19 +65,16 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 }
 .toast.show { visibility: visible; }
 
-/* 💡 탭 활성화 시 디자인 시스템에 맞춰 블랙 언더라인으로 교체 */
 .tab-active {
     border-bottom: 2px solid #111111;
     color: #111111;
     font-weight: 800;
 }
 
-/* 스크롤바 커스텀 */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #111111/20; border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(17, 17, 17, 0.2); border-radius: 10px; }
 
-/* 💡 아이콘 폰트 가중치 정돈 */
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined' !important;
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
@@ -94,7 +88,6 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     direction: ltr !important;
 }
 
-/* 💡 FullCalendar 전용 테마 무스킨 스타일 이식 */
 .fc { font-family: 'Pretendard', sans-serif; }
 .fc .fc-button-primary { background-color: #111111 !important; border-color: #111111 !important; }
 .fc .fc-button-primary:hover { background-color: #222222 !important; border-color: #222222 !important; }
@@ -102,12 +95,18 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
 .fc th { font-weight: 600; color: #555555; }
 
-/* 💡 고정 시간표 공간 전용 커스텀 레이아웃 그리드 스타일 */
+/* 💡 [수정] 30분 단위 그리드로 정밀 표현을 위해 열 개수를 20칸(10시~20시)으로 확장하고 border 스타일 최적화 */
 .timetable-grid {
     display: grid;
-    grid-template-columns: 80px repeat(10, minmax(100px, 1fr));
+    /* 요일 열(80px) + 10시부터 20시까지 총 10시간을 30분 단위로 쪼갬 = 총 20개 컬럼 */
+    grid-template-columns: 80px repeat(20, minmax(50px, 1fr));
     border-top: 1px solid #EAEAEA;
     border-left: 1px solid #EAEAEA;
+    background-color: #ffffff;
+}
+.grid-cell-header {
+    border-right: 1px solid #EAEAEA;
+    border-bottom: 1px solid #EAEAEA;
 }
 </style>
 </head>
@@ -261,7 +260,6 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         <button id="btn-sched-harmony" onclick="showSchedule('harmony')" class="px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition">어울림방</button>
     </div>
 
-    <!-- 💡 iframe 대신 디자인 시스템 맞춤형 네이티브 타임라인 컨테이너 배치 -->
     <div class="bg-white rounded-2xl border border-outline shadow-soft p-6 overflow-x-auto custom-scrollbar">
         <div id="timetable-view-container" class="min-w-[1000px]"></div>
     </div>
@@ -276,11 +274,9 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 
 </main>
 
-<!-- 💡 [추가 스펙] 시스템 테마 컬러 기반의 웹진 모달 레이어 구조 설계 -->
 <div id="booking-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="closeBookingModal()">
     <div class="bg-white rounded-2xl border border-outline shadow-modal max-w-md w-full overflow-hidden transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
         
-        <!-- 상단 라인 (공간 색상에 따라 JS에서 동적으로 매핑) -->
         <div id="modal-top-bar" class="h-1.5 w-full bg-primary"></div>
         
         <div class="p-6 md:p-8">
@@ -306,7 +302,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             
             <div class="mt-8">
                 <button onclick="closeBookingModal()" class="w-full bg-[#111111] text-white font-bold py-3.5 rounded-xl hover:bg-[#222222] transition shadow-sm text-sm">
-                    확인
+                    确认
                 </button>
             </div>
         </div>
@@ -322,7 +318,6 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 <script>
 let calendar = null;
 
-// 💡 타임스탬프를 직관적인 한국어 날짜 형식으로 세탁해 주는 가공 엔진
 function formatKoreanDateTime(dateStr) {
     if (!dateStr) return "-";
     try {
@@ -341,7 +336,6 @@ function formatKoreanDateTime(dateStr) {
     }
 }
 
-// 💡 대관 확인 웹진 모달 제어 핸들러
 function openBookingModal(spaceName, titleText, rawStart) {
     const badge = document.getElementById('modal-space-badge');
     const topBar = document.getElementById('modal-top-bar');
@@ -350,7 +344,6 @@ function openBookingModal(spaceName, titleText, rawStart) {
     document.getElementById('modal-booking-title').innerText = titleText || "대관 정보 없음";
     document.getElementById('modal-booking-time').innerText = formatKoreanDateTime(rawStart);
     
-    // 공간 고유 색상을 배지와 모달 바에 매핑
     const color = getSpaceColor(spaceName);
     badge.style.backgroundColor = color;
     topBar.style.backgroundColor = color;
@@ -397,7 +390,7 @@ function showBookingTab(tab) {
     document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
 
     if (tab === 'schedule') {
-        showSchedule('dance'); // 기본값으로 댄스실 상시 렌더링
+        showSchedule('dance'); 
     }
 
     if (tab === 'calendar') {
@@ -409,11 +402,10 @@ function showBookingTab(tab) {
     }
 }
 
-// 💡 각 공간별 고정 스케줄러 데이터셋 빌더 정의
 const fixedSchedules = {
     dance: {
         title: "댄스실 시간표",
-        colorClass: "bg-orange-100 border-orange-500 text-orange-700",
+        colorClass: "bg-orange-50 border-orange-500 text-orange-700",
         data: [
             { day: "화", records: [{ name: "천하제일", time: "10:00~14:00" }, { name: "나래예술단", time: "14:00~16:00" }, { name: "아사모", time: "16:00~18:00" }] },
             { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }, { name: "라니훌라", time: "18:30~19:30" }] },
@@ -425,7 +417,7 @@ const fixedSchedules = {
     },
     music: {
         title: "음악실 시간표",
-        colorClass: "bg-blue-100 border-blue-500 text-blue-700",
+        colorClass: "bg-blue-50 border-blue-500 text-blue-700",
         data: [
             { day: "화", records: [] },
             { day: "수", records: [{ name: "기타동동", time: "10:00~13:00" }, { name: "바람소리앙상블", time: "14:00~16:30" }] },
@@ -437,7 +429,7 @@ const fixedSchedules = {
     },
     clubroom: {
         title: "동아리방 시간표",
-        colorClass: "bg-green-100 border-green-500 text-green-700",
+        colorClass: "bg-green-50 border-green-500 text-green-700",
         data: [
             { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
             { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }] },
@@ -449,7 +441,7 @@ const fixedSchedules = {
     },
     harmony: {
         title: "어울림방(커뮤니티) 시간표",
-        colorClass: "bg-purple-100 border-purple-500 text-purple-700",
+        colorClass: "bg-purple-50 border-purple-500 text-purple-700",
         data: [
             { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
             { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }, { name: "새로이음", time: "13:30~17:30" }] },
@@ -461,13 +453,12 @@ const fixedSchedules = {
     }
 };
 
-// 💡 구글 드라이브 아이프레임 연동 로직 철거 및 전용 데이터 컴포넌트 이식 가동
+// 💡 [수정] 카드 사용시간 정비 및 가로 길이 비례 매핑 처리 전용 엔진 가동
 function showSchedule(type) {
     const container = document.getElementById('timetable-view-container');
     const schedule = fixedSchedules[type];
     if (!schedule) return;
 
-    // 상단 탭 버튼 활성화 상태 제어
     const types = ['dance', 'music', 'clubroom', 'harmony'];
     types.forEach(t => {
         const btn = document.getElementById(`btn-sched-${t}`);
@@ -478,39 +469,65 @@ function showSchedule(type) {
         }
     });
 
-    const hoursHeader = Array.from({length: 10}, (_, i) => `<div class="grid-header text-xs">${10 + i}:00</div>`).join('');
+    // 상단 헤더: 1시간 단위 생성하되 그리드 상에서는 2칸씩 차지하게 함 (30분 단위 그리드이므로)
+    let hoursHeader = '';
+    for (let i = 10; i <= 19; i++) {
+        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2 text-gray-500 bg-gray-50" style="grid-column: span 2;">${i}:00</div>`;
+    }
 
     let gridHtml = `
         <div class="mb-4 flex items-center justify-between">
             <h4 class="magazine-title text-lg text-primary">${schedule.title}</h4>
-            <span class="text-xs text-gray-400 font-medium">* 가로 스크롤로 전체 시간대를 확인할 수 있습니다.</span>
+            <span class="text-xs text-gray-400 font-medium">* 가로 스크롤 및 비례 시간 제어가 이식되었습니다.</span>
         </div>
         <div class="timetable-grid text-sm text-center">
-            <div class="grid-header text-xs">요일</div>
+            <div class="grid-cell-header text-xs font-semibold py-2 text-gray-500 bg-gray-50">요일</div>
             ${hoursHeader}
     `;
 
+    // 시간을 그리드 컬럼 인덱스로 변환해주는 헬퍼 함수 (10:00시작 = column index 2)
+    function timeToColumnIndex(timeStr) {
+        const [h, m] = timeStr.split(':').map(Number);
+        const baseIndex = 2; // 1번은 요일 칸
+        const diffMinutes = (h - 10) * 60 + m;
+        return baseIndex + Math.floor(diffMinutes / 30);
+    }
+
     schedule.data.forEach(row => {
+        // 해당 요일 행의 전체 카드 컨테이너 배치 (30분 단위 배경 세로선을 가이드로 주기 위해 빈 셀 20개 먼저 레이아웃 형성)
         gridHtml += `
-            <div class="flex items-center justify-center font-bold bg-gray-50 border-right border-b border-outline py-4">${row.day}</div>
+            <div class="flex items-center justify-center font-bold bg-gray-50 border-right border-b border-outline py-4" style="grid-column: 1;">${row.day}</div>
         `;
 
-        for (let h = 10; h <= 19; h++) {
-            const matchedEvents = row.records.filter(e => {
-                const startHour = parseInt(e.time.split('~')[0].split(':')[0]);
-                return startHour === h;
-            });
+        // 10시~20시 배경 빈 격자 20칸 생성
+        for (let j = 0; j < 20; j++) {
+            gridHtml += `<div class="border-right border-b border-outline bg-white/40 pointer-events-none" style="grid-column: ${2 + j}; grid-row: auto; min-h-[76px]"></div>`;
+        }
 
-            gridHtml += `<div class="p-1 border-right border-b border-outline flex flex-col justify-center gap-1 bg-white min-h-[70px]">`;
-            matchedEvents.forEach(ev => {
-                gridHtml += `
-                    <div class="event p-1.5 rounded text-left border-l-4 text-[11px] leading-tight flex flex-col ${schedule.colorClass}">
-                        <strong class="font-bold overflow-hidden text-ellipsis whitespace-nowrap">${ev.name}</strong>
-                        <span class="text-[9px] opacity-80">${ev.time}</span>
+        // 실제 일정 데이터들을 시간 비례 좌표 계산하여 절대 격자에 주입
+        row.records.forEach(ev => {
+            const [startStr, endStr] = ev.time.split('~');
+            const startCol = timeToColumnIndex(startStr);
+            const endCol = timeToColumnIndex(endStr);
+
+            gridHtml += `
+                <div class="p-1 flex flex-col justify-center border-b border-outline" 
+                     style="grid-column: ${startCol} / ${endCol}; grid-row: auto; z-index: 10; margin-bottom: -1px;">
+                    <div class="event p-2 rounded-lg border-l-4 text-[11px] leading-tight flex flex-col justify-between shadow-sm transition hover:scale-[1.01] ${schedule.colorClass}" style="height: calc(100% - 4px);">
+                        <strong class="font-bold overflow-hidden text-ellipsis whitespace-nowrap text-gray-900">${ev.name}</strong>
+                        <span class="text-[10px] opacity-90 mt-1 font-mono">${ev.time}</span>
                     </div>
-                `;
-            });
-            gridHtml += `</div>`;
+                </div>
+            `;
+        });
+
+        // 만약 특정 요일에 아무 스케줄도 없다면 안내 텍스트 처리할 공간 확보
+        if (row.records.length === 0) {
+            gridHtml += `
+                <div class="text-[11px] text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" style="grid-column: 2 / 22; grid-row: auto; min-h-[76px]">
+                    배정된 고정 일정이 없습니다.
+                </div>
+            `;
         }
     });
 
@@ -548,7 +565,6 @@ function initFullCalendar() {
         editable: false,
         selectable: true,
         
-        // 💡 [연동 완료] 기존 원시 alert 구조를 철거하고 고급 모달 시스템 탑재
         eventClick: function(info) {
             const props = info.event.extendedProps;
             openBookingModal(props.space, info.event.title, props.rawStart);
@@ -565,9 +581,9 @@ function initFullCalendar() {
 
                 const events = bookingData.map(item => {
                     return {
-                        title: item.title,               // GAS 가공 완료 스트링 적용
-                        start: item.start,               // 타임스탬프 원본 전달
-                        color: getSpaceColor(item.space), // 공간별 테마 디자인 자동 빌딩
+                        title: item.title,               
+                        start: item.start,               
+                        color: getSpaceColor(item.space), 
                         extendedProps: {
                             space: item.space,
                             rawStart: item.start
@@ -587,10 +603,10 @@ function initFullCalendar() {
 
 function getSpaceColor(space) {
     switch(space) {
-        case '댄스실': return '#FF5A36'; // 힙한 오렌지
-        case '음악실': return '#2563EB'; // 블루
-        case '동아리방': return '#16A34A'; // 그린
-        case '어울림방': return '#7C3AED'; // 퍼플
+        case '댄스실': return '#FF5A36'; 
+        case '음악실': return '#2563EB'; 
+        case '동아리방': return '#16A34A'; 
+        case '어울림방': return '#7C3AED'; 
         default: return '#111111';
     }
 }
