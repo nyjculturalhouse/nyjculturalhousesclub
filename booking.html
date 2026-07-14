@@ -107,7 +107,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     border-bottom: 1px solid #EAEAEA;
 }
 
-/* 💡 [추정/추가] 주말 미운영 구역 사선 패턴 표시용 스타일 */
+/* 💡 주말 미운영 구역 사선 패턴 표시용 스타일 */
 .bg-striped {
     background-image: linear-gradient(135deg, #f9f9f9 25%, transparent 25%, transparent 50%, #f9f9f9 50%, #f9f9f9 75%, transparent 75%, transparent);
     background-size: 8px 8px;
@@ -318,422 +318,418 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     <p>© 2026 Culture Connect. All rights reserved.</p>
 </footer>
 
-<!-- 기존 <script src="js/api.js"></script> 구문은 삭제하거나 주석 처리하고, 아래와 같이 작성합니다. -->
+<!-- 💡 두 스크립트 블록을 type="module" 하나로 원활하게 연동 및 병합 완료 -->
 <script type="module">
-    // api.js에서 함수를 직접 가져옵니다.
     import { apiGet, apiPost } from './js/api.js';
     
-    // 만약 기존 HTML 코드 내 script 영역에서 apiGet, apiPost를 사용하고 있었다면 
-    // 이 type="module" 블록 안으로 해당 실행 코드(예: sendPost 등)를 함께 옮기거나, 
-    // 브라우저 전역 변수(window)에 등록해 주어야 정상 작동합니다.
+    // 💡 HTML 안의 인라인 onclick 속성들이 모듈 범위 내 함수들을 정상적으로 찾을 수 있도록 window에 바인딩합니다.
     window.apiGet = apiGet;
     window.apiPost = apiPost;
-</script>
+    window.showBookingTab = showBookingTab;
+    window.showSchedule = showSchedule;
+    window.closeBookingModal = closeBookingModal;
+    window.sendPost = sendPost;
 
-<script>
-let calendar = null;
+    let calendar = null;
 
-function formatKoreanDateTime(dateStr) {
-    if (!dateStr) return "-";
-    try {
-        const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr;
-        
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const hours = String(d.getHours()).padStart(2, '0');
-        const minutes = String(d.getMinutes()).padStart(2, '0');
-        
-        return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
-    } catch(e) {
-        return dateStr;
-    }
-}
-
-function openBookingModal(spaceName, titleText, rawStart) {
-    const badge = document.getElementById('modal-space-badge');
-    const topBar = document.getElementById('modal-top-bar');
-    
-    badge.innerText = spaceName || "공간 미지정";
-    document.getElementById('modal-booking-title').innerText = titleText || "대관 정보 없음";
-    document.getElementById('modal-booking-time').innerText = formatKoreanDateTime(rawStart);
-    
-    const color = getSpaceColor(spaceName);
-    badge.style.backgroundColor = color;
-    topBar.style.backgroundColor = color;
-    
-    const modal = document.getElementById('booking-modal');
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        modal.querySelector('div').classList.remove('scale-95');
-    }, 10);
-}
-
-function closeBookingModal() {
-    const modal = document.getElementById('booking-modal');
-    modal.classList.add('opacity-0');
-    modal.querySelector('div').classList.add('scale-95');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
-
-function formatPhoneNumber(value) {
-    if (!value) return value;
-    const phoneNumber = value.replace(/[^\d]/g, '');
-    const phoneNumberLength = phoneNumber.length;
-    if (phoneNumberLength < 4) return phoneNumber;
-    if (phoneNumberLength < 8) {
-        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
-    }
-    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7, 11)}`;
-}
-
-document.getElementById('b_phone').addEventListener('input', (e) => {
-    e.target.value = formatPhoneNumber(e.target.value);
-});
-
-function showBookingTab(tab) {
-    document.getElementById('booking-form-section').classList.toggle('hidden', tab !== 'form');
-    document.getElementById('booking-schedule-section').classList.toggle('hidden', tab !== 'schedule');
-    document.getElementById('booking-calendar-section').classList.toggle('hidden', tab !== 'calendar');
-
-    document.getElementById('tab-form-btn').className = tab === 'form' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
-    document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
-    document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
-
-    if (tab === 'schedule') {
-        showSchedule('dance'); 
-    }
-
-    if (tab === 'calendar') {
-        if (!calendar) {
-            initFullCalendar();
-        } else {
-            calendar.updateSize();
+    function formatKoreanDateTime(dateStr) {
+        if (!dateStr) return "-";
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            
+            return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+        } catch(e) {
+            return dateStr;
         }
     }
-}
 
-const fixedSchedules = {
-    dance: {
-        title: "댄스실 시간표",
-        colorClass: "bg-orange-50 border-orange-400 text-orange-900",
-        data: [
-            { day: "화", records: [{ name: "천하제일", time: "10:00~14:00" }, { name: "나래예술단", time: "14:00~16:00" }, { name: "아사모", time: "16:00~18:00" }] },
-            { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }] }, // 토/일 규정 적용을 위해 18:30 제거
-            { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }] }, 
-            { day: "금", records: [{ name: "타울림", time: "10:00~13:00" }, { name: "라인나와유", time: "13:30~15:30" }, { name: "해피하모니", time: "15:30~17:00" }, { name: "덩더쿵사가지", time: "17:00~19:30" }] },
-            { day: "토", records: [{ name: "훌라센스", time: "12:00~14:00" }] },
-            { day: "일", records: [{ name: "궁채와열채사이", time: "10:00~13:00" }, { name: "소리노리", time: "13:00~15:00" }] }
-        ]
-    },
-    music: {
-        title: "음악실 시간표",
-        colorClass: "bg-blue-50 border-blue-400 text-blue-900",
-        data: [
-            { day: "화", records: [] },
-            { day: "수", records: [{ name: "기타동동", time: "10:00~13:00" }, { name: "바람소리앙상블", time: "14:00~16:30" }] },
-            { day: "목", records: [{ name: "* 오톳이 (1,3주)", time: "10:00~13:00" }] },
-            { day: "금", records: [{ name: "버킷피아노", time: "11:30~13:00" }, { name: "여섯줄사랑", time: "13:00~17:00" }] },
-            { day: "토", records: [{ name: "오쏠리", time: "10:00~14:00" }] },
-            { day: "일", records: [] }
-        ]
-    },
-    clubroom: {
-        title: "동아리방 시간표",
-        colorClass: "bg-green-50 border-green-400 text-green-900",
-        data: [
-            { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
-            { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }] },
-            { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }] }, 
-            { day: "금", records: [{ name: "묵향", time: "10:00~14:00" }, { name: "꽃길명리", time: "15:00~17:30" }] },
-            { day: "토", records: [] },
-            { day: "일", records: [] }
-        ]
-    },
-    harmony: {
-        title: "어울림방(커뮤니티) 시간표",
-        colorClass: "bg-purple-50 border-purple-400 text-purple-900",
-        data: [
-            { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
-            { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }, { name: "새로이음", time: "13:30~17:30" }] },
-            { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }] }, 
-            { day: "금", records: [{ name: "상록수", time: "10:00~11:30" }, { name: "우쿨오하나", time: "12:00~13:00" }, { name: "코인마술동아리", time: "14:00~18:00" }] },
-            { day: "토", records: [] },
-            { day: "일", records: [{ name: "소리노리", time: "11:00~13:00" }] }
-        ]
+    function openBookingModal(spaceName, titleText, rawStart) {
+        const badge = document.getElementById('modal-space-badge');
+        const topBar = document.getElementById('modal-top-bar');
+        
+        badge.innerText = spaceName || "공간 미지정";
+        document.getElementById('modal-booking-title').innerText = titleText || "대관 정보 없음";
+        document.getElementById('modal-booking-time').innerText = formatKoreanDateTime(rawStart);
+        
+        const color = getSpaceColor(spaceName);
+        badge.style.backgroundColor = color;
+        topBar.style.backgroundColor = color;
+        
+        const modal = document.getElementById('booking-modal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+        }, 10);
     }
-};
 
-function showSchedule(type) {
-    const container = document.getElementById('timetable-view-container');
-    const schedule = fixedSchedules[type];
-    if (!schedule) return;
+    function closeBookingModal() {
+        const modal = document.getElementById('booking-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
 
-    const types = ['dance', 'music', 'clubroom', 'harmony'];
-    types.forEach(t => {
-        const btn = document.getElementById(`btn-sched-${t}`);
-        if(t === type) {
-            btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white border border-outline transition";
-        } else {
-            btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition";
+    function formatPhoneNumber(value) {
+        if (!value) return value;
+        const phoneNumber = value.replace(/[^\d]/g, '');
+        const phoneNumberLength = phoneNumber.length;
+        if (phoneNumberLength < 4) return phoneNumber;
+        if (phoneNumberLength < 8) {
+            return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
         }
+        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7, 11)}`;
+    }
+
+    document.getElementById('b_phone').addEventListener('input', (e) => {
+        e.target.value = formatPhoneNumber(e.target.value);
     });
 
-    let hoursHeader = '';
-    for (let i = 10; i <= 19; i++) {
-        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 2;">${i}:00</div>`;
+    function showBookingTab(tab) {
+        document.getElementById('booking-form-section').classList.toggle('hidden', tab !== 'form');
+        document.getElementById('booking-schedule-section').classList.toggle('hidden', tab !== 'schedule');
+        document.getElementById('booking-calendar-section').classList.toggle('hidden', tab !== 'calendar');
+
+        document.getElementById('tab-form-btn').className = tab === 'form' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
+        document.getElementById('tab-schedule-btn').className = tab === 'schedule' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
+        document.getElementById('tab-calendar-btn').className = tab === 'calendar' ? 'py-3 tab-active' : 'py-3 text-gray-500 hover:text-primary transition';
+
+        if (tab === 'schedule') {
+            showSchedule('dance'); 
+        }
+
+        if (tab === 'calendar') {
+            if (!calendar) {
+                initFullCalendar();
+            } else {
+                calendar.updateSize();
+            }
+        }
     }
 
-    let gridHtml = `
-        <div class="mb-4 flex items-center justify-between">
-            <h4 class="magazine-title text-lg text-primary">${schedule.title}</h4>
-            <span class="text-xs text-gray-400 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
-        </div>
-        <div class="timetable-grid text-sm text-center">
-            <div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80">요일</div>
-            ${hoursHeader}
-    `;
+    const fixedSchedules = {
+        dance: {
+            title: "댄스실 시간표",
+            colorClass: "bg-orange-50 border-orange-400 text-orange-900",
+            data: [
+                { day: "화", records: [{ name: "천하제일", time: "10:00~14:00" }, { name: "나래예술단", time: "14:00~16:00" }, { name: "아사모", time: "16:00~18:00" }] },
+                { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }] },
+                { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }] }, 
+                { day: "금", records: [{ name: "타울림", time: "10:00~13:00" }, { name: "라인나와유", time: "13:30~15:30" }, { name: "해피하모니", time: "15:30~17:00" }, { name: "덩더쿵사가지", time: "17:00~19:30" }] },
+                { day: "토", records: [{ name: "훌라센스", time: "12:00~14:00" }] },
+                { day: "일", records: [{ name: "궁채와열채사이", time: "10:00~13:00" }, { name: "소리노리", time: "13:00~15:00" }] }
+            ]
+        },
+        music: {
+            title: "음악실 시간표",
+            colorClass: "bg-blue-50 border-blue-400 text-blue-900",
+            data: [
+                { day: "화", records: [] },
+                { day: "수", records: [{ name: "기타동동", time: "10:00~13:00" }, { name: "바람소리앙상블", time: "14:00~16:30" }] },
+                { day: "목", records: [{ name: "* 오톳이 (1,3주)", time: "10:00~13:00" }] },
+                { day: "금", records: [{ name: "버킷피아노", time: "11:30~13:00" }, { name: "여섯줄사랑", time: "13:00~17:00" }] },
+                { day: "토", records: [{ name: "오쏠리", time: "10:00~14:00" }] },
+                { day: "일", records: [] }
+            ]
+        },
+        clubroom: {
+            title: "동아리방 시간표",
+            colorClass: "bg-green-50 border-green-400 text-green-900",
+            data: [
+                { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
+                { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }] },
+                { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }] }, 
+                { day: "금", records: [{ name: "묵향", time: "10:00~14:00" }, { name: "꽃길명리", time: "15:00~17:30" }] },
+                { day: "토", records: [] },
+                { day: "일", records: [] }
+            ]
+        },
+        harmony: {
+            title: "어울림방(커뮤니티) 시간표",
+            colorClass: "bg-purple-50 border-purple-400 text-purple-900",
+            data: [
+                { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
+                { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }, { name: "새로이음", time: "13:30~17:30" }] },
+                { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }] }, 
+                { day: "금", records: [{ name: "상록수", time: "10:00~11:30" }, { name: "우쿨오하나", time: "12:00~13:00" }, { name: "코인마술동아리", time: "14:00~18:00" }] },
+                { day: "토", records: [] },
+                { day: "일", records: [{ name: "소리노리", time: "11:00~13:00" }] }
+            ]
+        }
+    };
 
-    function timeToColumnIndex(timeStr) {
-        const [h, m] = timeStr.split(':').map(Number);
-        const baseIndex = 2; 
-        const diffMinutes = (h - 10) * 60 + m;
-        return baseIndex + Math.floor(diffMinutes / 30);
-    }
+    function showSchedule(type) {
+        const container = document.getElementById('timetable-view-container');
+        const schedule = fixedSchedules[type];
+        if (!schedule) return;
 
-    let rowIdx = 2; 
+        const types = ['dance', 'music', 'clubroom', 'harmony'];
+        types.forEach(t => {
+            const btn = document.getElementById(`btn-sched-${t}`);
+            if(t === type) {
+                btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white border border-outline transition";
+            } else {
+                btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition";
+            }
+        });
 
-    schedule.data.forEach(row => {
-        const isWeekend = (row.day === "토" || row.day === "일");
+        let hoursHeader = '';
+        for (let i = 10; i <= 19; i++) {
+            hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 2;">${i}:00</div>`;
+        }
 
-        // 요일 칸 생성
-        gridHtml += `
-            <div class="flex items-center justify-center font-bold bg-gray-50/50 border-right border-b border-outline py-4 text-sm" 
-                 style="grid-column: 1; grid-row: ${rowIdx}; min-height: 84px;">${row.day}</div>
+        let gridHtml = `
+            <div class="mb-4 flex items-center justify-between">
+                <h4 class="magazine-title text-lg text-primary">${schedule.title}</h4>
+                <span class="text-xs text-gray-400 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
+            </div>
+            <div class="timetable-grid text-sm text-center">
+                <div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80">요일</div>
+                ${hoursHeader}
         `;
 
-        // 배경 가이드 격자 20칸 생성
-        for (let j = 0; j < 20; j++) {
-            // 💡 [수정] 토요일, 일요일 15시 이후(10개째 컬럼 이후) 미운영 스타일(bg-striped) 바인딩
-            if (isWeekend && j >= 10) {
-                gridHtml += `<div class="border-right border-b border-outline bg-striped" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
-            } else {
-                gridHtml += `<div class="border-right border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
-            }
+        function timeToColumnIndex(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            const baseIndex = 2; 
+            const diffMinutes = (h - 10) * 60 + m;
+            return baseIndex + Math.floor(diffMinutes / 30);
         }
 
-        // 주말 미운영 텍스트 표시용 배너 바인딩 (15시부터 20시 범위 = Column index 12 ~ 22)
-        if (isWeekend) {
+        let rowIdx = 2; 
+
+        schedule.data.forEach(row => {
+            const isWeekend = (row.day === "토" || row.day === "일");
+
+            // 요일 칸 생성
             gridHtml += `
-                <div class="text-[12px] font-bold text-gray-400 bg-gray-100/40 flex items-center justify-center border-b border-outline tracking-wider pointer-events-none" 
-                     style="grid-column: 12 / 22; grid-row: ${rowIdx}; z-index: 5;">
-                    3시 이후 미운영
-                </div>
+                <div class="flex items-center justify-center font-bold bg-gray-50/50 border-right border-b border-outline py-4 text-sm" 
+                     style="grid-column: 1; grid-row: ${rowIdx}; min-height: 84px;">${row.day}</div>
             `;
-        }
 
-        // 카드 컴포넌트 렌더링
-        row.records.forEach(ev => {
-            const [startStr, endStr] = ev.time.split('~');
-            const startCol = timeToColumnIndex(startStr);
-            const endCol = timeToColumnIndex(endStr);
-
-            // 💡 [수정] 폰트 크기 증대 (text-[11px]->text-[13px], text-[9px]->text-[11px]) 및 여백 확장
-            gridHtml += `
-                <div class="p-1 flex flex-col justify-center" 
-                     style="grid-column: ${startCol} / ${endCol}; grid-row: ${rowIdx}; z-index: 10;">
-                    <div class="event px-2.5 py-2 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.01] ${schedule.colorClass} flex flex-col justify-center overflow-hidden" 
-                         style="height: calc(100% - 2px);">
-                        <strong class="font-extrabold text-[13px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
-                        <span class="text-[11px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
-                    </div>
-                </div>
-            `;
-        });
-
-        if (!isWeekend && row.records.length === 0) {
-            gridHtml += `
-                <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
-                     style="grid-column: 2 / 22; grid-row: ${rowIdx};">
-                    배정된 고정 일정이 없습니다.
-                </div>
-            `;
-        } else if (isWeekend && row.records.length === 0) {
-            // 주말인데 3시 전에도 스케줄이 비어있을 때 빈 격자 텍스트 처리
-            gridHtml += `
-                <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
-                     style="grid-column: 2 / 12; grid-row: ${rowIdx};">
-                    일정 없음
-                </div>
-            `;
-        }
-
-        rowIdx++;
-    });
-
-    gridHtml += `</div>`;
-    container.innerHTML = gridHtml;
-}
-
-function getOrCreateUID() {
-    let uid = localStorage.getItem("user_unique_id");
-    if (!uid) {
-        uid = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        localStorage.setItem("user_unique_id", uid);
-    }
-    return uid;
-}
-
-function initFullCalendar() {
-    const calendarEl = document.getElementById('calendar');
-    if (!calendarEl) return;
-
-    calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'ko',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,listWeek'
-        },
-        buttonText: {
-            today: '오늘',
-            month: '월',
-            week: '주',
-            list: '목록'
-        },
-        editable: false,
-        selectable: true,
-        
-        eventClick: function(info) {
-            const props = info.event.extendedProps;
-            openBookingModal(props.space, info.event.title, props.rawStart);
-        },
-
-        events: async function(info, successCallback, failureCallback) {
-            try {
-                const bookingData = await apiGet("getBookings"); 
-                
-                if (!bookingData || bookingData.error || !Array.isArray(bookingData)) {
-                    successCallback([]);
-                    return;
+            // 배경 가이드 격자 20칸 생성
+            for (let j = 0; j < 20; j++) {
+                if (isWeekend && j >= 10) {
+                    gridHtml += `<div class="border-right border-b border-outline bg-striped" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+                } else {
+                    gridHtml += `<div class="border-right border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
                 }
-
-                const events = bookingData.map(item => {
-                    return {
-                        title: item.title,               
-                        start: item.start,               
-                        color: getSpaceColor(item.space), 
-                        extendedProps: {
-                            space: item.space,
-                            rawStart: item.start
-                        }
-                    };
-                });
-
-                successCallback(events);
-            } catch (error) {
-                console.error("Calendar data fetch error:", error);
-                failureCallback(error);
             }
-        }
-    });
-    calendar.render();
-}
 
-function getSpaceColor(space) {
-    switch(space) {
-        case '댄스실': return '#FF5A36'; 
-        case '음악실': return '#2563EB'; 
-        case '동아리방': return '#16A34A'; 
-        case '어울림방': return '#7C3AED'; 
-        default: return '#111111';
-    }
-}
+            // 주말 미운영 텍스트 표시용 배너 바인딩
+            if (isWeekend) {
+                gridHtml += `
+                    <div class="text-[12px] font-bold text-gray-400 bg-gray-100/40 flex items-center justify-center border-b border-outline tracking-wider pointer-events-none" 
+                         style="grid-column: 12 / 22; grid-row: ${rowIdx}; z-index: 5;">
+                        3시 이후 미운영
+                    </div>
+                `;
+            }
 
-async function sendPost(mode) {
-    if (mode === 'submitBooking') {
-        const name = document.getElementById('b_name').value.trim();
-        const phone = document.getElementById('b_phone').value.trim();
-        const space = document.getElementById('b_space').value;
-        const dateTime = document.getElementById('b_date').value;
-        const hours = document.getElementById('b_hours').value;
-        const count = document.getElementById('b_count').value;
-        const content = document.getElementById('b_content').value.trim();
-        
-        const agree1Checked = document.getElementById('b_agree1').checked;
-        const agree2Checked = document.getElementById('b_agree2').checked;
+            // 카드 컴포넌트 렌더링
+            row.records.forEach(ev => {
+                const [startStr, endStr] = ev.time.split('~');
+                const startCol = timeToColumnIndex(startStr);
+                const endCol = timeToColumnIndex(endStr);
 
-        if (!name || !phone || !dateTime) {
-            alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
-            return;
-        }
+                gridHtml += `
+                    <div class="p-1 flex flex-col justify-center" 
+                         style="grid-column: ${startCol} / ${endCol}; grid-row: ${rowIdx}; z-index: 10;">
+                        <div class="event px-2.5 py-2 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.01] ${schedule.colorClass} flex flex-col justify-center overflow-hidden" 
+                             style="height: calc(100% - 2px);">
+                            <strong class="font-extrabold text-[13px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
+                            <span class="text-[11px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
+                        </div>
+                    </div>
+                `;
+            });
 
-        if (phone.length < 12) {
-            alert("연락처를 올바른 형식(010-0000-0000)으로 정확하게 입력하세요.");
-            return;
-        }
+            if (!isWeekend && row.records.length === 0) {
+                gridHtml += `
+                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
+                         style="grid-column: 2 / 22; grid-row: ${rowIdx};">
+                        배정된 고정 일정이 없습니다.
+                    </div>
+                `;
+            } else if (isWeekend && row.records.length === 0) {
+                gridHtml += `
+                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
+                         style="grid-column: 2 / 12; grid-row: ${rowIdx};">
+                        일정 없음
+                    </div>
+                `;
+            }
 
-        if (!agree1Checked || !agree2Checked) {
-            alert("모든 필수 약관에 동의하셔야 대관 신청이 가능합니다.");
-            return;
-        }
-
-        const btn = document.getElementById('btn-submit-book');
-        btn.innerText = "신청서 전송 중...";
-        btn.disabled = true;
-
-        const res = await apiPost({
-            mode: mode,
-            name: name,
-            phone: phone,
-            space: space,
-            dateTime: dateTime,
-            hours: hours,
-            count: count,
-            content: content,
-            agree1: agree1Checked ? "동의" : "비동의",
-            agree2: agree2Checked ? "동의" : "비동의",
-            uid: getOrCreateUID()
+            rowIdx++;
         });
 
-        btn.innerText = "대관 신청하기";
-        btn.disabled = false;
+        gridHtml += `</div>`;
+        container.innerHTML = gridHtml;
+    }
 
-        if (!res) {
-            alert("서버 통신 실패. 네트워크 연결을 확인하세요.");
-            return;
+    function getOrCreateUID() {
+        let uid = localStorage.getItem("user_unique_id");
+        if (!uid) {
+            uid = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem("user_unique_id", uid);
         }
+        return uid;
+    }
 
-        if (res.error) {
-            alert(res.error);
-            return;
-        }
+    function initFullCalendar() {
+        const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) return;
 
-        const toastEl = document.getElementById('toast');
-        toastEl.classList.add('show');
-        setTimeout(() => toastEl.classList.remove('show'), 3000);
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'ko',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            buttonText: {
+                today: '오늘',
+                month: '월',
+                week: '주',
+                list: '목록'
+            },
+            editable: false,
+            selectable: true,
+            
+            eventClick: function(info) {
+                const props = info.event.extendedProps;
+                openBookingModal(props.space, info.event.title, props.rawStart);
+            },
 
-        alert("공간 예약과 캘린더 등록이 완료되었습니다.");
+            events: async function(info, successCallback, failureCallback) {
+                try {
+                    const bookingData = await apiGet("getBookings"); 
+                    
+                    if (!bookingData || bookingData.error || !Array.isArray(bookingData)) {
+                        successCallback([]);
+                        return;
+                    }
 
-        document.getElementById('b_name').value = "";
-        document.getElementById('b_phone').value = "";
-        document.getElementById('b_date').value = "";
-        document.getElementById('b_hours').value = "1";
-        document.getElementById('b_count').value = "";
-        document.getElementById('b_content').value = "";
-        document.getElementById('b_agree1').checked = false;
-        document.getElementById('b_agree2').checked = false;
+                    const events = bookingData.map(item => {
+                        return {
+                            title: item.title,               
+                            start: item.start,               
+                            color: getSpaceColor(item.space), 
+                            extendedProps: {
+                                space: item.space,
+                                rawStart: item.start
+                            }
+                        };
+                    });
 
-        if (calendar) {
-            calendar.refetchEvents();
+                    successCallback(events);
+                } catch (error) {
+                    console.error("Calendar data fetch error:", error);
+                    failureCallback(error);
+                }
+            }
+        });
+        calendar.render();
+    }
+
+    function getSpaceColor(space) {
+        switch(space) {
+            case '댄스실': return '#FF5A36'; 
+            case '음악실': return '#2563EB'; 
+            case '동아리방': return '#16A34A'; 
+            case '어울림방': return '#7C3AED'; 
+            default: return '#111111';
         }
     }
-}
+
+    async function sendPost(mode) {
+        if (mode === 'submitBooking') {
+            const name = document.getElementById('b_name').value.trim();
+            const phone = document.getElementById('b_phone').value.trim();
+            const space = document.getElementById('b_space').value;
+            const dateTime = document.getElementById('b_date').value;
+            const hours = document.getElementById('b_hours').value;
+            const count = document.getElementById('b_count').value;
+            const content = document.getElementById('b_content').value.trim();
+            
+            const agree1Checked = document.getElementById('b_agree1').checked;
+            const agree2Checked = document.getElementById('b_agree2').checked;
+
+            if (!name || !phone || !dateTime) {
+                alert("이름, 전화번호, 사용 일시는 필수 정보입니다.");
+                return;
+            }
+
+            if (phone.length < 12) {
+                alert("연락처를 올바른 형식(010-0000-0000)으로 정확하게 입력하세요.");
+                return;
+            }
+
+            if (!agree1Checked || !agree2Checked) {
+                alert("모든 필수 약관에 동의하셔야 대관 신청이 가능합니다.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit-book');
+            btn.innerText = "신청서 전송 중...";
+            btn.disabled = true;
+
+            const res = await apiPost({
+                mode: mode,
+                name: name,
+                phone: phone,
+                space: space,
+                dateTime: dateTime,
+                hours: hours,
+                count: count,
+                content: content,
+                agree1: agree1Checked ? "동의" : "비동의",
+                agree2: agree2Checked ? "동의" : "비동의",
+                uid: getOrCreateUID()
+            });
+
+            btn.innerText = "대관 신청하기";
+            btn.disabled = false;
+
+            if (!res) {
+                alert("서버 통신 실패. 네트워크 연결을 확인하세요.");
+                return;
+            }
+
+            if (res.error) {
+                alert(res.error);
+                return;
+            }
+
+            const toastEl = document.getElementById('toast');
+            toastEl.classList.add('show');
+            setTimeout(() => toastEl.classList.remove('show'), 3000);
+
+            alert("공간 예약과 캘린더 등록이 완료되었습니다.");
+
+            document.getElementById('b_name').value = "";
+            document.getElementById('b_phone').value = "";
+            document.getElementById('b_date').value = "";
+            document.getElementById('b_hours').value = "1";
+            document.getElementById('b_count').value = "";
+            document.getElementById('b_content').value = "";
+            document.getElementById('b_agree1').checked = false;
+            document.getElementById('b_agree2').checked = false;
+
+            if (calendar) {
+                calendar.refetchEvents();
+            }
+        }
+    }
 </script>
 
 </body>
