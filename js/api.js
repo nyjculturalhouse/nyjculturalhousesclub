@@ -1,4 +1,5 @@
-import { API_URL } from '../config.js'; // 혹은 이전 경로
+// 💡 config.js 파일이 api.js와 같은 폴더(js/) 안에 있으므로 경로를 ./config.js로 수정합니다.
+import { API_URL } from './config.js'; 
 
 /* =========================
    GET
@@ -56,4 +57,5 @@ async function apiPost(data) {
     }
 }
 
+// 외부 파일에서 모듈로 호출하여 사용할 수 있도록 내보냅니다.
 export { apiGet, apiPost };
