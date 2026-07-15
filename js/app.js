@@ -21,23 +21,23 @@ const AttendanceApp = (() => {
     /* =========================
         MODAL UTILS
     ========================= */
-    function showModal(isAlreadySubmitted) {
-        const modal = document.getElementById('result-modal');
-        const title = document.getElementById('modal-title');
-        const desc = document.getElementById('modal-desc');
-        const icon = document.getElementById('modal-icon');
+function showModal(isAlreadySubmitted) {
+    const modal = document.getElementById('result-modal');
+    const title = document.getElementById('modal-title');
+    const desc = document.getElementById('modal-desc');
+    const icon = document.getElementById('modal-icon');
 
-        if (isAlreadySubmitted) {
-            icon.innerText = '⚠️';
-            title.innerText = '이미 출석이 등록되었습니다.';
-            desc.innerText = '인원에 변동이 있는 경우에는 문화의집 사무실로 방문해 주세요.';
-        } else {
-            icon.innerText = '✅';
-            title.innerText = '출석이 등록되었습니다.';
-            desc.innerText = '오늘의 출석이 성공적으로 반영되었습니다.';
-        }
-        modal.classList.remove('hidden');
+    if (isAlreadySubmitted) {
+        icon.innerText = '⚠️';
+        title.innerText = '이미 출석부를 제출하였습니다.';
+        desc.innerText = '제출 후에는 온라인 수정이 불가능합니다. 수정이 필요한 경우 사무실에 방문하여 수정을 요청해 주시기 바랍니다.';
+    } else {
+        icon.innerText = '✅';
+        title.innerText = '출석이 등록되었습니다.';
+        desc.innerText = '오늘의 출석이 성공적으로 반영되었습니다.';
     }
+    modal.classList.remove('hidden');
+}
 
     window.closeModal = () => {
         document.getElementById('result-modal').classList.add('hidden');
