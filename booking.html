@@ -485,9 +485,12 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         });
 
         let hoursHeader = '';
-        for (let i = 10; i <= 19; i++) {
+        for (let i = 10; i <= 18; i++) {
             hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 2;">${i}:00</div>`;
         }
+        // 💡 마지막 시간대는 30분 단위로 쪼개서 19:00 / 19:30 라벨을 둘 다 표시합니다.
+        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 1;">19:00</div>`;
+        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 1;">19:30</div>`;
 
         let gridHtml = `
             <div class="mb-4 flex items-center justify-between">
