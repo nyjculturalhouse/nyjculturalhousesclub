@@ -1,129 +1,78 @@
 <!DOCTYPE html>
-<html class="light" lang="ko">
+<html lang="ko">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="description" content="남양주시 문화의집 동아리들의 외부 활동 일정을 달력으로 확인하는 페이지입니다."/>
     <title>남양주시 문화의집 - 외부 활동 일정</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    
+
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    
-    <script>
-        // 💡 메인 시스템 스펙과 완전히 일치하는 테마 컬러 코드를 주입했습니다.
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
-                            hover: "#222222"
-                        },
-                        accent: {
-                            bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
-                            text: "#FFFFFF",
-                            hover: "#E04825"
-                        },
-                        bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
-                        surface: "#ffffff",
-                        outline: "#EAEAEA"
-                    },
-                    boxShadow: {
-                        soft: "0 8px 30px rgba(0,0,0,0.03)",
-                        modal: "0 20px 50px rgba(0, 0, 0, 0.15)"
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* 💡 전체 기본 폰트를 Pretendard로 변경하고 배경을 미색 처리했습니다. */
-        body { font-family: 'Pretendard', sans-serif; background-color: #F4F4F3; letter-spacing: -0.01em; }
-        
-        /* 💡 타이틀 font-weight를 300으로 유지 */
-        .magazine-title {
-            font-weight: 300 !important;
-            letter-spacing: -0.04em !important;
-            line-height: 1.1 !important;
-        }
+    <link rel="stylesheet" href="css/style.css" />
 
-        .material-symbols-outlined { 
-            font-family: 'Material Symbols Outlined' !important;
-            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important; 
-            vertical-align: middle; 
-        }
-        
-        /* FullCalendar 내부 미세 스타일 조정 */
-        .fc { font-family: 'Pretendard', sans-serif; }
-        .fc .fc-button-primary { background-color: #111111; border-color: #111111; }
-        .fc .fc-button-primary:hover { background-color: #222222; border-color: #222222; }
-        .fc .fc-button-primary:disabled { background-color: #cccccc; border-color: #cccccc; }
-        .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
-        .fc th { font-weight: 600; color: #555555; }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="js/theme.js"></script>
 </head>
 <body class="min-h-screen flex flex-col antialiased relative">
 
+<a href="#main-content" class="skip-link">본문 바로가기</a>
+
 <header class="w-full top-0 sticky bg-[#F4F4F3] border-b border-outline z-50">
     <div class="flex justify-between items-center px-6 py-4 max-w-[1200px] mx-auto">
-        <div class="flex items-center gap-3">
-            <h1 class="magazine-title text-xl text-primary">남양주시 문화의집</h1>
-        </div>
-        <button class="p-2 rounded-full hover:bg-white/50 transition text-primary" onclick="location.href='index.html'" title="메인으로">
-            <span class="material-symbols-outlined text-xl">home_app_logo</span>
-        </button>
+        <h1 class="magazine-title text-xl text-primary">남양주시 문화의집</h1>
+        <a class="p-2 rounded-full hover:bg-white/50 transition text-primary" href="index.html" aria-label="메인으로 이동">
+            <span class="material-symbols-outlined text-xl" aria-hidden="true">home_app_logo</span>
+        </a>
     </div>
 </header>
 
-<main class="flex-grow max-w-[1200px] mx-auto w-full px-6 py-10">
+<main id="main-content" class="flex-grow max-w-[1200px] mx-auto w-full px-6 py-10">
     <div class="mb-8">
         <h2 class="magazine-title text-3xl text-primary">외부 활동 일정</h2>
         <p class="text-gray-500 mt-2 text-sm font-medium">실시간으로 외부활동 일정을 확인하세요.</p>
     </div>
 
     <div class="bg-white rounded-2xl shadow-soft border border-outline p-4 md:p-6">
-        <div id="calendar"></div>
+        <div id="calendar" aria-label="외부 활동 일정 달력"></div>
     </div>
 </main>
 
-<div id="activity-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="closeActivityModal(event)">
-    <div class="bg-white rounded-2xl border border-outline shadow-modal max-w-md w-full overflow-hidden transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-        
-        <div class="h-1.5 bg-accent-bg w-full"></div>
-        
+<div id="activity-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-event-title" onclick="if(event.target===this) closeActivityModal()">
+    <div class="modal-panel">
+        <div class="h-1.5 bg-accent-bg w-full" aria-hidden="true"></div>
+
         <div class="p-6 md:p-8">
             <div class="flex justify-between items-start gap-4 mb-6">
                 <div>
                     <span id="modal-club-badge" class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-[#111111] text-white tracking-wide mb-2">동아리명</span>
-                    <h3 id="modal-event-title" class="magazine-title text-2xl text-primary leading-snug">활동 내용명</h3>
+                    <h2 id="modal-event-title" class="magazine-title text-2xl text-primary leading-snug">활동 내용명</h2>
                 </div>
-                <button onclick="closeActivityModal()" class="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-primary transition">
-                    <span class="material-symbols-outlined text-2xl">close</span>
+                <button type="button" onclick="closeActivityModal()" class="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-primary transition" aria-label="닫기">
+                    <span class="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
                 </button>
             </div>
-            
+
             <div class="space-y-4 border-t border-outline pt-6 text-sm">
                 <div class="flex items-start gap-3">
-                    <span class="material-symbols-outlined text-gray-400 mt-0.5">schedule</span>
+                    <span class="material-symbols-outlined text-gray-400 mt-0.5" aria-hidden="true">schedule</span>
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">시작 일시</p>
-                        <p id="modal-start-time" class="text-primary font-medium mt-0.5">2026년 00월 00일 00:00</p>
+                        <p id="modal-start-time" class="text-primary font-medium mt-0.5">-</p>
                     </div>
                 </div>
-                
+
                 <div id="modal-end-container" class="flex items-start gap-3">
-                    <span class="material-symbols-outlined text-gray-400 mt-0.5">event_busy</span>
+                    <span class="material-symbols-outlined text-gray-400 mt-0.5" aria-hidden="true">event_busy</span>
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">종료 일시</p>
-                        <p id="modal-end-time" class="text-primary font-medium mt-0.5">2026년 00월 00일 00:00</p>
+                        <p id="modal-end-time" class="text-primary font-medium mt-0.5">-</p>
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-8">
-                <button onclick="closeActivityModal()" class="w-full bg-[#111111] text-white font-bold py-3.5 rounded-xl hover:bg-[#222222] transition shadow-sm text-sm">
+                <button type="button" onclick="closeActivityModal()" class="w-full bg-[#111111] text-white font-bold py-3.5 rounded-xl hover:bg-[#222222] transition shadow-sm text-sm">
                     확인
                 </button>
             </div>
@@ -136,72 +85,34 @@
 </footer>
 
 <script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
+<script src="js/utils.js"></script>
 
 <script>
-    // 💡 날짜 데이터를 웹진 뷰어 형식에 맞춰 정교하게 포맷팅하는 헬퍼 함수
-    function formatKoreanDateTime(dateStr, isAllDay) {
-        if (!dateStr) return "-";
-        try {
-            // 빈칸 스페이스를 T포맷으로 완화해 크로스브라우징 파싱 유도 및 동기화 안정성 보정
-            const cleanStr = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T");
-            const d = new Date(cleanStr);
-            if (isNaN(d.getTime())) return dateStr;
-            
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            
-            if (isAllDay === true || isAllDay === "true") {
-                return `${year}년 ${month}월 ${day}일 (종일)`;
-            } else {
-                const hours = String(d.getHours()).padStart(2, '0');
-                const minutes = String(d.getMinutes()).padStart(2, '0');
-                return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
-            }
-        } catch(e) {
-            console.error("날짜 변환 실패:", e);
-            return dateStr;
-        }
-    }
-
-    // 💡 모달 열기 핸들러 (undefined 유실 예외처리 강화)
     function openActivityModal(club, eventName, start, end, isAllDay) {
-        document.getElementById('modal-club-badge').innerText = club || "지정 안 됨";
-        document.getElementById('modal-event-title').innerText = eventName || "내용 없음";
-        document.getElementById('modal-start-time').innerText = formatKoreanDateTime(start, isAllDay);
-        
+        document.getElementById('modal-club-badge').textContent = club || "지정 안 됨";
+        document.getElementById('modal-event-title').textContent = eventName || "내용 없음";
+        document.getElementById('modal-start-time').textContent = formatKoreanDateTime(start, isAllDay);
+
         const endContainer = document.getElementById('modal-end-container');
         if (end && end !== "undefined" && end !== "null") {
             endContainer.classList.remove('hidden');
-            document.getElementById('modal-end-time').innerText = formatKoreanDateTime(end, isAllDay);
+            document.getElementById('modal-end-time').textContent = formatKoreanDateTime(end, isAllDay);
         } else {
             endContainer.classList.add('hidden');
         }
-        
-        const modal = document.getElementById('activity-modal');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            modal.querySelector('div').classList.remove('scale-95');
-        }, 10);
+
+        KRDSModal.open('activity-modal');
     }
 
-    // 💡 모달 닫기 핸들러
     function closeActivityModal() {
-        const modal = document.getElementById('activity-modal');
-        modal.classList.add('opacity-0');
-        modal.querySelector('div').classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
+        KRDSModal.close('activity-modal');
     }
+    window.closeActivityModal = closeActivityModal;
 
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
-        if (!calendarEl) return; 
-        
+        if (!calendarEl) return;
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'ko',
@@ -218,15 +129,14 @@
             },
             editable: false,
             selectable: true,
-            
-            // 💡 [수정 완료] 데이터 유실이 없도록 순수 상태로 가공된 extendedProps 명시 매핑
+
             eventClick: function(info) {
                 const props = info.event.extendedProps;
                 openActivityModal(
-                    props.club, 
-                    props.event, 
-                    props.rawStart, 
-                    props.rawEnd, 
+                    props.club,
+                    props.event,
+                    props.rawStart,
+                    props.rawEnd,
                     props.isAllDay
                 );
             },
@@ -234,7 +144,7 @@
             events: async function(info, successCallback, failureCallback) {
                 try {
                     const activities = await apiGet("getActivities");
-                    
+
                     if (!activities || activities.error || !Array.isArray(activities)) {
                         successCallback([]);
                         return;
@@ -251,8 +161,6 @@
                           end: parsedEnd,
                           allDay: isAllDayEvent,
                           color: '#FF5A36',
-                          
-                          // 외부 변수 참조 누락 필터를 완벽히 방어하기 위해 프롭스 구조 정규화
                           extendedProps: {
                               club: act.club || "지정 안 됨",
                               event: act.event || "내용 없음",
@@ -270,7 +178,7 @@
                 }
             }
         });
-        
+
         calendar.render();
     });
 </script>
