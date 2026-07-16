@@ -449,7 +449,7 @@ const fixedSchedules = {
             data: [
                 { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
                 { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }, { name: "새로이음", time: "13:30~17:30" }] },
-                { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }, { name: "재미방", time: "18:00~19:30" }] }, 
+                { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }, { name: "재미팡", time: "18:00~19:30" }] }, 
                 { day: "금", records: [{ name: "묵향", time: "10:00~14:00" }, { name: "꽃길명리", time: "15:00~17:30" }] },
                 { day: "토", records: [] },
                 { day: "일", records: [] }
@@ -461,7 +461,7 @@ const fixedSchedules = {
             data: [
                 { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
                 { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }] },
-                { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }, { name: "업:써", time: "18:00~19:30" }] }, 
+                { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }, { name: "엄:써", time: "18:00~19:30" }] }, 
                 { day: "금", records: [{ name: "상록수", time: "10:00~11:30" }, { name: "우쿨오하나", time: "12:00~13:00" }, { name: "코인마술동아리", time: "14:00~18:00" }] },
                 { day: "토", records: [] },
                 { day: "일", records: [{ name: "소리노리", time: "11:00~13:00" }] }
@@ -486,7 +486,6 @@ const fixedSchedules = {
             }
         });
 
-        // 💡 10:00부터 19:00까지 30분 단위 헤더 생성 (총 19칸)
         const times = [
             '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', 
             '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00'
@@ -494,16 +493,17 @@ const fixedSchedules = {
         
         let hoursHeader = '';
         times.forEach(t => {
-            hoursHeader += `<div class="grid-cell-header text-[11px] font-semibold py-2.5 text-gray-500 bg-gray-50/80 flex items-center justify-center border-b border-r border-outline" style="grid-column: span 1;">${t}</div>`;
+            hoursHeader += `<div class="grid-cell-header text-[11px] font-semibold py-2.5 text-gray-500 bg-gray-50/80 flex items-center justify-center border-b border-outline" style="grid-column: span 1;">${t}</div>`;
         });
 
-        // 💡 가로 1200px에 맞게 강제 고정 및 19개의 30분 슬롯 그리드 구성
+        // 💡 minmax(0, 1fr) 적용 및 box-sizing 추가로 내부 콘텐츠 팽창 방지
         let gridHtml = `
-            <div class="mb-4 flex items-center justify-between" style="width: 1200px;">
+            <div class="mb-4 flex items-center justify-between" style="width: 100%; max-width: 1200px; box-sizing: border-box;">
                 <h4 class="magazine-title text-lg text-primary font-bold">${schedule.title}</h4>
                 <span class="text-xs text-gray-500 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
             </div>
-            <div class="timetable-grid text-sm text-center border-t border-l border-outline" style="width: 1200px; display: grid; grid-template-columns: 60px repeat(19, 1fr);">
+            <div class="timetable-grid text-sm text-center border-t border-l border-r border-outline" 
+                 style="width: 100%; max-width: 1200px; box-sizing: border-box; display: grid; grid-template-columns: 60px repeat(19, minmax(0, 1fr));">
                 <div class="grid-cell-header text-xs font-bold py-2.5 text-gray-600 bg-gray-50/80 border-b border-r border-outline flex items-center justify-center">요일</div>
                 ${hoursHeader}
         `;
@@ -520,32 +520,28 @@ const fixedSchedules = {
         schedule.data.forEach(row => {
             const isWeekend = (row.day === "토" || row.day === "일");
 
-            // 요일 칸 생성
             gridHtml += `
                 <div class="flex items-center justify-center font-bold bg-gray-50/50 border-r border-b border-outline py-4 text-sm" 
                      style="grid-column: 1; grid-row: ${rowIdx}; min-height: 84px;">${row.day}</div>
             `;
 
-            // 배경 가이드 격자 (총 19칸)
             for (let j = 0; j < 19; j++) {
-                if (isWeekend && j >= 10) { // 15:00 이후 (j=10은 15:00 슬롯)
-                    gridHtml += `<div class="border-r border-b border-outline bg-gray-100/60" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+                if (isWeekend && j >= 10) {
+                    gridHtml += `<div class="border-b border-outline bg-gray-100/60" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
                 } else {
-                    gridHtml += `<div class="border-r border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+                    gridHtml += `<div class="border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
                 }
             }
 
-            // 주말 미운영 텍스트 표시용 배너
             if (isWeekend) {
                 gridHtml += `
-                    <div class="text-[12px] font-bold text-gray-400 flex items-center justify-center tracking-wider pointer-events-none" 
+                    <div class="text-[12px] font-bold text-gray-400 flex items-center justify-center tracking-wider pointer-events-none overflow-hidden whitespace-nowrap" 
                          style="grid-column: 12 / 21; grid-row: ${rowIdx}; z-index: 5;">
                         15:00 이후 미운영
                     </div>
                 `;
             }
 
-            // 카드 컴포넌트 렌더링
             row.records.forEach(ev => {
                 const [startStr, endStr] = ev.time.split('~');
                 const startCol = timeToColumnIndex(startStr);
@@ -562,17 +558,16 @@ const fixedSchedules = {
                 `;
             });
 
-            // 빈 일정 텍스트 안내
             if (!isWeekend && row.records.length === 0) {
                 gridHtml += `
-                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 pointer-events-none" 
+                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 pointer-events-none overflow-hidden whitespace-nowrap" 
                          style="grid-column: 2 / 21; grid-row: ${rowIdx};">
                         일정 없음
                     </div>
                 `;
             } else if (isWeekend && row.records.length === 0) {
                 gridHtml += `
-                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 pointer-events-none" 
+                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 pointer-events-none overflow-hidden whitespace-nowrap" 
                          style="grid-column: 2 / 12; grid-row: ${rowIdx};">
                         일정 없음
                     </div>
@@ -597,7 +592,6 @@ const fixedSchedules = {
         }
         return uid;
     }
-
     function initFullCalendar() {
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
