@@ -489,8 +489,10 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 2;">${i}:00</div>`;
         }
         // 💡 마지막 시간대는 30분 단위로 쪼개서 19:00 / 19:30 라벨을 둘 다 표시합니다.
-        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 1;">19:00</div>`;
-        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 1;">19:30</div>`;
+        // 이 두 라벨은 칸 중앙이 아니라 왼쪽(정확한 시각 눈금 위치)에 붙여서,
+        // 19:30에 끝나는 일정 박스의 끝 지점과 라벨 위치가 정확히 일치하도록 합니다.
+        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80 text-left pl-1" style="grid-column: span 1;">19:00</div>`;
+        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80 text-left pl-1" style="grid-column: span 1;">19:30</div>`;
 
         let gridHtml = `
             <div class="mb-4 flex items-center justify-between">
@@ -578,6 +580,10 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 
         gridHtml += `</div>`;
         container.innerHTML = gridHtml;
+
+        // 💡 [수정] 탭을 바꿔도 이전 스크롤 위치가 남아있지 않도록, 항상 10:00부터 보이게 스크롤을 초기화합니다.
+        const scrollWrapper = container.closest('.overflow-x-auto');
+        if (scrollWrapper) scrollWrapper.scrollLeft = 0;
     }
 
     function getOrCreateUID() {
