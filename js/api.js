@@ -1,8 +1,14 @@
+/**
+ * api.js
+ * Google Apps Script(GAS) 백엔드와 통신하는 공통 GET/POST 함수입니다.
+ */
 const API_URL = "https://script.google.com/macros/s/AKfycbw8TIvA_grDjk0Lu98nSh3gplAUBHezY5rp5ANDlxu4Fk7b2x6VRd0Lbw6wgFNA-NvL9A/exec";
 
-/* =========================
-   GET
-========================= */
+/**
+ * GET 요청
+ * @param {string} mode - GAS doGet 라우팅용 모드명
+ * @param {Object} params - 추가 쿼리 파라미터
+ */
 async function apiGet(mode, params = {}) {
     const query = new URLSearchParams({ mode, ...params });
 
@@ -15,11 +21,12 @@ async function apiGet(mode, params = {}) {
     }
 }
 
-/* =========================
-   POST (CORS 해결 버전)
-========================= */
+/**
+ * POST 요청
+ * GAS의 CORS Preflight 제약을 피하기 위해 text/plain 컨텐츠 타입으로 전송합니다.
+ * @param {Object} data - 전송할 payload (mode 필드를 포함해야 합니다)
+ */
 async function apiPost(data) {
-
     const honeypotEl = document.getElementById('honeypot');
     const honeypotValue = honeypotEl ? honeypotEl.value : "";
 
@@ -29,11 +36,9 @@ async function apiPost(data) {
     };
 
     try {
-        // 🔥 GAS의 CORS 제한을 우회하기 위해 text/plain 또는 헤더 생략 방식을 사용합니다.
         const res = await fetch(API_URL, {
             method: "POST",
             headers: {
-                // 원래 application/json 이었던 부분을 text/plain 으로 변경하여 Preflight 차단을 우회합니다.
                 "Content-Type": "text/plain;charset=utf-8"
             },
             redirect: "follow",
@@ -42,21 +47,17 @@ async function apiPost(data) {
 
         const text = await res.text();
 
-        // JSON 안전 파싱
         try {
             return JSON.parse(text);
         } catch {
             console.warn("Non-JSON response:", text);
             return { error: "서버 응답 오류" };
         }
-
     } catch (e) {
         console.error("POST error", e);
         return { error: "네트워크 오류" };
     }
 }
 
-// 💡 [수정] 일반 브라우저 환경에서 충돌 없이 함수를 전역 객체로 바로 등록합니다.
-// 맨 하단에 에러를 유발하던 'export' 구문을 완전히 제거하여 브라우저 호환성을 확보했습니다.
 window.apiGet = apiGet;
 window.apiPost = apiPost;
