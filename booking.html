@@ -318,13 +318,15 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
     <p>© 2026 Culture Connect. All rights reserved.</p>
 </footer>
 
-<!-- 💡 두 스크립트 블록을 type="module" 하나로 원활하게 연동 및 병합 완료 -->
-<script type="module">
-    import { apiGet, apiPost } from './js/api.js';
-    
-    // 💡 HTML 안의 인라인 onclick 속성들이 모듈 범위 내 함수들을 정상적으로 찾을 수 있도록 window에 바인딩합니다.
-    window.apiGet = apiGet;
-    window.apiPost = apiPost;
+<script src="js/api.js"></script>
+<script>
+    // 💡 [수정] api.js는 모듈이 아닌 일반 스크립트로 window.apiGet / window.apiPost를 전역 등록합니다.
+    // 기존에 여기서 ES 모듈 import를 사용했는데, api.js에는 export 구문이 없어서
+    // "The requested module './js/api.js' does not provide an export named 'apiGet'" 에러가 발생했고,
+    // 그로 인해 이 스크립트 블록 전체가 실행되지 않아 대관 신청 저장/시간표/캘린더가 모두 동작하지 않았습니다.
+    // 일반 스크립트로 바꾸고 다른 페이지들처럼 전역 apiGet/apiPost를 그대로 사용하도록 수정했습니다.
+
+    // 💡 HTML 안의 인라인 onclick 속성들이 함수들을 정상적으로 찾을 수 있도록 window에 바인딩합니다.
     window.showBookingTab = showBookingTab;
     window.showSchedule = showSchedule;
     window.closeBookingModal = closeBookingModal;
@@ -675,7 +677,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             }
 
             const payload = {
-                action: "createBooking",
+                mode: "createBooking",
                 uid: getOrCreateUID(),
                 name,
                 phone,
