@@ -677,7 +677,7 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             }
 
             const payload = {
-                mode: "createBooking",
+                mode: "submitBooking",
                 uid: getOrCreateUID(),
                 name,
                 phone,
@@ -685,7 +685,9 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
                 dateTime,
                 hours,
                 count,
-                content
+                content,
+                agree1: agree1Checked ? "동의" : "비동의",
+                agree2: agree2Checked ? "동의" : "비동의"
             };
 
             const btn = document.getElementById('btn-submit-book');
