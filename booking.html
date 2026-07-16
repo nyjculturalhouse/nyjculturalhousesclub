@@ -418,14 +418,14 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         }
     }
 
-    const fixedSchedules = {
+const fixedSchedules = {
         dance: {
             title: "댄스실 시간표",
             colorClass: "bg-orange-50 border-orange-400 text-orange-900",
             data: [
                 { day: "화", records: [{ name: "천하제일", time: "10:00~14:00" }, { name: "나래예술단", time: "14:00~16:00" }, { name: "아사모", time: "16:00~18:00" }] },
-                { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }] },
-                { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }] }, 
+                { day: "수", records: [{ name: "소리마루", time: "10:00~12:00" }, { name: "훌라센스", time: "12:00~14:00" }, { name: "라인나와유", time: "14:00~16:00" }, { name: "개나리라인댄스", time: "16:00~18:00" }, { name: "라니훌라", time: "18:30~19:30" }] },
+                { day: "목", records: [{ name: "라니훌라", time: "10:00~11:30" }, { name: "나래예술단", time: "11:30~13:30" }, { name: "아코가락", time: "14:00~16:00" }, { name: "해피하모니", time: "16:00~18:00" }, { name: "훌라센스", time: "18:30~19:30" }] }, 
                 { day: "금", records: [{ name: "타울림", time: "10:00~13:00" }, { name: "라인나와유", time: "13:30~15:30" }, { name: "해피하모니", time: "15:30~17:00" }, { name: "덩더쿵사가지", time: "17:00~19:30" }] },
                 { day: "토", records: [{ name: "훌라센스", time: "12:00~14:00" }] },
                 { day: "일", records: [{ name: "궁채와열채사이", time: "10:00~13:00" }, { name: "소리노리", time: "13:00~15:00" }] }
@@ -448,8 +448,8 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             colorClass: "bg-green-50 border-green-400 text-green-900",
             data: [
                 { day: "화", records: [{ name: "힐링만화", time: "10:00~12:00" }, { name: "엣지", time: "15:00~17:00" }] },
-                { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }] },
-                { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }] }, 
+                { day: "수", records: [{ name: "꼼지락", time: "10:00~13:00" }, { name: "새로이음", time: "13:30~17:30" }] },
+                { day: "목", records: [{ name: "그림향기", time: "10:00~13:00" }, { name: "깨알 레알 잉글리쉬", time: "14:00~16:00" }, { name: "재미팡", time: "18:00~19:30" }] }, 
                 { day: "금", records: [{ name: "묵향", time: "10:00~14:00" }, { name: "꽃길명리", time: "15:00~17:30" }] },
                 { day: "토", records: [] },
                 { day: "일", records: [] }
@@ -460,8 +460,8 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
             colorClass: "bg-purple-50 border-purple-400 text-purple-900",
             data: [
                 { day: "화", records: [{ name: "한지나래", time: "10:00~14:00" }, { name: "* 글낭 (2,4주)", time: "16:00~18:00" }] },
-                { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }, { name: "새로이음", time: "13:30~17:30" }] },
-                { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }] }, 
+                { day: "수", records: [{ name: "캘리하랑", time: "10:00~12:00" }, { name: "하오하오", time: "12:30~14:30" }] },
+                { day: "목", records: [{ name: "* 뿌리채포레 (2,4주)", time: "10:30~12:30" }, { name: "우아한미술", time: "13:00~17:00" }, { name: "엄:써", time: "18:00~19:30" }] }, 
                 { day: "금", records: [{ name: "상록수", time: "10:00~11:30" }, { name: "우쿨오하나", time: "12:00~13:00" }, { name: "코인마술동아리", time: "14:00~18:00" }] },
                 { day: "토", records: [] },
                 { day: "일", records: [{ name: "소리노리", time: "11:00~13:00" }] }
@@ -477,30 +477,34 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         const types = ['dance', 'music', 'clubroom', 'harmony'];
         types.forEach(t => {
             const btn = document.getElementById(`btn-sched-${t}`);
-            if(t === type) {
-                btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white border border-outline transition";
-            } else {
-                btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition";
+            if(btn) {
+                if(t === type) {
+                    btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-primary text-white border border-outline transition";
+                } else {
+                    btn.className = "px-4 py-2 text-xs font-bold rounded-xl bg-white text-gray-600 border border-outline hover:bg-primary hover:text-white transition";
+                }
             }
         });
 
+        // 💡 10:00부터 19:00까지 30분 단위 헤더 생성 (총 19칸)
+        const times = [
+            '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', 
+            '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00'
+        ];
+        
         let hoursHeader = '';
-        for (let i = 10; i <= 18; i++) {
-            hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80" style="grid-column: span 2;">${i}:00</div>`;
-        }
-        // 💡 마지막 시간대는 30분 단위로 쪼개서 19:00 / 19:30 라벨을 둘 다 표시합니다.
-        // 이 두 라벨은 칸 중앙이 아니라 왼쪽(정확한 시각 눈금 위치)에 붙여서,
-        // 19:30에 끝나는 일정 박스의 끝 지점과 라벨 위치가 정확히 일치하도록 합니다.
-        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80 text-left pl-1" style="grid-column: span 1;">19:00</div>`;
-        hoursHeader += `<div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80 text-left pl-1" style="grid-column: span 1;">19:30</div>`;
+        times.forEach(t => {
+            hoursHeader += `<div class="grid-cell-header text-[11px] font-semibold py-2.5 text-gray-500 bg-gray-50/80 flex items-center justify-center border-b border-r border-outline" style="grid-column: span 1;">${t}</div>`;
+        });
 
+        // 💡 가로 1200px에 맞게 강제 고정 및 19개의 30분 슬롯 그리드 구성
         let gridHtml = `
-            <div class="mb-4 flex items-center justify-between">
-                <h4 class="magazine-title text-lg text-primary">${schedule.title}</h4>
-                <span class="text-xs text-gray-400 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
+            <div class="mb-4 flex items-center justify-between" style="width: 1200px;">
+                <h4 class="magazine-title text-lg text-primary font-bold">${schedule.title}</h4>
+                <span class="text-xs text-gray-500 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
             </div>
-            <div class="timetable-grid text-sm text-center">
-                <div class="grid-cell-header text-xs font-semibold py-2.5 text-gray-500 bg-gray-50/80">요일</div>
+            <div class="timetable-grid text-sm text-center border-t border-l border-outline" style="width: 1200px; display: grid; grid-template-columns: 60px repeat(19, 1fr);">
+                <div class="grid-cell-header text-xs font-bold py-2.5 text-gray-600 bg-gray-50/80 border-b border-r border-outline flex items-center justify-center">요일</div>
                 ${hoursHeader}
         `;
 
@@ -518,25 +522,25 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
 
             // 요일 칸 생성
             gridHtml += `
-                <div class="flex items-center justify-center font-bold bg-gray-50/50 border-right border-b border-outline py-4 text-sm" 
+                <div class="flex items-center justify-center font-bold bg-gray-50/50 border-r border-b border-outline py-4 text-sm" 
                      style="grid-column: 1; grid-row: ${rowIdx}; min-height: 84px;">${row.day}</div>
             `;
 
-            // 배경 가이드 격자 20칸 생성
-            for (let j = 0; j < 20; j++) {
-                if (isWeekend && j >= 10) {
-                    gridHtml += `<div class="border-right border-b border-outline bg-striped" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+            // 배경 가이드 격자 (총 19칸)
+            for (let j = 0; j < 19; j++) {
+                if (isWeekend && j >= 10) { // 15:00 이후 (j=10은 15:00 슬롯)
+                    gridHtml += `<div class="border-r border-b border-outline bg-gray-100/60" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
                 } else {
-                    gridHtml += `<div class="border-right border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
+                    gridHtml += `<div class="border-r border-b border-outline bg-white" style="grid-column: ${2 + j}; grid-row: ${rowIdx}; pointer-events-none"></div>`;
                 }
             }
 
-            // 주말 미운영 텍스트 표시용 배너 바인딩
+            // 주말 미운영 텍스트 표시용 배너
             if (isWeekend) {
                 gridHtml += `
-                    <div class="text-[12px] font-bold text-gray-400 bg-gray-100/40 flex items-center justify-center border-b border-outline tracking-wider pointer-events-none" 
-                         style="grid-column: 12 / 22; grid-row: ${rowIdx}; z-index: 5;">
-                        3시 이후 미운영
+                    <div class="text-[12px] font-bold text-gray-400 flex items-center justify-center tracking-wider pointer-events-none" 
+                         style="grid-column: 12 / 21; grid-row: ${rowIdx}; z-index: 5;">
+                        15:00 이후 미운영
                     </div>
                 `;
             }
@@ -550,25 +554,25 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
                 gridHtml += `
                     <div class="p-1 flex flex-col justify-center" 
                          style="grid-column: ${startCol} / ${endCol}; grid-row: ${rowIdx}; z-index: 10;">
-                        <div class="event px-2.5 py-2 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.01] ${schedule.colorClass} flex flex-col justify-center overflow-hidden" 
-                             style="height: calc(100% - 2px);">
-                            <strong class="font-extrabold text-[13px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
-                            <span class="text-[11px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
+                        <div class="event px-2 py-1.5 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.02] ${schedule.colorClass} flex flex-col justify-center overflow-hidden h-full">
+                            <strong class="font-bold text-[12px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
+                            <span class="text-[10px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
                         </div>
                     </div>
                 `;
             });
 
+            // 빈 일정 텍스트 안내
             if (!isWeekend && row.records.length === 0) {
                 gridHtml += `
-                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
-                         style="grid-column: 2 / 22; grid-row: ${rowIdx};">
-                        배정된 고정 일정이 없습니다.
+                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 pointer-events-none" 
+                         style="grid-column: 2 / 21; grid-row: ${rowIdx};">
+                        일정 없음
                     </div>
                 `;
             } else if (isWeekend && row.records.length === 0) {
                 gridHtml += `
-                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 border-b border-outline pointer-events-none" 
+                    <div class="text-xs text-gray-300 flex items-center justify-start pl-4 pointer-events-none" 
                          style="grid-column: 2 / 12; grid-row: ${rowIdx};">
                         일정 없음
                     </div>
@@ -581,7 +585,6 @@ body { font-family: 'Pretendard', sans-serif; background: #F4F4F3; letter-spacin
         gridHtml += `</div>`;
         container.innerHTML = gridHtml;
 
-        // 💡 [수정] 탭을 바꿔도 이전 스크롤 위치가 남아있지 않도록, 항상 10:00부터 보이게 스크롤을 초기화합니다.
         const scrollWrapper = container.closest('.overflow-x-auto');
         if (scrollWrapper) scrollWrapper.scrollLeft = 0;
     }
