@@ -1,135 +1,95 @@
 <!DOCTYPE html>
-<html class="light" lang="ko">
+<html lang="ko">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="description" content="문화의집 운영 현황과 출석 데이터를 관리하는 관리자 페이지입니다.">
     <title>관리자 대시보드</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
 
-    <script>
-        // 💡 [수정] 메인 시스템 스펙과 일치하는 테마 컬러 코드를 주입했습니다.
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: "#111111", // 매거진 스타일의 깊은 다크 차콜
-                            hover: "#222222"
-                        },
-                        accent: {
-                            bg: "#FF5A36",      // 힙한 오렌지 레드 포인트
-                            text: "#FFFFFF",
-                            hover: "#E04825"
-                        },
-                        bg: "#F4F4F3",          // 미색이 도는 부드러운 화이트 배경
-                        surface: "#ffffff",
-                        outline: "#EAEAEA"
-                    },
-                    boxShadow: {
-                        soft: "0 8px 30px rgba(0,0,0,0.03)"
-                    }
-                }
-            }
-        }
-    </script>
-
+    <script src="js/theme.js"></script>
     <style>
-        /* 💡 [수정] 기본 폰트 두께를 요구사항인 200(Extralight) 기반으로 세팅했습니다. */
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background: #F4F4F3;
-            letter-spacing: -0.01em;
-            font-weight: 200 !important;
-        }
-        .hidden { display: none !important; }
-
-        /* 💡 [요구사항 반영] 기존 200 두께를 300(Light)으로 변경하여 세련된 가독성 확보 */
-        .magazine-title {
-            font-weight: 300 !important;
-            letter-spacing: -0.02em !important;
-            line-height: 1.2 !important;
-        }
-
-        /* 💡 [수정 완료] 다른 디자인 시스템 스펙과 아이콘 굵기 무드를 일치시키기 위해 wght를 300으로 조절 */
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined' !important;
-            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
-            display: inline-block !important;
-            vertical-align: middle !important;
-            text-transform: lowercase !important;
-            font-style: normal !important;
-            letter-spacing: normal !important;
-            word-wrap: normal !important;
-            white-space: nowrap !important;
-            direction: ltr !important;
-        }
-
-        .card {
-            transition: all .2s ease;
-            background: #ffffff;
-            border: 1px solid #EAEAEA;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: #111111 !important;
-        }
+        body { font-weight: 200; }
+        .magazine-title { letter-spacing: -0.02em !important; line-height: 1.2 !important; }
     </style>
 </head>
 
 <body class="text-primary antialiased">
 
-<header class="sticky top-0 z-50 bg-[#F4F4F3] border-b border-outline">
-    <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='index.html'">
-            <h1 class="magazine-title text-lg text-primary">남양주시 문화의집</h1>
-        </div>
+<a href="#main-content" class="skip-link">본문 바로가기</a>
 
-        <div class="flex items-center gap-4">
-            <button class="text-primary hover:opacity-70 transition flex items-center gap-1 text-sm font-light" onclick="location.href='index.html'">
-                <span class="material-symbols-outlined text-lg">home_app_logo</span>
-            </button>
-        </div>
+<!--
+  ⚠️ 참고: 아래 관리자 로그인은 정적 페이지 안에서만 동작하는 간단한 화면 잠금입니다.
+  비밀번호가 클라이언트 코드에 그대로 노출되므로 실제 접근 통제(서버 인증)로는
+  사용할 수 없습니다. 운영 환경에서는 서버 측 인증으로 교체를 권장합니다.
+-->
+<div id="admin-login-modal" class="modal-backdrop is-open" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+    <div class="modal-panel p-8">
+        <h1 id="admin-login-title" class="magazine-title text-2xl text-primary mb-2">관리자 로그인</h1>
+        <p class="text-gray-500 text-sm mb-6">관리자 비밀번호를 입력해 주세요.</p>
+        <form id="admin-login-form" novalidate>
+            <label for="admin-pw" class="field-label">비밀번호</label>
+            <input id="admin-pw" type="password" inputmode="numeric" autocomplete="current-password"
+                class="mt-2 w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary text-sm h-11" required>
+            <p id="admin-login-error" class="text-sm text-accent-bg font-semibold mt-2 hidden" role="alert">비밀번호가 일치하지 않습니다.</p>
+            <div class="flex gap-3 mt-6">
+                <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-hover transition">확인</button>
+                <a href="index.html" class="flex-1 text-center py-3 rounded-xl border border-outline font-bold text-gray-600 hover:bg-gray-50 transition">메인으로</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<header class="sticky top-0 z-40 bg-[#F4F4F3] border-b border-outline">
+    <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+            <h2 class="magazine-title text-lg text-primary">남양주시 문화의집</h2>
+        </a>
+        <a href="index.html" class="text-primary hover:opacity-70 transition flex items-center gap-1 text-sm font-light" aria-label="메인으로 이동">
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">home_app_logo</span>
+        </a>
     </div>
 </header>
 
-<main class="max-w-[1200px] mx-auto px-6 py-10">
+<main id="main-content" class="max-w-[1200px] mx-auto px-6 py-10">
 
     <div class="mb-10">
-        <h2 class="magazine-title text-4xl text-primary mb-2">관리자 페이지</h2>
+        <h1 class="magazine-title text-4xl text-primary mb-2">관리자 페이지</h1>
         <p class="text-gray-500 text-sm font-extralight">플랫폼 운영 현황 및 출석 데이터를 관리합니다.</p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10" role="tablist" aria-label="관리자 메뉴">
 
-        <div onclick="showAdminTab('stats')" class="card p-6 rounded-2xl cursor-pointer shadow-soft">
-            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
+        <button type="button" role="tab" aria-selected="true" aria-controls="admin-stats-section" id="tab-stats"
+            onclick="showAdminTab('stats')" class="card p-6 rounded-2xl cursor-pointer shadow-soft text-left w-full">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4" aria-hidden="true">
                 <span class="material-symbols-outlined text-primary text-xl">monitoring</span>
             </div>
-            <h4 class="magazine-title text-xl mb-1 text-primary">동아리 출석 통계 현황</h4>
+            <h3 class="magazine-title text-xl mb-1 text-primary">동아리 출석 통계 현황</h3>
             <p class="text-xs text-gray-400 font-extralight">주간 및 월간 참여 지표 분석</p>
-        </div>
+        </button>
 
-        <div onclick="showAdminTab('attendance-check')" class="card p-6 rounded-2xl cursor-pointer shadow-soft">
-            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
+        <button type="button" role="tab" aria-selected="false" aria-controls="admin-attendance-check-section" id="tab-attendance-check"
+            onclick="showAdminTab('attendance-check')" class="card p-6 rounded-2xl cursor-pointer shadow-soft text-left w-full">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4" aria-hidden="true">
                 <span class="material-symbols-outlined text-primary text-xl">how_to_reg</span>
             </div>
-            <h4 class="magazine-title text-xl mb-1 text-primary">출석 체크 현황</h4>
-            <p class="text-xs text-gray-400 font-extralight">QR / 수동 출석 관리</p>
-        </div>
+            <h3 class="magazine-title text-xl mb-1 text-primary">출석 체크 현황</h3>
+            <p class="text-xs text-gray-400 font-extralight">동아리별 주간 출석 제출 여부</p>
+        </button>
 
-        <div onclick="showAdminTab('calendar')" class="card p-6 rounded-2xl cursor-pointer shadow-soft">
-            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
+        <button type="button" role="tab" aria-selected="false" aria-controls="admin-calendar-section" id="tab-calendar"
+            onclick="showAdminTab('calendar')" class="card p-6 rounded-2xl cursor-pointer shadow-soft text-left w-full">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-4" aria-hidden="true">
                 <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
             </div>
-            <h4 class="magazine-title text-xl mb-1 text-primary">대관 캘린더</h4>
+            <h3 class="magazine-title text-xl mb-1 text-primary">대관 캘린더</h3>
             <p class="text-xs text-gray-400 font-extralight">시설 예약 일정 관리</p>
-        </div>
+        </button>
 
     </div>
 
@@ -152,64 +112,68 @@
             </div>
         </div>
 
-        <div id="admin-stats-section" class="hidden">
+        <section id="admin-stats-section" role="tabpanel" aria-labelledby="tab-stats" class="hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-outline">
-                <h3 class="magazine-title text-2xl text-primary">동아리 출석 현황 통계</h3>
-                
-                <div class="flex bg-gray-100 p-1 rounded-xl w-fit border border-outline">
-                    <button id="btn-filter-week" onclick="toggleStatsPeriod('week')" class="px-4 py-2 text-xs font-light rounded-lg bg-white text-primary shadow-sm transition">
+                <h2 class="magazine-title text-2xl text-primary">동아리 출석 현황 통계</h2>
+
+                <div class="flex bg-gray-100 p-1 rounded-xl w-fit border border-outline" role="group" aria-label="통계 조회 기간">
+                    <button id="btn-filter-week" type="button" aria-pressed="true" onclick="toggleStatsPeriod('week')" class="px-4 py-2 text-xs font-light rounded-lg bg-white text-primary shadow-sm transition">
                         매주 조회 (토~금)
                     </button>
-                    <button id="btn-filter-month" onclick="toggleStatsPeriod('month')" class="px-4 py-2 text-xs font-extralight rounded-lg text-gray-500 hover:text-primary transition">
+                    <button id="btn-filter-month" type="button" aria-pressed="false" onclick="toggleStatsPeriod('month')" class="px-4 py-2 text-xs font-extralight rounded-lg text-gray-500 hover:text-primary transition">
                         매달 조회 (월별)
                     </button>
                 </div>
             </div>
 
-            <div id="admin-stats-content" class="overflow-x-auto">데이터를 불러오는 중...</div>
-        </div>
+            <div id="admin-stats-content" class="overflow-x-auto" aria-live="polite">데이터를 불러오는 중...</div>
+        </section>
 
-        <div id="admin-attendance-check-section" class="hidden">
-            <h3 class="magazine-title text-2xl text-primary mb-6">출석 체크 현황</h3>
-            <div id="attendance-check-content" class="overflow-x-auto">
+        <section id="admin-attendance-check-section" role="tabpanel" aria-labelledby="tab-attendance-check" class="hidden">
+            <h2 class="magazine-title text-2xl text-primary mb-6">출석 체크 현황</h2>
+            <div id="attendance-check-content" class="overflow-x-auto" aria-live="polite">
                 <p class="text-gray-400 text-sm font-extralight">불러오는 중...</p>
             </div>
-        </div>
+        </section>
 
-        <div id="admin-calendar-section" class="hidden">
-            <h3 class="magazine-title text-2xl text-primary mb-6">대관 캘린더</h3>
+        <section id="admin-calendar-section" role="tabpanel" aria-labelledby="tab-calendar" class="hidden">
+            <h2 class="magazine-title text-2xl text-primary mb-6">대관 캘린더</h2>
             <div class="w-full h-[600px] rounded-xl overflow-hidden border border-outline">
                 <iframe
                     src="https://calendar.google.com/calendar/embed?src=29f49ca08ab45c6d905555a73977703f275fd464e254ed959725c9046b3a6436%40group.calendar.google.com&ctz=Asia%2FSeoul"
-                    class="w-full h-full border-0">
+                    class="w-full h-full border-0"
+                    title="문화의집 대관 캘린더">
                 </iframe>
             </div>
-        </div>
+        </section>
 
     </div>
 </main>
 
 <script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
-
+<script src="js/utils.js"></script>
 <script>
-    const TOTAL_CLUBS_COUNT = 46; 
-    let currentStatsPeriod = 'week'; 
+    const TOTAL_CLUBS_COUNT = 46;
+    let currentStatsPeriod = 'week';
     let cachedRawStatsData = [];
 
-    function checkAdminAccess() {
-        const pw = prompt("관리자 비밀번호를 입력하세요:");
+    document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pw = document.getElementById('admin-pw').value;
+        const errorEl = document.getElementById('admin-login-error');
+
         if (pw !== "0226") {
-            alert("비밀번호가 일치하지 않습니다. 메인 화면으로 이동합니다.");
-            location.href = "index.html";
-        } else {
-            if (typeof adminAuth === "function") adminAuth();
-            initDashboardData();
+            errorEl.classList.remove('hidden');
+            document.getElementById('admin-pw').focus();
+            return;
         }
-    }
-    
-    checkAdminAccess();
+
+        errorEl.classList.add('hidden');
+        document.getElementById('admin-login-modal').classList.remove('is-open');
+        setTimeout(() => document.getElementById('admin-login-modal').classList.add('hidden'), 300);
+
+        initDashboardData();
+    });
 
     async function initDashboardData() {
         try {
@@ -217,7 +181,7 @@
             const attendanceStatusData = await apiGet("getAttendanceStatus") || [];
             cachedRawStatsData = statsData;
 
-            document.getElementById("stats-clubs").innerText = TOTAL_CLUBS_COUNT + "개";
+            document.getElementById("stats-clubs").textContent = TOTAL_CLUBS_COUNT + "개";
 
             let totalAttendancePeople = 0;
             statsData.forEach(d => {
@@ -227,9 +191,9 @@
 
             let completedCount = 0;
             attendanceStatusData.forEach(d => {
-                if(d.thisWeek === true || d.thisWeek === '완료') completedCount++;
+                if (d.thisWeek === true || d.thisWeek === '완료') completedCount++;
             });
-            
+
             const attendanceRate = TOTAL_CLUBS_COUNT > 0 ? Math.round((completedCount / TOTAL_CLUBS_COUNT) * 100) : 0;
             document.getElementById("stats-rate").innerHTML = `<span class="font-light">${attendanceRate}%</span>` + ` <span class="text-xs text-gray-400 font-extralight">(${completedCount}/${TOTAL_CLUBS_COUNT} 완료)</span>`;
 
@@ -241,18 +205,28 @@
     }
 
     function showAdminTab(tab) {
-        document.getElementById('admin-stats-section').classList.add('hidden');
-        document.getElementById('admin-attendance-check-section').classList.add('hidden');
-        document.getElementById('admin-calendar-section').classList.add('hidden');
+        const sections = {
+            'stats': 'admin-stats-section',
+            'attendance-check': 'admin-attendance-check-section',
+            'calendar': 'admin-calendar-section'
+        };
+        const tabs = {
+            'stats': 'tab-stats',
+            'attendance-check': 'tab-attendance-check',
+            'calendar': 'tab-calendar'
+        };
 
-        if(tab === 'stats') {
-            document.getElementById('admin-stats-section').classList.remove('hidden');
+        Object.entries(sections).forEach(([key, id]) => {
+            document.getElementById(id).classList.toggle('hidden', key !== tab);
+        });
+        Object.entries(tabs).forEach(([key, id]) => {
+            document.getElementById(id).setAttribute('aria-selected', String(key === tab));
+        });
+
+        if (tab === 'stats') {
             renderStatsTable();
-        } else if(tab === 'attendance-check') {
-            document.getElementById('admin-attendance-check-section').classList.remove('hidden');
+        } else if (tab === 'attendance-check') {
             loadAttendanceCheckList();
-        } else if(tab === 'calendar') {
-            document.getElementById('admin-calendar-section').classList.remove('hidden');
         }
     }
 
@@ -261,27 +235,28 @@
         const btnWeek = document.getElementById('btn-filter-week');
         const btnMonth = document.getElementById('btn-filter-month');
 
-        if (period === 'week') {
-            btnWeek.className = "px-4 py-2 text-xs font-light rounded-lg bg-white text-primary shadow-sm transition";
-            btnMonth.className = "px-4 py-2 text-xs font-extralight rounded-lg text-gray-500 hover:text-primary transition";
-        } else {
-            btnMonth.className = "px-4 py-2 text-xs font-light rounded-lg bg-white text-primary shadow-sm transition";
-            btnWeek.className = "px-4 py-2 text-xs font-extralight rounded-lg text-gray-500 hover:text-primary transition";
-        }
+        const activeClass = "px-4 py-2 text-xs font-light rounded-lg bg-white text-primary shadow-sm transition";
+        const inactiveClass = "px-4 py-2 text-xs font-extralight rounded-lg text-gray-500 hover:text-primary transition";
+
+        btnWeek.className = period === 'week' ? activeClass : inactiveClass;
+        btnMonth.className = period === 'month' ? activeClass : inactiveClass;
+        btnWeek.setAttribute('aria-pressed', String(period === 'week'));
+        btnMonth.setAttribute('aria-pressed', String(period === 'month'));
+
         renderStatsTable();
     }
 
     function getCustomWeekRange(dateStr) {
-        if(!dateStr) return "미지정 주차";
+        if (!dateStr) return "미지정 주차";
         const current = new Date(dateStr);
-        if(isNaN(current.getTime())) return dateStr; 
+        if (isNaN(current.getTime())) return dateStr;
 
-        const day = current.getDay(); 
+        const day = current.getDay();
         const diffToSaturday = day === 6 ? 0 : -(day + 1);
-        
+
         const satDate = new Date(current);
         satDate.setDate(current.getDate() + diffToSaturday);
-        
+
         const friDate = new Date(satDate);
         friDate.setDate(satDate.getDate() + 6);
 
@@ -303,29 +278,27 @@
         if (currentStatsPeriod === 'week') {
             cachedRawStatsData.forEach(d => {
                 let label = d.week;
-                if(d.week && d.week.includes('-')) {
+                if (d.week && d.week.includes('-')) {
                     label = getCustomWeekRange(d.week);
-                } else if(!d.week && d.date) {
+                } else if (!d.week && d.date) {
                     label = getCustomWeekRange(d.date);
                 }
                 summaryMap[label] = (summaryMap[label] || 0) + Number(d.total || 0);
             });
         } else {
-            // 💡 [수정 완료] 원본 2026-07 형태의 문자열 포맷팅을 "2026년 07월" 형식으로 깔끔하게 연동
             cachedRawStatsData.forEach(d => {
                 let targetTargetStr = d.week || d.date || "";
                 let monthLabel = "기간 미지정";
-                
+
                 if (targetTargetStr && targetTargetStr.length >= 7 && targetTargetStr.includes('-')) {
                     const parts = targetTargetStr.split('-');
                     monthLabel = `${parts[0]}년 ${parts[1]}월`;
                 } else if (targetTargetStr) {
-                    // 안전 장치: 대시(-)가 없는 포맷인 경우 가공 유도
                     const year = targetTargetStr.substring(0, 4);
                     const month = targetTargetStr.substring(5, 7) || "01";
                     monthLabel = `${year}년 ${month}월`;
                 }
-                
+
                 summaryMap[monthLabel] = (summaryMap[monthLabel] || 0) + Number(d.total || 0);
             });
         }
@@ -334,10 +307,11 @@
 
         let html = `
             <table class="w-full text-sm text-left">
+                <caption class="sr-only">${currentStatsPeriod === 'week' ? '주차별' : '월별'} 출석 누적 통계</caption>
                 <thead class="bg-gray-50 border-b border-outline">
                     <tr>
-                        <th class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">${currentStatsPeriod === 'week' ? '주차 일자 (토~금)' : '해당 월'}</th>
-                        <th class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">총 출석 누적 인원</th>
+                        <th scope="col" class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">${currentStatsPeriod === 'week' ? '주차 일자 (토~금)' : '해당 월'}</th>
+                        <th scope="col" class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">총 출석 누적 인원</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-outline">
@@ -363,18 +337,19 @@
         try {
             const data = await apiGet("getAttendanceStatus") || [];
 
-            if(data.length === 0) {
+            if (data.length === 0) {
                 box.innerHTML = `<p class="text-gray-400 p-4 text-sm font-extralight">출석 대상 동아리 내역이 없습니다.</p>`;
                 return;
             }
 
             let html = `
                 <table class="w-full text-left text-sm">
+                <caption class="sr-only">동아리별 출석 체크 현황</caption>
                 <thead class="bg-gray-50 border-b border-outline">
                     <tr>
-                        <th class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">동아리 명</th>
-                        <th class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">지난주 현황</th>
-                        <th class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">이번주 현황</th>
+                        <th scope="col" class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">동아리 명</th>
+                        <th scope="col" class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">지난주 현황</th>
+                        <th scope="col" class="py-3 px-4 font-light text-gray-600 text-xs tracking-wider uppercase">이번주 현황</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-outline">
@@ -404,7 +379,7 @@
             html += `</tbody></table>`;
             box.innerHTML = html;
 
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             box.innerHTML = `<p class="text-accent-bg p-4 text-sm font-light">데이터 로딩 중 에러가 발생했습니다.</p>`;
         }
