@@ -349,14 +349,15 @@
         ];
 
         let hoursHeader = '';
-        times.forEach(t => {
-            hoursHeader += `<div class="grid-cell-header text-[11px] font-semibold py-2.5 text-gray-500 bg-gray-50/80 flex items-center justify-center border-b border-outline" style="grid-column: span 1;">${t}</div>`;
-        });
+times.forEach(t => {
+    const isHour = t.endsWith(':00');
+    hoursHeader += `<div class="grid-cell-header text-[13px] font-semibold py-2.5 text-gray-500 bg-gray-50/80 flex items-center justify-center border-b border-outline" style="grid-column: span 1;">${isHour ? t : ''}</div>`;
+});
 
         let gridHtml = `
             <div class="mb-4 flex items-center justify-between" style="width: 100%; max-width: 1200px; box-sizing: border-box;">
                 <h3 class="magazine-title text-lg text-primary font-bold">${schedule.title}</h3>
-                <span class="text-xs text-gray-500 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
+                <span class="text-[15px] text-gray-500 font-medium">* 주말(토, 일)은 15:00 이후 미운영합니다.</span>
             </div>
             <div class="timetable-grid text-sm text-center border-t border-l border-r border-outline"
                  style="width: 100%; max-width: 1200px; box-sizing: border-box; display: grid; grid-template-columns: 60px repeat(19, minmax(0, 1fr));">
@@ -391,11 +392,11 @@
 
             if (isWeekend) {
                 gridHtml += `
-                    <div class="text-[12px] font-bold text-gray-400 flex items-center justify-center tracking-wider pointer-events-none overflow-hidden whitespace-nowrap"
-                         style="grid-column: 12 / 21; grid-row: ${rowIdx}; z-index: 5;">
-                        15:00 이후 미운영
-                    </div>
-                `;
+    <div class="text-[15px] font-bold text-gray-400 flex items-center justify-center tracking-wider pointer-events-none overflow-hidden whitespace-nowrap"
+         style="grid-column: 12 / 21; grid-row: ${rowIdx}; z-index: 5;">
+        15:00 이후 미운영
+    </div>
+`;
             }
 
             row.records.forEach(ev => {
@@ -407,8 +408,8 @@
                     <div class="p-1 flex flex-col justify-center"
                          style="grid-column: ${startCol} / ${endCol}; grid-row: ${rowIdx}; z-index: 10;">
                         <div class="event px-2 py-1.5 rounded border-l-4 text-left shadow-sm transition hover:scale-[1.02] ${schedule.colorClass} flex flex-col justify-center overflow-hidden h-full">
-                            <strong class="font-bold text-[12px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
-                            <span class="text-[10px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
+                            <strong class="font-bold text-[15px] text-gray-900 tracking-tight truncate" title="${ev.name}">${ev.name}</strong>
+                            <span class="text-[13px] font-mono font-medium opacity-80 mt-0.5 whitespace-nowrap overflow-hidden">${ev.time}</span>
                         </div>
                     </div>
                 `;
