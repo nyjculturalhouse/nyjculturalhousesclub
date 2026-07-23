@@ -79,6 +79,7 @@
             <label for="b_date" class="field-label">사용 일시 <span class="required-mark" aria-hidden="true">*</span><span class="sr-only">(필수)</span></label>
             <input id="b_date" type="datetime-local" required
                 class="mt-2 w-full rounded-xl border-gray-200 focus:border-primary focus:ring-primary text-sm h-11">
+            <p class="text-xs text-gray-500 mt-1">* 대관 신청은 최소 3일 이후부터 가능합니다.</p>
         </div>
 
         <div>
@@ -227,6 +228,25 @@
 
     let calendar = null;
     bindPhoneAutoFormat(document.getElementById('b_phone'));
+
+    // 💡 [추가] 3일 이후 날짜부터 선택 가능하도록 datetime-local 최소값(min) 설정
+    function setMinBookingDate() {
+        const dateInput = document.getElementById('b_date');
+        if (!dateInput) return;
+
+        const now = new Date();
+        now.setDate(now.getDate() + 3); // 현재 시간 기준 3일 뒤
+
+        // yyyy-MM-ddTHH:mm 형식으로 변환
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        dateInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    setMinBookingDate();
 
     function openBookingModal(spaceName, titleText, rawStart) {
         const badge = document.getElementById('modal-space-badge');
@@ -530,6 +550,16 @@ times.forEach(t => {
 
         if (!name || !phone || !dateTime || !hours || !count) {
             showBookingFormError("필수 입력 항목을 모두 채워주세요.");
+            return;
+        }
+
+        // 💡 [추가] 프론트엔드 전송 전 3일 이후 여부 검증
+        const bookingDate = new Date(dateTime);
+        const minDate = new Date();
+        minDate.setDate(minDate.getDate() + 3);
+
+        if (bookingDate < minDate) {
+            showBookingFormError("대관 신청은 최소 3일 이후부터 가능합니다.");
             return;
         }
 
