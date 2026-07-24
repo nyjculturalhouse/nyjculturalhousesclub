@@ -7,6 +7,14 @@
      surface #ffffff
      outline #EAEAEA
    - 페이지마다 중복 선언되던 <style> 블록을 이 파일 하나로 통합했습니다.
+   - 자간(letter-spacing)은 macOS HIG "포인트 크기별 자간 값" 표를 기준으로
+     각 폰트 크기에 맞는 값을 개별 지정합니다. (표의 1/1000em 값을 그대로
+     em 단위로 환산: 예) 16pt 행 "-20" → -0.02em)
+     10=+0.012em 11=+0.006em 12=0em 13=-0.006em 14=-0.011em 15=-0.016em
+     16=-0.02em 17=-0.026em 18=-0.025em 20=-0.023em 24=+0.003em
+     30=+0.014em 36=+0.01em
+   - 줄 높이(line-height)는 macOS 기본 텍스트 스타일 표에서 크기가 일치하는
+     항목(예: 17/22, 13/16 등)에 한해 그대로 적용했습니다.
    ========================================================= */
 
 /* -----------------------------
@@ -21,12 +29,14 @@ body {
     -webkit-font-smoothing: antialiased;
     background: #F4F4F3;
     color: #111111;
-    letter-spacing: -0.01em;
+    font-size: 16px;
+    letter-spacing: -0.02em; /* 16pt 행: -20/1000em */
 }
 
+/* magazine-title은 항상 Tailwind 크기 유틸(text-base~text-4xl)과 함께
+   쓰이므로, 자간은 아래 "타이포그래피" 섹션의 크기별 규칙이 담당합니다. */
 .magazine-title {
     font-weight: 300 !important;
-    letter-spacing: -0.04em !important;
     line-height: 1.1 !important;
 }
 
@@ -46,6 +56,34 @@ body {
 .hidden {
     display: none !important;
 }
+
+/* -----------------------------
+   1-1. 타이포그래피: 크기별 자간 규정 (macOS HIG 기준)
+   Tailwind 기본 크기 유틸에 각 포인트 크기에 맞는 자간을 지정합니다.
+   (아래 값은 위 헤더 주석의 자간 표를 그대로 적용한 것입니다)
+------------------------------ */
+.text-xs        { letter-spacing: 0em      !important; } /* 12px */
+.text-sm        { letter-spacing: -0.011em !important; } /* 14px */
+.text-base      { letter-spacing: -0.02em  !important; } /* 16px */
+.text-lg        { letter-spacing: -0.025em !important; } /* 18px */
+.text-xl        { letter-spacing: -0.023em !important; } /* 20px */
+.text-2xl       { letter-spacing: 0.003em  !important; } /* 24px */
+.text-3xl       { letter-spacing: 0.014em  !important; } /* 30px */
+.text-4xl       { letter-spacing: 0.01em   !important; } /* 36px */
+
+/* 임의 크기(text-[Npx])로 지정된 값들 - macOS 기본 텍스트 스타일과
+   크기가 정확히 일치하므로 자간과 줄 높이를 함께 적용합니다. */
+.text-\[10px\]  { letter-spacing: 0.012em  !important; line-height: 13px !important; } /* 각주/캡션: 10/13 */
+.text-\[13px\]  { letter-spacing: -0.006em !important; line-height: 16px !important; } /* 머리말/본문: 13/16 */
+.text-\[15px\]  { letter-spacing: -0.016em !important; line-height: 20px !important; } /* 제목3: 15/20 */
+.text-\[17px\]  { letter-spacing: -0.026em !important; line-height: 22px !important; } /* 제목2: 17/22 */
+
+/* 위 크기별 규칙보다 뒤에 두어, 대문자 라벨 등에서 의도적으로 쓰인
+   Tailwind 자간 유틸(tracking-*)은 그대로 유지되게 합니다. */
+.tracking-tight  { letter-spacing: -0.025em !important; }
+.tracking-wide   { letter-spacing: 0.025em  !important; }
+.tracking-wider  { letter-spacing: 0.05em   !important; }
+.tracking-widest { letter-spacing: 0.1em    !important; }
 
 /* -----------------------------
    2. 접근성 공통 유틸리티
@@ -75,6 +113,7 @@ body {
     border-radius: 0 0 12px 12px;
     font-weight: 700;
     font-size: 14px;
+    letter-spacing: -0.011em; /* 14pt 행 */
     transition: top 0.2s ease;
 }
 
@@ -119,6 +158,7 @@ select:focus-visible,
     display: block;
     width: 100%;
     font-size: 14px;
+    letter-spacing: -0.011em; /* 14pt 행 */
     color: #111111;
 }
 
@@ -184,6 +224,7 @@ select:focus-visible,
     border-radius: 12px;
     z-index: 100;
     font-size: 14px;
+    letter-spacing: -0.011em; /* 14pt 행 */
     font-weight: 600;
     opacity: 0;
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
@@ -224,6 +265,8 @@ select:focus-visible,
     align-items: center;
     gap: 6px;
     font-size: 12px;
+    line-height: 15px; /* 콜아웃: 12/15 */
+    letter-spacing: 0em; /* 12pt 행 */
     font-weight: 600;
     color: #9CA3AF;
 }
@@ -238,6 +281,8 @@ select:focus-visible,
     border: 1px solid #EAEAEA;
     background: #ffffff;
     font-size: 11px;
+    line-height: 14px; /* 부머리말: 11/14 */
+    letter-spacing: 0.006em; /* 11pt 행 */
     color: #9CA3AF;
 }
 
@@ -344,7 +389,7 @@ select:focus-visible,
 .fc .fc-button-primary:hover { background-color: #222222 !important; border-color: #222222 !important; }
 .fc .fc-button-primary:disabled { background-color: #cccccc !important; border-color: #cccccc !important; }
 .fc .fc-button-primary:focus-visible { outline: 2px solid #FF5A36 !important; outline-offset: 2px; }
-.fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111111; }
+.fc .fc-toolbar-title { font-size: 1.25rem !important; letter-spacing: -0.023em; font-weight: 700; color: #111111; }
 .fc th { font-weight: 600; color: #555555; }
 .fc a { cursor: pointer; }
 
@@ -387,15 +432,19 @@ select:focus-visible,
 .field-label {
     display: block;
     font-size: 12px;
+    line-height: 15px; /* 콜아웃: 12/15 */
     font-weight: 700;
     color: #4B5563;
     text-transform: uppercase;
+    /* 라벨은 대문자 강조용으로 넓은 자간(0.05em)을 의도적으로 유지합니다 */
     letter-spacing: 0.05em;
 }
 
 .field-hint {
     margin-top: 6px;
     font-size: 12px;
+    line-height: 15px; /* 콜아웃: 12/15 */
+    letter-spacing: 0em; /* 12pt 행 */
     color: #9CA3AF;
 }
 
@@ -415,7 +464,8 @@ select:focus-visible,
 }
 
 #day-buttons .day-en {
-    font-size: 0.75rem;
+    font-size: 0.75rem; /* 12px */
+    letter-spacing: 0em; /* 12pt 행 */
     font-weight: 600;
     color: #111111;
     text-transform: uppercase;
