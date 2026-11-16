@@ -45,3 +45,5 @@ body:not(.home-preview)>header{background:#fff!important;border-bottom:1px solid
 .week-event strong{white-space:nowrap;word-break:keep-all;font-size:11px;line-height:1.5}
 .week-event span{display:block;width:100%;text-align:center;font-size:10px;line-height:1.5}
 .schedule-record{text-align:center}.schedule-record time,.schedule-record strong,.schedule-record small{text-align:center}
+/* 모바일에서는 중복되는 가로 스크롤 주 메뉴를 숨긴다. */
+@media(max-width:767px){.home-preview .primary-nav{display:none}}
